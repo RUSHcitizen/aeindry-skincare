@@ -1,6 +1,7 @@
 /** Journal — the reasoning behind the formulas, plus the FAQ. */
 
 import { $$, esc } from '../lib/dom.js';
+import { pageField, initBotField } from '../ui/bot-field.js';
 import { JOURNAL, FAQS, BRAND } from '../data/content.js';
 import { initAccordion } from '../ui/accordion.js';
 
@@ -11,6 +12,7 @@ export default function journal() {
     title: 'Journal',
     html: `
     <header class="page-head">
+      ${pageField('journal')}
       <div class="wrap">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="#/">Home</a><span aria-hidden="true">·</span><span aria-current="page">Journal</span>
@@ -82,6 +84,7 @@ export default function journal() {
     </section>`,
 
     mount(root) {
+      const stopField = initBotField(root);
       initAccordion(root);
       // The journal pieces are written but not yet published as full articles.
       $$('[data-soon]', root).forEach((b) => b.addEventListener('click', (e) => {

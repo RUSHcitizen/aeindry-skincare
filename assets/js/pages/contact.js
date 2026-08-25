@@ -2,7 +2,8 @@
 
 import { $, $$, esc } from '../lib/dom.js';
 import { BRAND } from '../data/content.js';
-import { botanical } from '../lib/art.js';
+import { botanical as icon } from '../lib/art.js';
+import { pageField, initBotField } from '../ui/bot-field.js';
 import { toast } from '../ui/toast.js';
 
 const TOPICS = [
@@ -19,6 +20,7 @@ export default function contact() {
     title: 'Contact us',
     html: `
     <header class="page-head">
+      ${pageField('contact')}
       <div class="wrap">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="#/">Home</a><span aria-hidden="true">·</span><span aria-current="page">Contact</span>
@@ -69,25 +71,25 @@ export default function contact() {
 
           <aside class="contact__aside" data-stagger style="--stagger-step:90ms">
             <div class="ccard" data-reveal="up">
-              <span class="ccard__icon">${botanical('drop')}</span>
+              <span class="ccard__icon">${icon('drop')}</span>
               <h2 class="ccard__title">Email</h2>
               <a class="ccard__value link-underline" href="mailto:${esc(BRAND.email)}">${esc(BRAND.email)}</a>
               <p class="ccard__note">Usually answered within a day or two.</p>
             </div>
             <div class="ccard" data-reveal="up">
-              <span class="ccard__icon">${botanical('circle')}</span>
+              <span class="ccard__icon">${icon('circle')}</span>
               <h2 class="ccard__title">Phone</h2>
               <a class="ccard__value link-underline" href="tel:${esc(BRAND.phoneHref)}">${esc(BRAND.phone)}</a>
               <p class="ccard__note">Weekdays, Pacific time.</p>
             </div>
             <div class="ccard" data-reveal="up">
-              <span class="ccard__icon">${botanical('leaf')}</span>
+              <span class="ccard__icon">${icon('leaf')}</span>
               <h2 class="ccard__title">Where we are</h2>
               <p class="ccard__value">${esc(BRAND.city)}</p>
               <p class="ccard__note">Everything is made here, in small batches, by hand.</p>
             </div>
             <div class="ccard ccard--social" data-reveal="up">
-              <span class="ccard__icon">${botanical('sprig')}</span>
+              <span class="ccard__icon">${icon('sprig')}</span>
               <h2 class="ccard__title">Find us in person</h2>
               <p class="ccard__note">Market dates go up on Instagram first.</p>
               <div class="cluster" style="--gap:.5rem">
@@ -105,6 +107,7 @@ export default function contact() {
     </section>`,
 
     mount(root) {
+      const stopField = initBotField(root);
       const form = $('[data-contact]', root);
 
       const setError = (id, message) => {

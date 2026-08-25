@@ -4,6 +4,7 @@
  *   · Scent finder   — three questions, weighted onto six scent families.
  */
 
+import { pageField, initBotField } from '../ui/bot-field.js';
 import { $, $$, esc } from '../lib/dom.js';
 import { CONCERNS, ROUTINES, SCENT_QUIZ, SCENT_PROFILES, SCENT_MATCHES } from '../data/content.js';
 import { getProduct, formatPrice, priceOf } from '../data/products.js';
@@ -22,6 +23,7 @@ export default function ritual({ query }) {
     title: 'Build your ritual',
     html: `
     <header class="page-head">
+      ${pageField('ritual')}
       <div class="wrap">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="#/">Home</a><span aria-hidden="true">·</span><span aria-current="page">Build your ritual</span>
@@ -88,6 +90,7 @@ export default function ritual({ query }) {
     </section>`,
 
     mount(root) {
+      const stopField = initBotField(root);
       /* ---------------- tabs ---------------- */
       const tabs = $$('[data-tab]', root);
       const panels = { ritual: $('#panel-ritual', root), scent: $('#panel-scent', root) };
@@ -340,7 +343,7 @@ export default function ritual({ query }) {
         }
       };
       window.addEventListener('route:query', onQuery);
-      return () => window.removeEventListener('route:query', onQuery);
+      return () => { window.removeEventListener('route:query', onQuery); stopField?.(); };
     }
   };
 }

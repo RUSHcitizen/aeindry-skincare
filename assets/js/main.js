@@ -12,6 +12,7 @@ import { initNav } from './ui/nav.js';
 import { initCart, initCheckout } from './ui/cart.js';
 import { initQuickview } from './ui/quickview.js';
 import { initAccordion } from './ui/accordion.js';
+import { installPaper } from './ui/bot-field.js';
 import { toast } from './ui/toast.js';
 
 import home from './pages/home.js';
@@ -106,6 +107,7 @@ function initGlobalHandlers() {
 /* ---------- Boot ---------- */
 async function boot() {
   installGrain();
+  installPaper();
   initTheme();
   initScroll();
   initCursor();

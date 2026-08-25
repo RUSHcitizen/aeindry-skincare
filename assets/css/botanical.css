@@ -1,0 +1,217 @@
+/* ============================================================
+   The botanical layer
+   ------------------------------------------------------------
+   Every section can carry a "field": oversized, cropped, tinted
+   artwork that lives behind the content and moves at its own
+   speed. Two transforms are kept apart on purpose — the outer
+   element is driven by JS (scroll parallax + cursor), the inner
+   one carries the CSS sway — so neither overwrites the other.
+   ============================================================ */
+
+.bot-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: var(--z-bot);
+  /* Cursor offset, written by ui/bot-field.js. */
+  --cx: 0;
+  --cy: 0;
+}
+/* Bridges deliberately spill past the section edge to tie two together. */
+.bot-field--bleed { overflow: visible; }
+
+/* Content must sit above the field without every page saying so. */
+.section, .hero, .page-head, .band--olive, .band--linen,
+.band--ivory, .band--parchment { position: relative; }
+.section > .wrap, .hero > .wrap, .page-head > .wrap { position: relative; z-index: var(--z-base); }
+
+.bot-layer {
+  position: absolute;
+  will-change: transform;
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
+  line-height: 0;
+}
+.bot-layer svg { width: 100%; height: auto; display: block; }
+
+/* Inner element carries the ambient sway so the JS transform stays free. */
+.bot-sway {
+  display: block;
+  transform-origin: var(--origin, 50% 90%);
+  animation: bot-sway var(--sway, 22s) var(--ease-soft) var(--sway-delay, 0s) infinite alternate;
+}
+@keyframes bot-sway {
+  from { transform: rotate(calc(var(--sway-deg, 1.6deg) * -1)) translate3d(0, 0, 0); }
+  to   { transform: rotate(var(--sway-deg, 1.6deg)) translate3d(0, calc(var(--sway-lift, 6px) * -1), 0); }
+}
+
+/* A slower, larger bloom that breathes rather than sways. */
+.bot-sway--breathe {
+  animation-name: bot-breathe;
+  transform-origin: 50% 50%;
+}
+@keyframes bot-breathe {
+  from { transform: scale(0.985) rotate(-0.8deg); }
+  to   { transform: scale(1.02) rotate(0.8deg); }
+}
+
+/* ------------------------------------------------------------
+   Petals that drift down a section. Rationed to one or two
+   sections — the brief is explicit that this must not become
+   falling petals everywhere.
+   ------------------------------------------------------------ */
+.petal-drift { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.petal-drift i {
+  position: absolute;
+  top: -8%;
+  left: var(--l, 50%);
+  width: var(--s, 26px);
+  color: var(--bot-rose);
+  opacity: 0;
+  animation: petal-fall var(--d, 26s) linear var(--delay, 0s) infinite;
+}
+.petal-drift i svg { width: 100%; height: auto; }
+@keyframes petal-fall {
+  0%   { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+  8%   { opacity: var(--o, .5); }
+  92%  { opacity: var(--o, .5); }
+  100% { opacity: 0; transform: translate3d(var(--drift, 60px), 118vh, 0) rotate(var(--spin, 220deg)); }
+}
+
+/* ------------------------------------------------------------
+   Paper. A fibre weave over the whole page and an optional
+   heavier press on individual bands. Both stay under the
+   threshold where you would consciously notice them.
+   ------------------------------------------------------------ */
+.paper {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: .42;
+  mix-blend-mode: multiply;
+  background-image: var(--paper-url);
+  background-size: 240px 240px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .paper { mix-blend-mode: overlay; opacity: .2; }
+}
+:root[data-theme="dark"] .paper { mix-blend-mode: overlay; opacity: .2; }
+
+.pressed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--paper-url);
+  background-size: 180px 180px;
+  opacity: .3;
+  mix-blend-mode: multiply;
+  z-index: var(--z-bot);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pressed::after { mix-blend-mode: soft-light; opacity: .16; }
+}
+:root[data-theme="dark"] .pressed::after { mix-blend-mode: soft-light; opacity: .16; }
+
+/* ------------------------------------------------------------
+   Section joins. A hairline with a botanical mark centred on it,
+   used where two rooms meet and a hard edge would be abrupt.
+   ------------------------------------------------------------ */
+.join {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--space-l);
+}
+.join::before {
+  content: "";
+  position: absolute;
+  left: var(--gutter); right: var(--gutter);
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line), transparent);
+}
+.join__mark {
+  position: relative;
+  width: clamp(48px, 6vw, 78px);
+  color: var(--bot-ink);
+  opacity: .5;
+  background: var(--bg);
+  padding-inline: var(--space-s);
+}
+
+/* ------------------------------------------------------------
+   Curved section edge — an organic sweep rather than a straight
+   cut, so one band pours into the next.
+   ------------------------------------------------------------ */
+.edge {
+  position: absolute;
+  left: 0; right: 0;
+  height: clamp(48px, 6vw, 110px);
+  pointer-events: none;
+  z-index: var(--z-base);
+  color: var(--edge-to, var(--bg));
+}
+/* The path fills the area below its curve. At the foot of a section that is
+   already correct — the incoming colour pours in from the bottom. At the head
+   of a section it must be flipped so the outgoing colour sits above. */
+.edge--top { top: -1px; transform: scaleY(-1); }
+.edge--bottom { bottom: -1px; }
+.edge svg { width: 100%; height: 100%; display: block; }
+
+/* ------------------------------------------------------------
+   Interactive botanical — a small discovery, not a button farm.
+   ------------------------------------------------------------ */
+.bot-touch {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--bot-ink);
+  line-height: 0;
+}
+.bot-touch svg { transition: transform var(--dur-slow) var(--ease-out-expo), opacity var(--dur-slow) var(--ease-soft); }
+.bot-touch:hover svg, .bot-touch:focus-visible svg { transform: rotate(-6deg) scale(1.06); opacity: 1; }
+.bot-touch__reveal {
+  position: absolute;
+  left: 50%; top: 104%;
+  width: max-content;
+  max-width: 240px;
+  transform: translate(-50%, 8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-slow) var(--ease-out-expo), visibility var(--dur-base);
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--space-xs) var(--space-s);
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+  z-index: var(--z-raised);
+}
+.bot-touch:hover .bot-touch__reveal,
+.bot-touch:focus-visible .bot-touch__reveal { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+.bot-touch__name {
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  font-variation-settings: "opsz" 32;
+  display: block;
+  color: var(--text);
+}
+.bot-touch__note { font-size: var(--step--2); color: var(--text-muted); display: block; margin-top: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bot-sway, .petal-drift i { animation: none !important; }
+  .petal-drift { display: none; }
+  .bot-layer { transform: none !important; }
+}
+
+/* Mobile keeps the botanical world — it simplifies rather than deletes it. */
+@media (max-width: 760px) {
+  .bot-layer[data-mobile="hide"] { display: none; }
+  .petal-drift i:nth-child(n + 5) { display: none; }
+}

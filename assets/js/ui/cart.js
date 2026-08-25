@@ -171,7 +171,7 @@ function renderTotals() {
 function flyToCart(sourceBtn, product, variantId) {
   if (prefersReducedMotion()) return;
 
-  const card = sourceBtn.closest('.pcard, .modal, .pdp, .ritual-step, .quiz-result');
+  const card = sourceBtn.closest('.spec, .shelf-item, .modal, .pdp, .ritual-step, .quiz-result, .spotlight-sec');
   const art = card?.querySelector('svg.product-art') || sourceBtn.querySelector('svg.product-art');
   const cartBtn = $('.cart-btn');
   if (!art || !cartBtn) return;

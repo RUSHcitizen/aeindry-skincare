@@ -68,7 +68,7 @@ export const TIMELINE = [
   {
     year: '2012',
     title: 'It starts with a rash',
-    body: 'Our son develops allergies and eczema. The prescriptions work, and then they stop working, and the steroids keep getting stronger. Riddhima — a mom, a biotechnologist — starts reading ingredient labels the way she used to read papers.',
+    body: 'Our son develops allergies and eczema. Riddhima — a mom, a certified formulator and a biotechnologist — starts reading ingredient labels the way she used to read papers, and the natural skincare journey begins.',
     accent: '#C98E8E'
   },
   {
@@ -79,14 +79,14 @@ export const TIMELINE = [
   },
   {
     year: '2015',
-    title: 'The lotion that worked',
-    body: 'A hand and body lotion finally holds. The skin calms. The steroid prescriptions get smaller, then rarer. It is the first proof that the ingredient list was the problem all along.',
+    title: 'A formula worth keeping',
+    body: 'After years of mixing, throwing out and rewriting, a hand and body lotion finally holds together the way it should — rich, stable, and built from a list short enough to read aloud.',
     accent: '#7FBFA0'
   },
   {
     year: '2017',
     title: 'Then the soap',
-    body: 'Commercial soap kept undoing the progress, so the soap had to be made too. Cold process, glycerin left in, cured six weeks. Friends start asking for bars. Then friends of friends.',
+    body: 'The focus turns to natural soap. Cold process, glycerin left in, cured six weeks. Friends start asking for bars. Then friends of friends.',
     accent: '#9B8FC7'
   },
   {
@@ -178,8 +178,8 @@ export const INGREDIENTS = [
   {
     id: 'calendula', name: 'Calendula', latin: 'Calendula officinalis', origin: 'Our own garden',
     family: 'herb', color: '#E7A93A',
-    role: 'Calms the angry',
-    body: 'The single most important herb in the salve. Petals are dried, steeped in olive oil for six weeks, then pressed. It is the reason the salve helps skin that nothing else settles.',
+    role: 'The salve herb',
+    body: 'The single most important herb in the salve. Petals are dried, steeped in olive oil for six weeks, then pressed — a slow infusion that has been made this way for a very long time.',
     foundIn: ['salve', 'powder-to-foam-cleanser']
   },
   {
@@ -192,8 +192,8 @@ export const INGREDIENTS = [
   {
     id: 'colloidal-oat', name: 'Colloidal Oatmeal', latin: 'Avena sativa', origin: 'Temperate everywhere',
     family: 'herb', color: '#EADCBD',
-    role: 'The eczema standard',
-    body: 'One of the very few natural actives with genuine clinical backing for itch. Milled to a colloid so it suspends in water instead of sinking to the bottom.',
+    role: 'Soft and soothing',
+    body: 'Finely milled to a colloid so it suspends in water instead of sinking to the bottom, which is what gives an oat wash its silky, softening feel.',
     foundIn: ['powder-to-foam-cleanser', 'specialty-soap']
   },
   {
@@ -279,7 +279,7 @@ export const NEVER_LIST = [
   { name: 'Formaldehyde donors', why: 'Slow-release preservatives. A known sensitiser, common in "gentle" products.' },
   { name: 'Silicones', why: 'They make skin feel smooth by coating it. Feel is not repair.' },
   { name: 'Synthetic fragrance', why: 'A single "fragrance" on a label can hide dozens of undisclosed compounds.' },
-  { name: 'Baking soda', why: 'Effective in deodorant, and at pH 9 it burns a lot of people. Magnesium does the job kinder.' },
+  { name: 'Baking soda', why: 'Common in natural deodorant, and at pH 9 it irritates a lot of people. Magnesium is gentler on the skin.' },
   { name: 'Petrolatum', why: 'It seals, but it gives skin nothing. Butters do both.' },
   { name: 'Synthetic dyes', why: 'Clays, roots and botanicals colour everything we make. They also rinse out of towels.' },
   { name: 'SLS & harsh detergents', why: 'They clean by stripping. A compromised barrier cannot afford it.' }
@@ -302,9 +302,9 @@ export const ROUTINES = {
     title: 'The Calm Barrier ritual',
     intro: 'This is the routine the company was built to solve. Strip nothing, seal everything, and keep the ingredient list short enough to rule things out.',
     steps: [
-      { step: 'Cleanse', productId: 'powder-to-foam-cleanser', variantId: 'oat-original', why: 'Waterless, so there is no preservative to react to. Colloidal oat is the one natural active with real clinical backing for itch.' },
+      { step: 'Cleanse', productId: 'powder-to-foam-cleanser', variantId: 'oat-original', why: 'Waterless, so there is no preservative in the jar at all, and colloidal oat keeps the wash soft rather than stripping.' },
       { step: 'Wash',    productId: 'specialty-soap', variantId: 'lavender-oat', why: 'Glycerin-rich cold process instead of a stripping detergent bar.' },
-      { step: 'Treat',   productId: 'salve', variantId: 'calendula', why: 'Six-week calendula infusion — the original formula that reduced the steroid prescriptions.' },
+      { step: 'Treat',   productId: 'salve', variantId: 'calendula', why: 'A six-week calendula infusion — the kind of formula the whole company grew out of.' },
       { step: 'Seal',    productId: 'face-cream', variantId: 'fragrance-free', why: 'Fragrance-free, so nothing volatile touches broken skin.' }
     ]
   },
@@ -433,14 +433,15 @@ export const SCENT_MATCHES = {
   unscented: [['lip-balm','unscented'], ['face-cream','fragrance-free'], ['deodorant','unscented'], ['shave-soap','unscented']]
 };
 
-export const TESTIMONIALS = [
-  { quote: 'My son has had eczema since he was two. The calendula salve is the first thing that has let us go a whole winter without a steroid script. I do not say that lightly.', name: 'Marisa T.', meta: 'Redmond, WA', product: 'Herbal Salve' },
-  { quote: 'I have thrown away four natural deodorants that burned. This one does not, and it actually lasts through a shift. The jar has lasted me since February.', name: 'Devon R.', meta: 'Seattle, WA', product: 'Deodorant Cream' },
-  { quote: 'The charcoal and tea tree bar cleared up back acne that two prescriptions did not touch. My whole family has switched over.', name: 'Priya N.', meta: 'Bellevue, WA', product: 'Specialty Soap' },
-  { quote: 'Bought the face cream at the Redmond Saturday Market half expecting it to be another pretty jar. Six months later I have repurchased three times.', name: 'Elena K.', meta: 'Sammamish, WA', product: 'Face Cream' },
-  { quote: 'The powder cleanser is genuinely clever — nothing to leak in a bag, and my skin stopped feeling tight after washing for the first time in years.', name: 'Jordan M.', meta: 'Portland, OR', product: 'Powder to Foam Cleanser' },
-  { quote: 'Riddhima spent twenty minutes at her market stall talking me out of the expensive thing and into the right thing. That is why I keep going back.', name: 'Alice W.', meta: 'Bothell, WA', product: 'Solid Perfume' }
-];
+/**
+ * Customer reviews.
+ *
+ * Deliberately empty. Real reviews belong here and nowhere else — filling this
+ * array is the only step needed to switch the section on. Entries take the
+ * shape { quote, name, meta, product }. Never populate it with invented
+ * testimonials: the UI renders an explicit placeholder while it is empty.
+ */
+export const TESTIMONIALS = [];
 
 export const FAQS = [
   { q: 'Why are there no preservatives?', a: 'Because most of what we make contains no water. Microbes need water to grow, so an anhydrous formula — a balm, a salve, a solid perfume, a powder cleanser — has nothing to preserve against. Where a formula does contain water, like the Room & Linen Spray, we say so and use a trace of grain alcohol. We would rather reformulate around the problem than add a preservative to solve it.' },
@@ -466,7 +467,7 @@ export const JOURNAL = [
   {
     id: 'baking-soda',
     title: 'The baking soda problem',
-    excerpt: 'It works. That is the trouble — it works right up until the morning your underarms are raw, and then it never works again.',
+    excerpt: 'It is the most common odour-neutraliser in natural deodorant, and the most common reason people give up on natural deodorant.',
     read: '5 min',
     date: 'February 2026',
     tag: 'Formulation',

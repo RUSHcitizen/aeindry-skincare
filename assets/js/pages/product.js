@@ -3,7 +3,9 @@
 import { $, $$, esc } from '../lib/dom.js';
 import { getProduct, PRODUCTS, formatPrice, priceOf } from '../data/products.js';
 import { INGREDIENT_MAP, BRAND } from '../data/content.js';
-import { productArt, botanical } from '../lib/art.js';
+import { productArt, botanical as icon } from '../lib/art.js';
+import { botanical } from '../lib/botanical.js';
+import { botField, pageField, initBotField } from '../ui/bot-field.js';
 import { productCard } from '../ui/pcard.js';
 import { initAccordion } from '../ui/accordion.js';
 import { initTilt } from '../ui/tilt.js';
@@ -40,6 +42,7 @@ export default function product({ params, query }) {
     title: p.name,
     html: `
     <article class="pdp" style="--card-tint:${esc(t2)};--card-tint-2:${esc(t1)};--card-accent:${esc(p.art.accent)}">
+      ${pageField(p.id)}
       <div class="wrap wrap--wide">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="#/">Home</a><span aria-hidden="true">·</span>
@@ -51,14 +54,16 @@ export default function product({ params, query }) {
           <!-- media column -->
           <div class="pdp__media">
             <div class="pdp__stage" data-reveal="scale">
+              <span class="pdp__crown" aria-hidden="true">${botanical('arc', { seed: `${p.id}-crown`, mode: 'line', stroke: 1.5 })}</span>
               <span class="pdp__halo" aria-hidden="true"></span>
               <div class="pdp__art" data-art-host>${productArt(p, { variantId: initialVariant })}</div>
+              <span class="pdp__plinth" aria-hidden="true"></span>
             </div>
             <ul class="pdp__marks" role="list" data-stagger style="--stagger-step:70ms">
-              <li data-reveal="up">${botanical('leaf')}<span>100% natural</span></li>
-              <li data-reveal="up">${botanical('flask')}<span>Small batch</span></li>
-              <li data-reveal="up">${botanical('shield')}<span>No harsh chemicals</span></li>
-              <li data-reveal="up">${botanical('hand')}<span>Made in Washington</span></li>
+              <li data-reveal="up">${icon('leaf')}<span>100% natural</span></li>
+              <li data-reveal="up">${icon('flask')}<span>Small batch</span></li>
+              <li data-reveal="up">${icon('shield')}<span>No harsh chemicals</span></li>
+              <li data-reveal="up">${icon('hand')}<span>Made in Washington</span></li>
             </ul>
           </div>
 
@@ -173,8 +178,8 @@ export default function product({ params, query }) {
             <h2 class="h3" data-reveal="up">Build it into a routine</h2>
           </div>
         </header>
-        <div class="pgrid pgrid--4" data-stagger style="--stagger-step:70ms">
-          ${related.map((r) => productCard(r)).join('')}
+        <div class="spec-grid" data-stagger style="--stagger-step:70ms">
+          ${related.map((r, i) => productCard(r, { index: i })).join('')}
         </div>
       </div>
     </section>`,
@@ -245,7 +250,9 @@ export default function product({ params, query }) {
 
       initAccordion(root);
       initTilt(root);
+      const stopField = initBotField(root);
       repaint();
+      return () => stopField?.();
     }
   };
 }

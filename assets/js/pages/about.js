@@ -2,7 +2,9 @@
 
 import { $, $$, esc } from '../lib/dom.js';
 import { BRAND, TIMELINE, NEVER_LIST, PILLARS } from '../data/content.js';
-import { botanical, brandMark } from '../lib/art.js';
+import { botanical as icon, brandMark } from '../lib/art.js';
+import { botanical } from '../lib/botanical.js';
+import { pageField, initBotField } from '../ui/bot-field.js';
 import { trackProgress } from '../core/scroll.js';
 
 export default function about() {
@@ -10,6 +12,7 @@ export default function about() {
     title: 'About us',
     html: `
     <header class="page-head page-head--tall">
+      ${pageField('about')}
       <div class="wrap">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="#/">Home</a><span aria-hidden="true">·</span><span aria-current="page">About</span>
@@ -147,7 +150,7 @@ export default function about() {
     </section>`,
 
     mount(root) {
-      const cleanups = [];
+      const cleanups = [initBotField(root)];
       const spine = $('[data-spine]', root);
       const timeline = $('[data-timeline]', root);
 

@@ -1,5 +1,6 @@
 /** Ingredient library — filterable grid with a detail pane. */
 
+import { pageField, initBotField } from '../ui/bot-field.js';
 import { $, $$, esc, debounce } from '../lib/dom.js';
 import { INGREDIENTS, INGREDIENT_FAMILIES, NEVER_LIST } from '../data/content.js';
 import { getProduct } from '../data/products.js';
@@ -12,6 +13,7 @@ export default function ingredients({ query }) {
     title: 'Ingredients',
     html: `
     <header class="page-head">
+      ${pageField('ingredients')}
       <div class="wrap">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="#/">Home</a><span aria-hidden="true">·</span><span aria-current="page">Ingredients</span>
@@ -79,6 +81,7 @@ export default function ingredients({ query }) {
     </section>`,
 
     mount(root) {
+      const stopField = initBotField(root);
       const grid = $('[data-ing-grid]', root);
       const detail = $('[data-ing-detail]', root);
       const search = $('#ing-search', root);
@@ -169,7 +172,7 @@ export default function ingredients({ query }) {
 
       paintGrid();
       paintDetail();
-      return () => window.removeEventListener('route:query', onQuery);
+      return () => { window.removeEventListener('route:query', onQuery); stopField?.(); };
     }
   };
 }

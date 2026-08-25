@@ -17,7 +17,7 @@ body {
   font-family: var(--font-sans);
   font-size: var(--step-0);
   line-height: var(--lh-relaxed);
-  font-weight: 400;
+  font-weight: 350;
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
@@ -45,43 +45,58 @@ h1, h2, h3, h4, h5, h6, .display {
   font-weight: 400;
   line-height: var(--lh-snug);
   letter-spacing: var(--tracking-tight);
-  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 40;
+  /* Bodoni Moda is optically sized: small text needs the sturdier cut,
+     display sizes want the high-contrast one. */
+  font-variation-settings: "opsz" 32;
   color: var(--text);
   text-wrap: balance;
 }
 
-h1, .h1 { font-size: var(--step-6); line-height: var(--lh-tight); }
-h2, .h2 { font-size: var(--step-5); line-height: 1.06; }
-h3, .h3 { font-size: var(--step-3); }
-h4, .h4 { font-size: var(--step-2); }
-h5, .h5 { font-size: var(--step-1); }
+h1, .h1 { font-size: var(--step-6); line-height: var(--lh-tight); font-variation-settings: "opsz" 96; }
+h2, .h2 { font-size: var(--step-5); line-height: 1.02; font-variation-settings: "opsz" 88; }
+h3, .h3 { font-size: var(--step-3); font-variation-settings: "opsz" 60; }
+h4, .h4 { font-size: var(--step-2); font-variation-settings: "opsz" 44; }
+h5, .h5 { font-size: var(--step-1); font-variation-settings: "opsz" 32; }
 
 .display-xl {
   font-family: var(--font-display);
   font-size: var(--step-8);
-  line-height: 0.9;
-  letter-spacing: -0.035em;
-  font-weight: 300;
-  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 144;
+  line-height: 0.88;
+  letter-spacing: -0.028em;
+  font-weight: 400;
+  font-variation-settings: "opsz" 96;
 }
 .display-lg {
   font-family: var(--font-display);
   font-size: var(--step-7);
   line-height: 0.94;
-  letter-spacing: -0.03em;
-  font-weight: 300;
-  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 120;
+  letter-spacing: -0.024em;
+  font-weight: 400;
+  font-variation-settings: "opsz" 96;
+}
+.display-mega {
+  font-family: var(--font-display);
+  font-size: var(--step-9);
+  line-height: 0.84;
+  letter-spacing: -0.032em;
+  font-weight: 400;
+  font-variation-settings: "opsz" 96;
 }
 
-.serif-italic { font-style: italic; font-variation-settings: "SOFT" 8, "WONK" 1, "opsz" 60; }
+/* The italic is the point of this face — used for one word, not a paragraph. */
+.serif-italic, .display em, .h1 em, .h2 em, h1 em, h2 em {
+  font-style: italic;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.005em;
+}
 
 p { text-wrap: pretty; }
 .lede {
   font-size: var(--step-1);
-  line-height: 1.6;
+  line-height: 1.66;
   color: var(--text-soft);
   max-width: 46ch;
-  font-weight: 350;
+  font-weight: 300;
 }
 .body-lg { font-size: var(--step-1); line-height: 1.62; color: var(--text-soft); }
 .body-sm { font-size: var(--step--1); line-height: 1.62; color: var(--text-soft); }
@@ -89,21 +104,32 @@ p { text-wrap: pretty; }
 
 .eyebrow {
   font-family: var(--font-sans);
-  font-size: clamp(0.66rem, 0.62rem + 0.16vw, 0.76rem);
+  font-size: clamp(0.62rem, 0.58rem + 0.14vw, 0.72rem);
   font-weight: 500;
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--accent);
   display: inline-flex;
   align-items: center;
-  gap: 0.7em;
+  gap: 0.9em;
+  line-height: 1.4;
 }
 .eyebrow::before {
   content: "";
-  width: 1.9em; height: 1px;
+  width: 2.4em; height: 1px;
   background: currentColor;
-  opacity: .55;
+  opacity: .5;
   flex: none;
+}
+/* A label with a botanical hairline above it, for section openers. */
+.label {
+  font-family: var(--font-sans);
+  font-size: clamp(0.6rem, 0.56rem + 0.13vw, 0.68rem);
+  font-weight: 500;
+  letter-spacing: var(--tracking-mega);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
 }
 .eyebrow--bare::before { display: none; }
 .eyebrow--leaf { color: var(--leaf); }
@@ -139,8 +165,8 @@ a { color: inherit; text-decoration: none; }
   top: 0; left: 50%;
   transform: translate(-50%, -140%);
   z-index: calc(var(--z-preloader) + 1);
-  background: var(--forest-900);
-  color: var(--oat-100);
+  background: var(--olive-900);
+  color: var(--cream);
   padding: 0.85rem 1.5rem;
   border-radius: 0 0 var(--r-md) var(--r-md);
   font-size: var(--step--1);
@@ -154,11 +180,11 @@ a { color: inherit; text-decoration: none; }
   ::-webkit-scrollbar { width: 11px; height: 11px; }
   ::-webkit-scrollbar-track { background: var(--bg-sunken); }
   ::-webkit-scrollbar-thumb {
-    background: color-mix(in oklab, var(--forest-600) 40%, transparent);
+    background: color-mix(in oklab, var(--olive-600) 40%, transparent);
     border-radius: var(--r-full);
     border: 3px solid var(--bg-sunken);
   }
-  ::-webkit-scrollbar-thumb:hover { background: var(--forest-600); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--olive-600); }
 }
 
 /* ---------- Layout primitives ---------- */

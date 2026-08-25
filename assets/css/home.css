@@ -1,0 +1,648 @@
+/* ============================================================
+   HOME — nine rooms
+   Each section is composed differently on purpose. Shared
+   furniture lives at the top; the rooms follow in order.
+   ============================================================ */
+
+/* ---------------- shared section openers ---------------- */
+.sec-open {
+  max-width: 46ch;
+  margin-bottom: var(--space-xl);
+  display: grid;
+  gap: var(--space-xs);
+}
+.sec-open .h2 { margin-top: 0.1em; }
+.sec-open--center { margin-inline: auto; text-align: center; justify-items: center; }
+.sec-open__note { max-width: 42ch; color: var(--text-muted); }
+.sec-foot { margin-top: var(--space-xl); display: flex; justify-content: center; }
+
+/* ════════════════════ I. THE COVER ════════════════════ */
+.cover {
+  --leave: 0;
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: calc(var(--nav-h) + var(--space-m)) var(--space-l);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% -10%, var(--ivory) 0%, transparent 60%),
+    radial-gradient(90% 70% at 88% 8%, color-mix(in oklab, var(--blush) 40%, transparent), transparent 70%),
+    radial-gradient(80% 60% at 4% 92%, color-mix(in oklab, var(--sage-100) 70%, transparent), transparent 72%),
+    var(--parchment);
+}
+.cover__inner {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-2xs);
+  width: 100%;
+}
+.cover__label { color: var(--text-muted); }
+
+.cover__title {
+  max-width: 16ch;
+  margin-block: 0.04em 0.06em;
+}
+.cover__title em { color: var(--accent); }
+
+/* A drawn rule with a sprig set into it, like a pressed label. */
+.cover__rule {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  width: min(420px, 74vw);
+  color: var(--bot-ink);
+}
+.cover__rule span {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong));
+}
+.cover__rule span:last-child { background: linear-gradient(90deg, var(--line-strong), transparent); }
+.cover__rule svg { width: 30px; flex: none; opacity: .8; }
+
+.cover__product {
+  position: relative;
+  /* The art carries its own whitespace, so it is pulled up into the rule. */
+  margin: calc(var(--space-m) * -1) 0 calc(var(--space-m) * -1);
+  width: min(248px, 34vw);
+  display: grid;
+  justify-items: center;
+}
+.cover__glow {
+  position: absolute;
+  inset: 6% 4% 14%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--terracotta-300) 42%, transparent), transparent 72%);
+  filter: blur(38px);
+  opacity: .6;
+}
+.cover__art {
+  position: relative;
+  width: 100%;
+  filter: drop-shadow(0 34px 34px rgb(var(--shadow-color) / .22));
+  animation: cover-float 11s var(--ease-soft) infinite alternate;
+}
+@keyframes cover-float {
+  from { transform: translate3d(0, 0, 0) rotate(-0.8deg); }
+  to   { transform: translate3d(0, -14px, 0) rotate(0.8deg); }
+}
+.cover__product figcaption {
+  margin-top: 0;
+  display: grid;
+  gap: 2px;
+}
+.cover__caption-name {
+  font-family: var(--font-sans);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+.cover__caption-note { font-size: var(--step--2); color: var(--text-faint); font-style: italic; }
+
+.cover__foot {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-s);
+  margin-top: var(--space-2xs);
+}
+.cover__blurb {
+  max-width: 44ch;
+  font-size: var(--step-0);
+  line-height: 1.72;
+  color: var(--text-soft);
+}
+
+.cover__cue {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-m);
+  transform: translateX(-50%);
+  width: 1px; height: 62px;
+  overflow: hidden;
+  opacity: calc(1 - var(--leave) * 2.4);
+}
+.cover__cue-line { position: absolute; inset: 0; background: var(--line-strong); }
+.cover__cue-line::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 42%;
+  background: var(--accent);
+  animation: cue-run 2.8s var(--ease-soft) infinite;
+}
+@keyframes cue-run {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(240%); opacity: 0; }
+}
+
+/* ════════════════════ II. THE PROMISE ════════════════════ */
+.promise-band {
+  padding-block: clamp(2.4rem, 4vw, 3.6rem);
+  overflow: hidden;
+}
+.promise-band .marquee__item {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.1vw, 1.85rem);
+  font-variation-settings: "opsz" 60;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  gap: 1.1em;
+}
+.promise-band .marquee__track { gap: clamp(2rem, 4vw, 3.4rem); }
+.promise-band .sep { display: inline-flex; width: 20px; color: var(--accent); opacity: .85; }
+.promise-band .sep svg { width: 100%; height: auto; }
+
+/* ════════════════════ III. CRAFTED WITH INTENTION ════════════════════ */
+.intention { padding-block: var(--space-4xl); }
+.intention__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.intention__lead { position: sticky; top: calc(var(--nav-h) + var(--space-l)); display: grid; gap: var(--space-s); }
+.intention__title { max-width: 12ch; }
+.intention__title em { color: var(--accent); }
+.intention__body { display: grid; gap: var(--space-l); }
+.intention__body > .body-lg { max-width: 48ch; }
+
+.intention__pillars { display: grid; gap: var(--space-m); }
+.pillar-line {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-s);
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--line-soft);
+  align-items: start;
+}
+.pillar-line__num {
+  font-family: var(--font-sans);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  color: var(--accent);
+  padding-top: 0.35em;
+  font-variant-numeric: tabular-nums;
+}
+.pillar-line__title {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-variation-settings: "opsz" 40;
+  margin-bottom: 0.3rem;
+}
+.pillar-line__body { font-size: var(--step--1); color: var(--text-soft); line-height: 1.7; max-width: 44ch; }
+
+/* ════════════════════ IV. THE APOTHECARY SHELF ════════════════════ */
+.shelf-sec { padding-block: var(--space-4xl); }
+.shelf { position: relative; margin-bottom: var(--space-2xl); }
+.shelf:last-of-type { margin-bottom: 0; }
+.shelf {
+  --shelf-gap: clamp(1rem, 2.5vw, 2.5rem);
+}
+.shelf__row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--shelf-gap);
+  align-items: end;
+}
+
+.shelf-item { position: relative; display: grid; gap: var(--space-xs); }
+.shelf-item__stage {
+  position: relative;
+  aspect-ratio: 1 / 1.1;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 4%;
+}
+.shelf-item__halo {
+  position: absolute;
+  left: 50%; top: 44%;
+  transform: translate(-50%, -50%) scale(0.86);
+  width: 78%; aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--accent-art), transparent 70%);
+  opacity: 0;
+  filter: blur(30px);
+  transition: opacity var(--dur-slow) var(--ease-soft), transform var(--dur-slower) var(--ease-out-expo);
+}
+.shelf-item__leaf {
+  position: absolute;
+  left: 4%; top: 6%;
+  width: 34%;
+  color: var(--bot-sage);
+  opacity: .5;
+  transform: rotate(-8deg);
+  transition: transform var(--dur-slower) var(--ease-out-expo), opacity var(--dur-slow) var(--ease-soft);
+}
+.shelf-item__leaf svg { width: 100%; height: auto; }
+.shelf-item__art {
+  position: relative;
+  width: 84%;
+  transform-origin: 50% 100%;
+  transition: transform var(--dur-slower) var(--ease-out-expo), filter var(--dur-slow) var(--ease-soft);
+  filter: drop-shadow(0 18px 18px rgb(var(--shadow-color) / .16));
+}
+.shelf-item__shadow {
+  position: absolute;
+  left: 50%; bottom: 2%;
+  transform: translateX(-50%);
+  width: 56%; height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(var(--shadow-color) / .28), transparent 72%);
+  transition: width var(--dur-slower) var(--ease-out-expo), opacity var(--dur-slow) var(--ease-soft);
+}
+
+.shelf-item:hover .shelf-item__art,
+.shelf-item:focus-within .shelf-item__art { transform: translateY(-14px) scale(1.07); filter: drop-shadow(0 26px 26px rgb(var(--shadow-color) / .22)); }
+.shelf-item:hover .shelf-item__halo,
+.shelf-item:focus-within .shelf-item__halo { opacity: .5; transform: translate(-50%, -50%) scale(1.06); }
+.shelf-item:hover .shelf-item__leaf,
+.shelf-item:focus-within .shelf-item__leaf { transform: rotate(-16deg) translate(-4px, -6px); opacity: .8; }
+.shelf-item:hover .shelf-item__shadow,
+.shelf-item:focus-within .shelf-item__shadow { width: 46%; opacity: .7; }
+
+.shelf-item__label {
+  display: grid;
+  gap: 2px;
+  text-align: center;
+  position: relative;
+  /* The shelf line itself: each label's top edge, stretched by half the row
+     gap either side so the segments join into one continuous plank. */
+  border-top: 1px solid var(--line-strong);
+  margin-inline: calc(var(--shelf-gap) / -2 - 1px);
+  padding: var(--space-s) calc(var(--shelf-gap) / 2 + 1px) 0;
+}
+.shelf-item__label::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 22px;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--olive-900) 8%, transparent), transparent);
+  pointer-events: none;
+}
+.shelf-item__name {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-variation-settings: "opsz" 40;
+  line-height: 1.2;
+}
+.shelf-item__name a::after { content: ""; position: absolute; inset: 0; z-index: 2; }
+.shelf-item__note { font-size: var(--step--2); color: var(--text-muted); font-style: italic; }
+.shelf-item__price {
+  font-size: var(--step--1);
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.3rem;
+}
+.shelf-item__cta {
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-slow) var(--ease-out-expo);
+  margin-top: 0.35rem;
+}
+.shelf-item:hover .shelf-item__cta,
+.shelf-item:focus-within .shelf-item__cta { opacity: 1; transform: none; }
+
+/* ════════════════════ V. THE BOTANICAL ENCYCLOPEDIA ════════════════════ */
+.botanicals { padding-block: var(--space-4xl); position: relative; }
+.enc {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+  margin-top: var(--space-xl);
+}
+.enc__stage {
+  position: sticky;
+  top: calc(var(--nav-h) + var(--space-l));
+  display: grid;
+  gap: var(--space-s);
+  justify-items: center;
+}
+.enc__art {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 1;
+}
+.enc__plate {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  color: var(--bot-sage);
+  opacity: 0;
+  transform: scale(0.94) rotate(-4deg);
+  transition: opacity 900ms var(--ease-soft), transform 1200ms var(--ease-out-expo);
+  pointer-events: none;
+}
+.enc__plate.is-on { opacity: 1; transform: none; }
+.enc__plate svg { width: 100%; height: 100%; }
+.enc__halo {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--ing), transparent 70%);
+  opacity: .22;
+  filter: blur(34px);
+}
+.enc__latin {
+  position: absolute;
+  left: 50%; bottom: -0.5rem;
+  transform: translateX(-50%);
+  font-style: italic;
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.enc__count {
+  font-family: var(--font-sans);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.enc__count span { color: var(--accent); }
+
+.enc__list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-3xl); }
+.enc__entry {
+  display: grid;
+  gap: 0.4rem;
+  opacity: .34;
+  transform: translateY(6px);
+  transition: opacity var(--dur-slower) var(--ease-soft), transform var(--dur-slower) var(--ease-out-expo);
+  max-width: 46ch;
+}
+.enc__entry.is-on { opacity: 1; transform: none; }
+.enc__swatch {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  box-shadow: inset 0 -6px 12px rgb(0 0 0 / .14), 0 0 0 1px var(--line);
+  margin-bottom: var(--space-2xs);
+}
+.enc__role {
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.enc__name { font-family: var(--font-display); font-size: var(--step-4); font-variation-settings: "opsz" 72; line-height: 1.05; }
+.enc__origin { font-style: italic; font-size: var(--step--1); color: var(--text-muted); }
+.enc__body { font-size: var(--step-0); line-height: 1.75; color: var(--text-soft); margin-top: 0.4rem; }
+.enc__uses-label {
+  margin-top: var(--space-s);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.enc__uses { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin-top: 0.45rem; }
+.enc__uses a {
+  display: inline-block;
+  padding: 0.4em 0.9em;
+  border: 1px solid var(--line);
+  border-radius: var(--r-full);
+  font-size: var(--step--2);
+  color: var(--text-soft);
+  transition: border-color var(--dur-base) var(--ease-soft), color var(--dur-base) var(--ease-soft);
+}
+.enc__uses a:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ════════════════════ VI. THE STORY ════════════════════ */
+.story { padding-block: var(--space-4xl); }
+.story__quote {
+  font-family: var(--font-display);
+  font-size: var(--step-6);
+  line-height: 1.04;
+  letter-spacing: var(--tracking-tight);
+  font-variation-settings: "opsz" 96;
+  text-align: center;
+  margin: var(--space-s) auto var(--space-xl);
+  max-width: 17ch;
+  text-wrap: balance;
+}
+.story__cols {
+  columns: 2;
+  column-gap: clamp(1.5rem, 4vw, 3.5rem);
+  margin-bottom: var(--space-xl);
+}
+.story__cols p { break-inside: avoid; margin-bottom: var(--space-s); }
+.story__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-m);
+  padding-block: var(--space-l);
+  border-block: 1px solid var(--line-soft);
+}
+.stat-mini { display: grid; gap: 0.25rem; text-align: center; }
+.stat-mini__value {
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  font-variation-settings: "opsz" 72;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-mini__label { font-size: var(--step--2); color: var(--text-muted); max-width: 22ch; margin-inline: auto; }
+
+/* ════════════════════ VII. THE SPOTLIGHT ════════════════════ */
+.spotlight-sec {
+  position: relative;
+  padding-block: var(--space-4xl);
+  overflow: hidden;
+  background:
+    radial-gradient(70% 46% at 50% 24%, color-mix(in oklab, var(--sp-tint) 62%, transparent), transparent 72%),
+    linear-gradient(180deg, var(--parchment) 0%, var(--ivory) 44%, var(--parchment) 100%);
+}
+.spotlight__inner { display: grid; justify-items: center; text-align: center; gap: var(--space-s); }
+.spotlight__crown { width: min(360px, 62vw); color: var(--bot-sage); opacity: .55; margin-bottom: calc(var(--space-m) * -1); }
+.spotlight__crown svg { width: 100%; height: auto; }
+.spotlight__rule {
+  width: min(300px, 60vw);
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+  margin: var(--space-s) 0;
+}
+.spotlight__stage { position: relative; margin: 0; width: min(400px, 62vw); display: grid; place-items: center; }
+.spotlight__glow {
+  position: absolute;
+  inset: 4% 2% 12%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--sp-accent) 55%, transparent), transparent 72%);
+  filter: blur(42px);
+  opacity: .5;
+}
+.spotlight__art {
+  position: relative;
+  width: 100%;
+  filter: drop-shadow(0 36px 40px rgb(var(--shadow-color) / .22));
+  animation: cover-float 13s var(--ease-soft) infinite alternate;
+}
+.spotlight__info { display: grid; justify-items: center; gap: var(--space-xs); max-width: 54ch; }
+.spotlight__name { margin-bottom: 0; }
+.spotlight__tag { font-style: italic; font-family: var(--font-display); font-size: var(--step-1); color: var(--text-muted); }
+.spotlight__desc { max-width: 50ch; }
+.spotlight__marks { display: grid; gap: 0.5rem; list-style: none; padding: 0; margin-top: var(--space-xs); }
+.spotlight__marks li {
+  font-size: var(--step--1);
+  color: var(--text-soft);
+  padding-block: 0.5rem;
+  border-top: 1px solid var(--line-soft);
+}
+.spotlight__marks li:last-child { border-bottom: 1px solid var(--line-soft); }
+.spotlight__buy { display: flex; align-items: center; gap: var(--space-m); margin-top: var(--space-s); flex-wrap: wrap; justify-content: center; }
+.spotlight__price { font-family: var(--font-display); font-size: var(--step-3); font-variant-numeric: tabular-nums; }
+
+/* ════════════════════ VIII. IN THEIR WORDS ════════════════════ */
+.words { padding-block: var(--space-4xl); }
+.words__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-m); }
+.word-card {
+  margin: 0;
+  padding: var(--space-l) var(--space-m) var(--space-m);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-lg);
+  display: grid;
+  gap: var(--space-s);
+}
+.word-card blockquote {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-variation-settings: "opsz" 40;
+  line-height: 1.5;
+  font-style: italic;
+}
+.word-card figcaption { display: grid; gap: 2px; padding-top: var(--space-xs); border-top: 1px solid var(--line-soft); }
+.word-card__name { font-size: var(--step--1); font-weight: 500; }
+.word-card__meta { font-size: var(--step--2); color: var(--text-muted); }
+
+.words__empty {
+  max-width: 52ch;
+  margin-inline: auto;
+  text-align: center;
+  display: grid;
+  gap: var(--space-s);
+  justify-items: center;
+  padding: var(--space-xl) var(--space-m);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-lg);
+}
+.words__empty-mark { width: 72px; color: var(--bot-sage); opacity: .6; }
+.words__empty-mark svg { width: 100%; height: auto; }
+.words__empty code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--bg-sunken);
+  padding: 0.1em 0.4em;
+  border-radius: var(--r-xs);
+}
+
+/* ════════════════════ IX. THE JOURNAL ════════════════════ */
+.reading { padding-block: var(--space-4xl); }
+.reading__list { display: grid; }
+.read-row {
+  display: grid;
+  grid-template-columns: auto 46px minmax(0, 1fr) auto;
+  gap: var(--space-m);
+  align-items: center;
+  padding-block: var(--space-m);
+  border-top: 1px solid var(--line-soft);
+  position: relative;
+  transition: padding-inline var(--dur-slow) var(--ease-out-expo);
+}
+.read-row:last-child { border-bottom: 1px solid var(--line-soft); }
+.read-row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--jc) 12%, transparent), transparent 62%);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-soft);
+  pointer-events: none;
+}
+.read-row:hover { padding-inline: var(--space-s); }
+.read-row:hover::before { opacity: 1; }
+.read-row__idx {
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.read-row__leaf { width: 46px; color: var(--jc); opacity: .55; transition: transform var(--dur-slower) var(--ease-out-expo), opacity var(--dur-slow) var(--ease-soft); }
+.read-row__leaf svg { width: 100%; height: auto; }
+.read-row:hover .read-row__leaf { transform: rotate(-12deg) scale(1.12); opacity: .95; }
+.read-row__body { display: grid; gap: 3px; }
+.read-row__tag {
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.read-row__title {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-variation-settings: "opsz" 48;
+  line-height: 1.2;
+}
+.read-row__excerpt { font-size: var(--step--1); color: var(--text-muted); max-width: 62ch; }
+.read-row__meta { font-size: var(--step--2); color: var(--text-faint); white-space: nowrap; }
+
+/* ════════════════════ X. THE INVITATION ════════════════════ */
+.invite { position: relative; padding-block: var(--space-4xl); overflow: hidden; }
+.invite__inner { display: grid; justify-items: center; text-align: center; gap: var(--space-m); }
+.invite__mark { width: 92px; color: var(--bot-sage); opacity: .7; }
+.invite__mark svg { width: 100%; height: auto; }
+.invite .display-lg { max-width: 14ch; }
+.invite .display-lg em { color: var(--accent); }
+
+/* ════════════════════ RESPONSIVE ════════════════════ */
+@media (max-width: 1020px) {
+  .intention__grid,
+  .enc { grid-template-columns: 1fr; }
+  .intention__lead { position: static; }
+  .enc__stage {
+    position: sticky;
+    top: var(--nav-h);
+    background: linear-gradient(180deg, var(--bg) 72%, transparent);
+    padding-block: var(--space-s);
+    z-index: var(--z-raised);
+  }
+  .enc__art { max-width: 200px; }
+  .enc__list { gap: var(--space-2xl); }
+  .shelf__row { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-l); }
+  .story__cols { columns: 1; }
+  .story__stats { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-l); }
+}
+
+@media (max-width: 760px) {
+  .cover { min-height: auto; padding-block: calc(var(--nav-h) + var(--space-xl)) var(--space-xl); }
+  .cover__product { width: min(280px, 66vw); }
+  .cover__cue { display: none; }
+  .read-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "idx body" "leaf meta";
+    gap: var(--space-xs) var(--space-s);
+    align-items: start;
+  }
+  .read-row__idx { grid-area: idx; }
+  .read-row__body { grid-area: body; }
+  .read-row__leaf { grid-area: leaf; width: 32px; }
+  .read-row__meta { grid-area: meta; align-self: center; }
+  .spotlight__stage { width: min(260px, 66vw); }
+  .spotlight__crown { width: min(240px, 70vw); }
+}
+
+@media (max-width: 520px) {
+  .shelf__row { grid-template-columns: 1fr; }
+  .story__stats { grid-template-columns: 1fr; }
+}

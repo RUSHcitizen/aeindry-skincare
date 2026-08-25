@@ -3,6 +3,7 @@
 import { $, $$, esc, debounce } from '../lib/dom.js';
 import { PRODUCTS, CATEGORIES, priceOf } from '../data/products.js';
 import { productGrid } from '../ui/pcard.js';
+import { pageField, initBotField } from '../ui/bot-field.js';
 import { initTilt } from '../ui/tilt.js';
 import { initReveal } from '../core/reveal.js';
 import { syncHash } from '../core/router.js';
@@ -33,6 +34,7 @@ export default function shop({ query }) {
     title: 'Shop',
     html: `
     <header class="page-head">
+      ${pageField('shop')}
       <div class="wrap">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="#/">Home</a><span aria-hidden="true">·</span><span aria-current="page">Shop</span>
@@ -201,8 +203,9 @@ export default function shop({ query }) {
       window.addEventListener('route:query', onQuery);
 
       initTilt(root);
+      const stopField = initBotField(root);
       paint();
-      return () => window.removeEventListener('route:query', onQuery);
+      return () => { window.removeEventListener('route:query', onQuery); stopField?.(); };
     }
   };
 }

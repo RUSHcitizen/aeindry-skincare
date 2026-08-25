@@ -13,7 +13,6 @@ export function initTilt(root = document) {
     card.dataset.tiltBound = '1';
 
     const max = parseFloat(card.dataset.tilt) || 7;
-    const media = card.querySelector('.pcard__media') || card;
     let rx = 0, ry = 0, trx = 0, try_ = 0, raf = null;
 
     const animate = () => {

@@ -1,372 +1,455 @@
-/** Home — the full brand argument in one scroll. */
+/**
+ * Home — nine rooms of a botanical apothecary.
+ *
+ * Every section is a different composition on purpose: full-bleed cover,
+ * typographic statement, apothecary shelf, scroll-driven botanical
+ * encyclopedia, editorial story, centred product spotlight, reviews,
+ * education, closing invitation. The botanical artwork behind them is one
+ * continuous environment — branches leave one section and arrive in the next.
+ */
 
-import { $, $$, esc, countUp } from '../lib/dom.js';
+import { $, $$, esc, countUp, clamp } from '../lib/dom.js';
 import { PRODUCTS, getProduct, formatPrice, priceOf } from '../data/products.js';
-import { BRAND, PROMISES, PILLARS, TESTIMONIALS, JOURNAL, STATS, CONCERNS, INGREDIENTS } from '../data/content.js';
-import { productArt, botanical, brandMark } from '../lib/art.js';
-import { productCard } from '../ui/pcard.js';
-import { initHeroCanvas } from '../ui/hero-canvas.js';
-import { initCarousel } from '../ui/carousel.js';
+import {
+  BRAND, PROMISES, PILLARS, TESTIMONIALS, JOURNAL, STATS, INGREDIENTS, TIMELINE
+} from '../data/content.js';
+import { productArt } from '../lib/art.js';
+import { botanical } from '../lib/botanical.js';
+import { botField, petalDrift, edge, join, initBotField } from '../ui/bot-field.js';
 import { initTilt } from '../ui/tilt.js';
 import { trackProgress } from '../core/scroll.js';
 
-const HERO_PRODUCTS = ['salve', 'specialty-soap', 'face-cream'];
-const FEATURED = ['salve', 'specialty-soap', 'face-cream', 'lip-balm'];
+/* The shelf, the spotlight and the encyclopedia all pull from real data. */
+const SHELF = ['salve', 'specialty-soap', 'face-cream', 'lip-balm'];
+const SHELF_TWO = ['deodorant', 'powder-to-foam-cleanser', 'essential-oil-bath-bomb', 'perfume'];
+const SPOTLIGHT = 'face-cream';
+const HERO_PRODUCT = 'salve';
+const ENCYCLOPEDIA = ['shea-butter', 'calendula', 'cocoa-butter', 'kaolin-clay', 'rosehip-oil', 'beeswax'];
 
 export default function home() {
-  const bestsellers = FEATURED.map(getProduct);
-  const hero = HERO_PRODUCTS.map(getProduct);
+  const hero = getProduct(HERO_PRODUCT);
+  const spotlight = getProduct(SPOTLIGHT);
+  const shelf = SHELF.map(getProduct);
+  const shelfTwo = SHELF_TWO.map(getProduct);
+  const entries = ENCYCLOPEDIA.map((id) => INGREDIENTS.find((i) => i.id === id)).filter(Boolean);
 
   return {
     title: 'All Natural Handmade Skincare',
     html: `
-    <!-- ============ HERO ============ -->
-    <section class="hero">
-      <canvas class="hero__canvas" aria-hidden="true"></canvas>
-      <div class="hero__glow" aria-hidden="true"></div>
+    <!-- ═══════════ I. THE COVER ═══════════ -->
+    <section class="cover">
+      ${botField([
+        { kind: 'branch', seed: 'cover-a', mode: 'line', stroke: 1.4, right: '-6%', y: '-4%', w: '46vw',
+          rot: 8, op: 0.22, tone: 'var(--bot-ink)', par: 0.16, cur: 22, sway: 26, swayDeg: 1.1 },
+        { kind: 'fern', seed: 'cover-b', mode: 'line', stroke: 1.3, x: '-10%', y: '18%', w: '30vw',
+          rot: -14, op: 0.18, tone: 'var(--bot-sage)', par: -0.1, cur: 14, sway: 30, swayDeg: 1.4, mobile: 'hide' },
+        { kind: 'bloom', seed: 'cover-c', mode: 'line', stroke: 1.1, x: '30%', y: '6%', w: '38vw',
+          op: 0.09, tone: 'var(--bot-rose)', blur: 1.4, par: 0.05, cur: 8, breathe: true, sway: 34 },
+        { kind: 'spray', seed: 'cover-d', mode: 'duo', stroke: 1.1, x: '-8%', bottom: '-14%', w: '38vw',
+          op: 0.16, tone: 'var(--bot-sage)', par: 0.22, cur: 18, sway: 24, swayDeg: 1.2 },
+        { kind: 'sprig', seed: 'cover-e', mode: 'line', stroke: 1.4, right: '4%', bottom: '-6%', w: '20vw',
+          rot: 20, op: 0.2, tone: 'var(--bot-taupe)', par: 0.3, cur: 26, sway: 20, mobile: 'hide' }
+      ])}
+      ${petalDrift(7, 'cover')}
 
-      <div class="wrap wrap--wide hero__inner">
-        <div class="hero__copy">
-          <p class="eyebrow hero__eyebrow">Handmade in the Pacific Northwest · Est. ${BRAND.founded}</p>
+      <div class="wrap cover__inner">
+        <p class="label cover__label" data-reveal="fade">All Natural &middot; Handmade &middot; ${esc(BRAND.region)}</p>
 
-          <h1 class="hero__title display-xl" data-split="lines" data-split-step="70">
-            Purity is the whole formula.
-          </h1>
+        <h1 class="cover__title display-mega" data-split="lines" data-split-step="90">
+          Purity is <em>Essence</em>
+        </h1>
 
-          <p class="hero__lede lede" data-reveal="up" style="--reveal-delay:520ms">
-            A small, woman-owned company making 100% natural skincare by hand — plant oils,
-            botanical extracts and rich butters, and genuinely nothing else. It started in 2012,
-            with a child who could not stop scratching.
-          </p>
-
-          <div class="hero__actions cluster" data-reveal="up" style="--reveal-delay:660ms">
-            <a class="btn btn--primary btn--lg" href="#/shop" data-magnetic="0.2">
-              <span class="btn__label">Shop the range</span>
-              <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
-            <a class="btn btn--ghost btn--lg" href="#/ritual" data-magnetic="0.2">
-              <span class="btn__label">Build your ritual</span>
-            </a>
-          </div>
-
-          <dl class="hero__proof" data-reveal="fade" style="--reveal-delay:820ms">
-            <div><dt>${PRODUCTS.length}</dt><dd>formulas</dd></div>
-            <div><dt>0</dt><dd>preservatives</dd></div>
-            <div><dt>6<span>wks</span></dt><dd>soap cure</dd></div>
-          </dl>
+        <div class="cover__rule" data-reveal="fade" style="--reveal-delay:600ms">
+          <span></span>${botanical('sprig', { seed: 'rule', mode: 'line', stroke: 2.4 })}<span></span>
         </div>
 
-        <div class="hero__stage" data-reveal="scale" style="--reveal-delay:340ms">
-          ${hero.map((p, i) => `
-            <figure class="hero__item hero__item--${i + 1}" data-parallax="${0.1 + i * 0.09}"
-                    style="--tint:${p.art.tint[1]};--accent:${p.art.accent}">
-              <a href="#/product/${esc(p.id)}" data-cursor="label:VIEW" aria-label="${esc(p.name)}">
-                ${productArt(p)}
-              </a>
-              <figcaption>${esc(p.name)}</figcaption>
-            </figure>`).join('')}
-          <div class="hero__ring" aria-hidden="true">
-            <svg viewBox="0 0 200 200"><defs><path id="heroArc" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
-              <text><textPath href="#heroArc" startOffset="0">${esc(BRAND.tagline.toUpperCase())} · ${esc(BRAND.tagline.toUpperCase())} · </textPath></text>
-            </svg>
-          </div>
+        <figure class="cover__product" data-reveal="scale" style="--reveal-delay:420ms">
+          <span class="cover__glow" aria-hidden="true"></span>
+          ${productArt(hero, { className: 'cover__art' })}
+          <figcaption>
+            <span class="cover__caption-name">${esc(hero.name)}</span>
+            <span class="cover__caption-note">${esc(hero.tagline)}</span>
+          </figcaption>
+        </figure>
+
+        <div class="cover__foot">
+          <p class="cover__blurb" data-reveal="up" style="--reveal-delay:520ms">
+            A small, woman-owned company making 100% natural skincare by hand in
+            ${esc(BRAND.city)} &mdash; plant oils, botanical extracts and rich butters,
+            and genuinely nothing else.
+          </p>
+          <a class="btn btn--primary btn--lg" href="#/shop" data-magnetic="0.18"
+             data-reveal="up" style="--reveal-delay:620ms">
+            <span class="btn__label">Explore skincare</span>
+            <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
         </div>
       </div>
 
-      <a class="hero__cue" href="#promise" aria-label="Scroll to content">
-        <span class="hero__cue-line" aria-hidden="true"></span>
-        <span class="hero__cue-text">Scroll</span>
+      <a class="cover__cue" href="#promise" aria-label="Scroll to content">
+        <span class="cover__cue-line" aria-hidden="true"></span>
       </a>
     </section>
 
-    <!-- ============ PROMISE MARQUEE ============ -->
-    <section class="promise band--forest" id="promise">
+    <!-- ═══════════ II. THE PROMISE ═══════════ -->
+    <section class="promise-band band--olive" id="promise">
+      ${edge('top', 'var(--parchment)')}
+      ${botField([
+        { kind: 'arc', seed: 'pr-a', mode: 'line', stroke: 1.2, x: '-4%', bottom: '-40%', w: '58vw',
+          op: 0.14, tone: 'var(--bot-sage)', par: 0.14, cur: 12 },
+        { kind: 'seedstem', seed: 'pr-b', mode: 'line', stroke: 1.3, right: '6%', y: '-16%', w: '16vw',
+          rot: 12, op: 0.2, tone: 'var(--bot-sage)', par: -0.12, cur: 16, mobile: 'hide' }
+      ])}
       <div class="marquee" aria-hidden="true">
-        <div class="marquee__track" style="--speed:52s">
+        <div class="marquee__track" style="--speed:74s">
           ${[...PROMISES, ...PROMISES].map((p) =>
-            `<span class="marquee__item">${esc(p)}<span class="sep">✦</span></span>`).join('')}
+            `<span class="marquee__item">${esc(p)}<span class="sep">${botanical('sprig', { seed: p, mode: 'line', stroke: 3 })}</span></span>`).join('')}
         </div>
       </div>
       <p class="visually-hidden">${PROMISES.join('. ')}.</p>
     </section>
 
-    <!-- ============ BESTSELLERS ============ -->
-    <section class="section" id="bestsellers">
+    <!-- ═══════════ III. CRAFTED WITH INTENTION ═══════════ -->
+    <section class="section intention pressed">
+      ${botField([
+        { kind: 'fern', seed: 'int-a', mode: 'duo', stroke: 1.1, right: '-12%', y: '-8%', w: '44vw',
+          rot: 16, op: 0.16, tone: 'var(--bot-sage)', par: 0.18, cur: 20, sway: 28, swayDeg: 1.3 },
+        { kind: 'petals', seed: 'int-b', mode: 'line', stroke: 1.2, x: '4%', bottom: '4%', w: '26vw',
+          op: 0.16, tone: 'var(--bot-taupe)', par: -0.14, cur: 24, mobile: 'hide' }
+      ])}
       <div class="wrap">
-        <header class="sec-head">
-          <div>
-            <p class="eyebrow" data-reveal="fade">The regulars</p>
-            <h2 class="h2" data-split="lines">What people come back for</h2>
+        <div class="intention__grid">
+          <div class="intention__lead">
+            <p class="label" data-reveal="fade">Crafted with intention</p>
+            <h2 class="intention__title display-lg" data-split="lines">
+              Every formula begins as a <em>question</em>, not a product.
+            </h2>
           </div>
-          <p class="sec-head__aside body-sm" data-reveal="up">
-            Four formulas that get reordered more than anything else we make — and the
-            reason most people find us in the first place.
+          <div class="intention__body">
+            <p class="body-lg" data-reveal="up">
+              ${esc(BRAND.founder)} is a mom, a certified formulator and a biotechnologist.
+              The work started in ${BRAND.journeyStarted}, when her son developed allergies
+              and eczema and she began reading ingredient labels the way she used to read papers.
+            </p>
+            <div class="intention__pillars" data-stagger style="--stagger-step:120ms">
+              ${PILLARS.map((p, i) => `
+                <article class="pillar-line" data-reveal="up">
+                  <span class="pillar-line__num">${String(i + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3 class="pillar-line__title">${esc(p.title)}</h3>
+                    <p class="pillar-line__body">${esc(p.body)}</p>
+                  </div>
+                </article>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ IV. THE APOTHECARY SHELF ═══════════ -->
+    <section class="section shelf-sec band--linen">
+      ${botField([
+        { kind: 'branch', seed: 'sh-a', mode: 'line', stroke: 1.3, x: '-14%', y: '2%', w: '48vw',
+          rot: -6, flip: true, op: 0.16, tone: 'var(--bot-ink)', par: 0.12, cur: 16 },
+        { kind: 'bloom', seed: 'sh-b', mode: 'line', stroke: 1, right: '-8%', bottom: '-10%', w: '34vw',
+          op: 0.11, tone: 'var(--bot-rose)', blur: 1, par: 0.2, cur: 12, breathe: true, mobile: 'hide' }
+      ])}
+      <div class="wrap">
+        <header class="sec-open">
+          <p class="label" data-reveal="fade">The shelf</p>
+          <h2 class="h2" data-split="lines">What people reach for first</h2>
+          <p class="sec-open__note body-sm" data-reveal="up">
+            Small batches, poured and cut by hand. Every bar cures six full weeks before it leaves the bench.
           </p>
         </header>
+      </div>
 
-        <div class="pgrid pgrid--4" data-stagger style="--stagger-step:80px">
-          ${bestsellers.map((p, i) => productCard(p, { reveal: i % 2 ? 'up' : 'tilt' })).join('')}
-        </div>
+      ${[shelf, shelfTwo].map((row, ri) => `
+        <div class="shelf" data-reveal="fade">
+          <div class="wrap wrap--wide">
+            <div class="shelf__row" data-stagger style="--stagger-step:90ms">
+              ${row.map((p, i) => shelfItem(p, ri * 4 + i)).join('')}
+            </div>
+          </div>
+        </div>`).join('')}
 
+      <div class="wrap">
         <div class="sec-foot" data-reveal="up">
-          <a class="btn-text" href="#/shop">
-            See all ${PRODUCTS.length} products
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <a class="btn btn--ghost" href="#/shop" data-magnetic="0.16">
+            <span class="btn__label">The whole apothecary &mdash; ${PRODUCTS.length} formulas</span>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- ============ ORIGIN STORY ============ -->
-    <section class="section origin band--forest" id="origin">
-      <div class="origin__botanicals" aria-hidden="true" data-parallax="0.2">
-        ${botanical('sprig', 'origin__sprig origin__sprig--1')}
-        ${botanical('leaf', 'origin__sprig origin__sprig--2')}
-      </div>
+    <!-- ═══════════ V. DISCOVER THE BOTANICALS ═══════════ -->
+    <section class="botanicals band--olive" id="botanicals">
+      ${edge('top', 'var(--linen)')}
+      ${botField([
+        { kind: 'spray', seed: 'bo-a', mode: 'line', stroke: 1, x: '-16%', bottom: '-18%', w: '52vw',
+          op: 0.1, tone: 'var(--bot-sage)', par: 0.1, cur: 10 }
+      ])}
       <div class="wrap">
-        <div class="origin__grid">
-          <div class="origin__copy stack-m">
-            <p class="eyebrow" data-reveal="fade">Why any of this exists</p>
-            <h2 class="h2" data-split="lines">
-              In 2012 our son developed eczema. Nothing on the shelf was honest enough to help.
-            </h2>
-            <p class="body-lg" data-reveal="up">
-              The prescriptions worked, then stopped working, and the steroids kept getting
-              stronger. So ${BRAND.founder.split(' ')[0]} — a mom, a certified formulator and a
-              biotechnologist — started reading ingredient labels the way she used to read papers,
-              and researching natural body care ingredients from around the world.
-            </p>
-            <p class="body-lg" data-reveal="up" style="--reveal-delay:120ms">
-              The first lotion that held was the proof. The steroid prescriptions got smaller,
-              then rarer. Then commercial soap kept undoing the progress, so the soap had to be
-              made too. Everything on this site grew out of that one problem.
-            </p>
-            <div class="cluster" data-reveal="up" style="--reveal-delay:200ms">
-              <a class="btn btn--light" href="#/about" data-magnetic="0.18">
-                <span class="btn__label">Read the full story</span>
-              </a>
+        <header class="sec-open sec-open--center">
+          <p class="label" data-reveal="fade">Discover the botanicals</p>
+          <h2 class="h2" data-split="lines">An <em>encyclopedia</em> of what goes in</h2>
+        </header>
+
+        <div class="enc" data-enc>
+          <div class="enc__stage">
+            <div class="enc__art" data-enc-art>
+              ${entries.map((ing, i) => `
+                <figure class="enc__plate ${i === 0 ? 'is-on' : ''}" data-plate="${i}">
+                  <span class="enc__halo" style="--ing:${esc(ing.color)}" aria-hidden="true"></span>
+                  ${botanical(encKind(ing.id), { seed: ing.id, mode: 'line', stroke: 1.5 })}
+                  <figcaption class="enc__latin">${esc(ing.latin)}</figcaption>
+                </figure>`).join('')}
             </div>
-          </div>
-
-          <div class="origin__stats" data-stagger style="--stagger-step:110ms">
-            ${STATS.map((s) => `
-              <div class="stat" data-reveal="up">
-                <span class="stat__value" data-count="${s.value}" data-suffix="${esc(s.suffix)}" data-group="${s.group === false ? 'false' : 'true'}">0${esc(s.suffix)}</span>
-                <span class="stat__label">${esc(s.label)}</span>
-              </div>`).join('')}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ PILLARS ============ -->
-    <section class="section" id="pillars">
-      <div class="wrap">
-        <header class="sec-head sec-head--center">
-          <p class="eyebrow eyebrow--bare" data-reveal="fade">How we work</p>
-          <h2 class="h2 text-balance" data-split="lines">Four rules we have never broken</h2>
-        </header>
-
-        <div class="pillars" data-stagger style="--stagger-step:100ms">
-          ${PILLARS.map((p, i) => `
-            <article class="pillar" data-reveal="up">
-              <span class="pillar__num">${String(i + 1).padStart(2, '0')}</span>
-              <span class="pillar__icon">${botanical(p.icon)}</span>
-              <h3 class="pillar__title">${esc(p.title)}</h3>
-              <p class="pillar__body">${esc(p.body)}</p>
-            </article>`).join('')}
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ RITUAL TEASER ============ -->
-    <section class="section ritual-teaser" id="ritual-teaser">
-      <div class="wrap">
-        <div class="ritual-teaser__inner">
-          <div class="ritual-teaser__copy stack-m">
-            <p class="eyebrow" data-reveal="fade">Not sure where to start?</p>
-            <h2 class="h2" data-split="lines">Tell us what your skin is doing.</h2>
-            <p class="body-lg" data-reveal="up">
-              Pick the thing that bothers you most and we will put a routine together —
-              which product, in what order, and honestly why. It takes about fifteen seconds.
+            <p class="enc__count" data-enc-count aria-hidden="true">
+              <span>01</span> &frasl; ${String(entries.length).padStart(2, '0')}
             </p>
           </div>
 
-          <div class="concern-grid" data-stagger style="--stagger-step:55ms">
-            ${CONCERNS.map((c) => `
-              <a class="concern" href="#/ritual?concern=${esc(c.id)}" data-reveal="scale" data-magnetic="0.14">
-                <span class="concern__icon">${botanical(c.icon)}</span>
-                <span class="concern__label">${esc(c.label)}</span>
-                <span class="concern__body">${esc(c.body)}</span>
-                <span class="concern__go" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </a>`).join('')}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ INGREDIENT SPOTLIGHT ============ -->
-    <section class="section spotlight" id="spotlight">
-      <div class="wrap">
-        <header class="sec-head">
-          <div>
-            <p class="eyebrow" data-reveal="fade">What goes in</p>
-            <h2 class="h2" data-split="lines">Ingredients you could name from memory</h2>
-          </div>
-          <p class="sec-head__aside body-sm" data-reveal="up">
-            Hover any of these to see what it does and where it turns up.
-            The full library runs to ${INGREDIENTS.length} entries.
-          </p>
-        </header>
-
-        <div class="spotlight__grid">
-          <ul class="ing-chips" role="list" data-stagger style="--stagger-step:40ms">
-            ${INGREDIENTS.slice(0, 12).map((ing) => `
-              <li data-reveal="scale">
-                <button class="ing-chip" type="button" data-ing="${esc(ing.id)}"
-                        style="--ing:${esc(ing.color)}">
-                  <span class="ing-chip__dot"></span>${esc(ing.name)}
-                </button>
-              </li>`).join('')}
-          </ul>
-
-          <aside class="ing-panel" data-reveal="left" aria-live="polite">
-            <div class="ing-panel__inner"></div>
-          </aside>
+          <ol class="enc__list" role="list">
+            ${entries.map((ing, i) => {
+              const uses = ing.foundIn.map(getProduct).filter(Boolean).slice(0, 3);
+              return `
+              <li class="enc__entry" data-entry="${i}">
+                <span class="enc__swatch" style="background:${esc(ing.color)}" aria-hidden="true"></span>
+                <p class="enc__role">${esc(ing.role)}</p>
+                <h3 class="enc__name">${esc(ing.name)}</h3>
+                <p class="enc__origin">${esc(ing.latin)} &middot; ${esc(ing.origin)}</p>
+                <p class="enc__body">${esc(ing.body)}</p>
+                ${uses.length ? `
+                  <p class="enc__uses-label">Found in</p>
+                  <ul class="enc__uses" role="list">
+                    ${uses.map((p) => `<li><a href="#/product/${esc(p.id)}">${esc(p.name)}</a></li>`).join('')}
+                  </ul>` : ''}
+              </li>`;
+            }).join('')}
+          </ol>
         </div>
 
         <div class="sec-foot" data-reveal="up">
           <a class="btn-text" href="#/ingredients">
-            Explore the full ingredient library
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            All ${INGREDIENTS.length} ingredients
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+      ${edge('bottom', 'var(--parchment)')}
+    </section>
+
+    <!-- ═══════════ VI. THE STORY ═══════════ -->
+    <section class="section story">
+      ${botField([
+        { kind: 'branch', seed: 'st-a', mode: 'line', stroke: 1.3, right: '-10%', y: '-6%', w: '42vw',
+          rot: -10, op: 0.18, tone: 'var(--bot-ink)', par: -0.14, cur: 18, sway: 26 },
+        { kind: 'sprig', seed: 'st-b', mode: 'duo', stroke: 1.1, x: '2%', y: '30%', w: '18vw',
+          rot: -18, op: 0.15, tone: 'var(--bot-sage)', par: 0.24, cur: 20, mobile: 'hide' },
+        { kind: 'petals', seed: 'st-c', mode: 'line', stroke: 1.2, right: '12%', bottom: '2%', w: '22vw',
+          op: 0.14, tone: 'var(--bot-rose)', par: 0.18, cur: 26, mobile: 'hide' }
+      ])}
+      <div class="wrap wrap--narrow">
+        <p class="label text-center mx-auto" data-reveal="fade">The story</p>
+        <blockquote class="story__quote" data-split="lines" data-split-step="100">
+          It started with a child who could not stop scratching.
+        </blockquote>
+
+        <div class="story__cols">
+          <p class="body-lg" data-reveal="up">
+            In ${BRAND.journeyStarted} our son developed allergies and eczema, and the natural
+            skincare journey began. ${esc(BRAND.founder.split(' ')[0])} researched natural body
+            care ingredients from around the world &mdash; shea from West Africa, kokum from the
+            Western Ghats, cold-pressed oils and the herbal infusions her grandmother would have
+            recognised.
+          </p>
+          <p class="body-lg" data-reveal="up" style="--reveal-delay:120ms">
+            The focus turned to natural soap, then to salves, creams and balms. In
+            ${BRAND.founded} what began at a kitchen counter became a company: small,
+            woman-owned, 100% natural, and made entirely by hand in the Pacific Northwest.
+          </p>
+        </div>
+
+        <div class="story__stats" data-stagger style="--stagger-step:110ms">
+          ${STATS.map((s) => `
+            <div class="stat-mini" data-reveal="up">
+              <span class="stat-mini__value" data-count="${s.value}" data-suffix="${esc(s.suffix)}"
+                    data-group="${s.group === false ? 'false' : 'true'}">0${esc(s.suffix)}</span>
+              <span class="stat-mini__label">${esc(s.label)}</span>
+            </div>`).join('')}
+        </div>
+
+        <div class="sec-foot" data-reveal="up">
+          <a class="btn btn--ghost" href="#/about" data-magnetic="0.16">
+            <span class="btn__label">Read the full story</span>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- ============ FULL RANGE RAIL ============ -->
-    <section class="section section--tight range" id="range">
-      <div class="wrap">
-        <header class="sec-head">
-          <div>
-            <p class="eyebrow" data-reveal="fade">Everything we make</p>
-            <h2 class="h2" data-split="lines">Twelve formulas, no filler</h2>
-          </div>
-        </header>
-      </div>
-      <div class="rail" data-native-scroll>
-        <div class="rail__track">
-          ${PRODUCTS.map((p) => `
-            <a class="rail__item" href="#/product/${esc(p.id)}" data-cursor="label:VIEW"
-               style="--tint:${p.art.tint[1]};--tint2:${p.art.tint[0]}">
-              <span class="rail__media">${productArt(p)}</span>
-              <span class="rail__name">${esc(p.name)}</span>
-              <span class="rail__price">${formatPrice(priceOf(p))}</span>
-            </a>`).join('')}
-        </div>
-      </div>
-    </section>
+    ${join('branch', 'j1')}
 
-    <!-- ============ TESTIMONIALS ============ -->
-    <section class="section quotes band--forest" id="quotes">
-      <div class="wrap">
-        <header class="sec-head sec-head--center">
-          <p class="eyebrow eyebrow--bare" data-reveal="fade">From the markets and the mailbox</p>
-          <h2 class="h2" data-split="lines">What people tell us</h2>
-        </header>
-      </div>
+    <!-- ═══════════ VII. THE SPOTLIGHT ═══════════ -->
+    <section class="spotlight-sec" style="--sp-tint:${esc(spotlight.art.tint[1])};--sp-accent:${esc(spotlight.art.accent)}">
+      ${botField([
+        { kind: 'bloom', seed: 'sp-a', mode: 'duo', stroke: 1, x: '50%', y: '-6%', w: '30vw',
+          op: 0.2, tone: 'var(--bot-rose)', par: 0.1, cur: 14, breathe: true, sway: 30 },
+        { kind: 'arc', seed: 'sp-b', mode: 'line', stroke: 1.2, x: '-10%', y: '30%', w: '60vw',
+          op: 0.12, tone: 'var(--bot-sage)', par: -0.08, cur: 10 },
+        { kind: 'fern', seed: 'sp-c', mode: 'line', stroke: 1.2, x: '-8%', bottom: '-6%', w: '26vw',
+          rot: -20, op: 0.16, tone: 'var(--bot-sage)', par: 0.2, cur: 18, mobile: 'hide' },
+        { kind: 'fern', seed: 'sp-d', mode: 'line', stroke: 1.2, right: '-8%', bottom: '-6%', w: '26vw',
+          rot: 20, flip: true, op: 0.16, tone: 'var(--bot-sage)', par: 0.2, cur: 18, mobile: 'hide' }
+      ], { bleed: false })}
+      ${petalDrift(5, 'spot')}
 
-      <div class="carousel" data-carousel tabindex="0" role="region" aria-label="Customer quotes">
-        <div class="carousel__track no-scrollbar" data-carousel-track data-native-scroll>
-          ${TESTIMONIALS.map((t) => `
-            <figure class="quote">
-              <span class="quote__mark" aria-hidden="true">”</span>
-              <blockquote>${esc(t.quote)}</blockquote>
-              <figcaption>
-                <span class="quote__name">${esc(t.name)}</span>
-                <span class="quote__meta">${esc(t.meta)} · ${esc(t.product)}</span>
-              </figcaption>
-            </figure>`).join('')}
+      <div class="wrap wrap--narrow spotlight__inner">
+        <div class="spotlight__crown" data-reveal="fade" aria-hidden="true">
+          ${botanical('arc', { seed: 'crown', mode: 'line', stroke: 1.6 })}
         </div>
-        <div class="carousel__controls wrap">
-          <div class="carousel__dots" data-carousel-dots></div>
-          <div class="carousel__arrows">
-            <button class="icon-btn" type="button" data-carousel-prev aria-label="Previous quote">
-              <svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-            </button>
-            <button class="icon-btn" type="button" data-carousel-next aria-label="Next quote">
-              <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </button>
+
+        <p class="label text-center mx-auto" data-reveal="fade">The spotlight</p>
+        <hr class="spotlight__rule" data-reveal="fade">
+
+        <figure class="spotlight__stage" data-reveal="scale">
+          <span class="spotlight__glow" aria-hidden="true"></span>
+          ${productArt(spotlight, { className: 'spotlight__art' })}
+        </figure>
+
+        <hr class="spotlight__rule" data-reveal="fade">
+
+        <div class="spotlight__info">
+          <h2 class="spotlight__name display-lg" data-split="lines">${esc(spotlight.name)}</h2>
+          <p class="spotlight__tag" data-reveal="up">${esc(spotlight.tagline)}</p>
+          <p class="body-lg spotlight__desc" data-reveal="up">${esc(spotlight.description)}</p>
+
+          <ul class="spotlight__marks" role="list" data-stagger style="--stagger-step:80ms">
+            ${spotlight.benefits.slice(0, 3).map((b) => `<li data-reveal="up">${esc(b)}</li>`).join('')}
+          </ul>
+
+          <div class="spotlight__buy" data-reveal="up">
+            <span class="spotlight__price">${formatPrice(priceOf(spotlight))}</span>
+            <a class="btn btn--primary" href="#/product/${esc(spotlight.id)}" data-magnetic="0.16">
+              <span class="btn__label">View product</span>
+            </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ============ JOURNAL ============ -->
-    <section class="section" id="journal-preview">
-      <div class="wrap">
-        <header class="sec-head">
-          <div>
-            <p class="eyebrow" data-reveal="fade">The journal</p>
-            <h2 class="h2" data-split="lines">Why we do it this way</h2>
-          </div>
-          <p class="sec-head__aside body-sm" data-reveal="up">
-            The reasoning behind the formulas — written for people who read labels.
-          </p>
-        </header>
-
-        <div class="jgrid" data-stagger style="--stagger-step:80ms">
-          ${JOURNAL.slice(0, 3).map((j) => `
-            <a class="jcard" href="#/journal" data-reveal="up" style="--jc:${esc(j.color)}">
-              <span class="jcard__tag">${esc(j.tag)}</span>
-              <h3 class="jcard__title">${esc(j.title)}</h3>
-              <p class="jcard__excerpt">${esc(j.excerpt)}</p>
-              <span class="jcard__meta">${esc(j.date)} · ${esc(j.read)}</span>
-            </a>`).join('')}
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ CTA ============ -->
-    <section class="cta">
+    <!-- ═══════════ VIII. IN THEIR WORDS ═══════════ -->
+    <section class="section words band--linen">
+      ${botField([
+        { kind: 'sprig', seed: 'w-a', mode: 'line', stroke: 1.3, x: '6%', y: '10%', w: '16vw',
+          rot: -12, op: 0.18, tone: 'var(--bot-sage)', par: 0.16, cur: 18, mobile: 'hide' },
+        { kind: 'sprig', seed: 'w-b', mode: 'line', stroke: 1.3, right: '6%', bottom: '10%', w: '16vw',
+          rot: 168, op: 0.18, tone: 'var(--bot-sage)', par: -0.16, cur: 18, mobile: 'hide' }
+      ])}
       <div class="wrap wrap--narrow">
-        <div class="cta__inner">
-          <span class="cta__mark" data-reveal="scale">${brandMark()}</span>
-          <h2 class="display-lg text-balance" data-split="lines">${esc(BRAND.shortTag)}</h2>
-          <p class="lede mx-auto text-center" data-reveal="up">
-            New batches, market dates and the occasional note on what we are reformulating.
-            No more than once a month.
+        <header class="sec-open sec-open--center">
+          <p class="label" data-reveal="fade">In their words</p>
+          <h2 class="h2" data-split="lines">From the markets and the mailbox</h2>
+        </header>
+        ${TESTIMONIALS.length ? `
+          <div class="words__grid" data-stagger style="--stagger-step:100ms">
+            ${TESTIMONIALS.map((t) => `
+              <figure class="word-card" data-reveal="up">
+                <blockquote>${esc(t.quote)}</blockquote>
+                <figcaption>
+                  <span class="word-card__name">${esc(t.name)}</span>
+                  <span class="word-card__meta">${esc(t.meta)} &middot; ${esc(t.product)}</span>
+                </figcaption>
+              </figure>`).join('')}
+          </div>`
+        : `
+          <div class="words__empty" data-reveal="up">
+            <span class="words__empty-mark" aria-hidden="true">
+              ${botanical('bloom', { seed: 'empty', mode: 'line', stroke: 1.4 })}
+            </span>
+            <p class="body-lg">
+              Real customer reviews belong here. This section is built and waiting &mdash;
+              it switches on the moment genuine reviews are added, and nothing has been
+              invented to fill it in the meantime.
+            </p>
+            <p class="body-xs">Reviews live in <code>assets/js/data/content.js</code> &rarr; <code>TESTIMONIALS</code>.</p>
+          </div>`}
+      </div>
+    </section>
+
+    <!-- ═══════════ IX. THE JOURNAL ═══════════ -->
+    <section class="section reading">
+      ${botField([
+        { kind: 'seedstem', seed: 'rd-a', mode: 'line', stroke: 1.3, right: '3%', y: '-4%', w: '14vw',
+          rot: 10, op: 0.2, tone: 'var(--bot-taupe)', par: 0.18, cur: 20, mobile: 'hide' }
+      ])}
+      <div class="wrap">
+        <header class="sec-open">
+          <p class="label" data-reveal="fade">From the workbench</p>
+          <h2 class="h2" data-split="lines">Why we do it this way</h2>
+          <p class="sec-open__note body-sm" data-reveal="up">
+            The reasoning behind the formulas &mdash; written for people who read labels.
           </p>
-          <form class="subscribe mx-auto" data-newsletter data-reveal="up" style="--reveal-delay:120ms">
-            <label class="visually-hidden" for="nl-home">Email address</label>
-            <input id="nl-home" type="email" name="email" placeholder="you@example.com" required autocomplete="email">
-            <button class="btn btn--accent btn--sm" type="submit"><span class="btn__label">Keep me posted</span></button>
-          </form>
-          <p class="body-xs text-center" data-reveal="fade">
-            Or find us in person at markets around Seattle —
-            <a class="link-underline" href="${esc(BRAND.instagram)}" target="_blank" rel="noopener">${esc(BRAND.instagramHandle)}</a>
-            has the current schedule.
-          </p>
+        </header>
+
+        <div class="reading__list" data-stagger style="--stagger-step:80ms">
+          ${JOURNAL.slice(0, 4).map((j, i) => `
+            <a class="read-row" href="#/journal" data-reveal="up" style="--jc:${esc(j.color)}">
+              <span class="read-row__idx">${String(i + 1).padStart(2, '0')}</span>
+              <span class="read-row__leaf" aria-hidden="true">${botanical('sprig', { seed: j.id, mode: 'line', stroke: 2.6 })}</span>
+              <span class="read-row__body">
+                <span class="read-row__tag">${esc(j.tag)}</span>
+                <span class="read-row__title">${esc(j.title)}</span>
+                <span class="read-row__excerpt">${esc(j.excerpt)}</span>
+              </span>
+              <span class="read-row__meta">${esc(j.read)}</span>
+            </a>`).join('')}
         </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ X. THE INVITATION ═══════════ -->
+    <section class="invite band--olive">
+      ${edge('top', 'var(--parchment)')}
+      ${botField([
+        { kind: 'branch', seed: 'iv-a', mode: 'line', stroke: 1.2, x: '-12%', y: '4%', w: '46vw',
+          rot: 6, op: 0.16, tone: 'var(--bot-sage)', par: 0.14, cur: 16 },
+        { kind: 'branch', seed: 'iv-b', mode: 'line', stroke: 1.2, right: '-12%', bottom: '2%', w: '46vw',
+          rot: 186, op: 0.16, tone: 'var(--bot-sage)', par: -0.14, cur: 16 },
+        { kind: 'bloom', seed: 'iv-c', mode: 'line', stroke: 1, x: '44%', y: '18%', w: '26vw',
+          op: 0.1, tone: 'var(--bot-rose)', blur: 1.2, par: 0.06, cur: 8, breathe: true }
+      ])}
+      <div class="wrap wrap--narrow invite__inner">
+        <span class="invite__mark" data-reveal="scale" aria-hidden="true">
+          ${botanical('bloom', { seed: 'invite', mode: 'line', stroke: 1.3 })}
+        </span>
+        <h2 class="display-lg" data-split="lines">Come and <em>smell</em> them.</h2>
+        <p class="lede mx-auto text-center" data-reveal="up">
+          We sell at markets around the Seattle area through the season. Dates go up on
+          Instagram first, along with new batches and the occasional note on what we are
+          reformulating.
+        </p>
+        <form class="subscribe mx-auto" data-newsletter data-reveal="up" style="--reveal-delay:120ms">
+          <label class="visually-hidden" for="nl-home">Email address</label>
+          <input id="nl-home" type="email" name="email" placeholder="you@example.com" required autocomplete="email">
+          <button class="btn btn--accent btn--sm" type="submit"><span class="btn__label">Keep me posted</span></button>
+        </form>
+        <p class="body-xs text-center" data-reveal="fade">
+          <a class="link-underline" href="${esc(BRAND.instagram)}" target="_blank" rel="noopener">${esc(BRAND.instagramHandle)}</a>
+          &middot;
+          <a class="link-underline" href="mailto:${esc(BRAND.email)}">${esc(BRAND.email)}</a>
+        </p>
       </div>
     </section>`,
 
     mount(root) {
       const cleanups = [];
 
-      // Hero atmosphere
-      cleanups.push(initHeroCanvas($('.hero__canvas', root)));
-
-      // Tilt on the bestseller cards
+      cleanups.push(initBotField(root));
       initTilt(root);
 
-      // Quote carousel
-      cleanups.push(initCarousel($('[data-carousel]', root)));
-
-      // Stats count up once the block is in view
-      const statsBlock = $('.origin__stats', root);
+      /* ---- counters ---- */
+      const statsBlock = $('.story__stats', root);
       if (statsBlock) {
         const io = new IntersectionObserver((entries) => {
           entries.forEach((e) => {
@@ -383,46 +466,98 @@ export default function home() {
         cleanups.push(() => io.disconnect());
       }
 
-      // Ingredient spotlight panel
-      const panel = $('.ing-panel__inner', root);
-      const chips = $$('.ing-chip', root);
-      const paintIng = (id) => {
-        const ing = INGREDIENTS.find((i) => i.id === id);
-        if (!ing || !panel) return;
-        chips.forEach((c) => c.classList.toggle('is-on', c.dataset.ing === id));
-        const uses = ing.foundIn.map(getProduct).filter(Boolean);
-        panel.innerHTML = `
-          <span class="ing-panel__swatch" style="background:${esc(ing.color)}"></span>
-          <p class="eyebrow eyebrow--bare">${esc(ing.role)}</p>
-          <h3 class="h4">${esc(ing.name)}</h3>
-          <p class="ing-panel__latin">${esc(ing.latin)} · ${esc(ing.origin)}</p>
-          <p class="body-sm">${esc(ing.body)}</p>
-          ${uses.length ? `
-            <p class="ing-panel__uses-label">Found in</p>
-            <ul class="ing-panel__uses" role="list">
-              ${uses.slice(0, 5).map((p) => `<li><a href="#/product/${esc(p.id)}">${esc(p.name)}</a></li>`).join('')}
-            </ul>` : ''}`;
-        panel.animate(
-          [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
-          { duration: 420, easing: 'cubic-bezier(0.16,1,0.3,1)' }
-        );
-      };
-      chips.forEach((c) => {
-        c.addEventListener('pointerenter', () => paintIng(c.dataset.ing));
-        c.addEventListener('focus', () => paintIng(c.dataset.ing));
-        c.addEventListener('click', () => paintIng(c.dataset.ing));
-      });
-      paintIng(INGREDIENTS[0].id);
+      /* ---- botanical encyclopedia: the plate follows the reader ---- */
+      const enc = $('[data-enc]', root);
+      if (enc) {
+        const plates = $$('.enc__plate', enc);
+        const entriesEls = $$('.enc__entry', enc);
+        const counter = $('[data-enc-count] span', enc);
+        let active = -1;
 
-      // Hero rotating caption ring
-      const ring = $('.hero__ring svg', root);
-      if (ring) {
-        cleanups.push(trackProgress($('.hero', root), (p) => {
-          ring.style.transform = `rotate(${p * 90}deg)`;
-        }));
+        const setActive = (i) => {
+          if (i === active) return;
+          active = i;
+          plates.forEach((p, pi) => p.classList.toggle('is-on', pi === i));
+          entriesEls.forEach((e, ei) => e.classList.toggle('is-on', ei === i));
+          if (counter) counter.textContent = String(i + 1).padStart(2, '0');
+        };
+
+        const io = new IntersectionObserver((obs) => {
+          // Whichever entry is nearest the middle of the viewport wins.
+          let best = null;
+          for (const o of obs) if (o.isIntersecting) best = o;
+          if (best) setActive(entriesEls.indexOf(best.target));
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+        entriesEls.forEach((e) => io.observe(e));
+        cleanups.push(() => io.disconnect());
+        setActive(0);
+      }
+
+      /* ---- the cover's caption rule draws itself as the hero leaves ---- */
+      const cover = $('.cover', root);
+      if (cover) {
+        cleanups.push(trackProgress(cover, (p) => {
+          cover.style.setProperty('--leave', clamp(p, 0, 1).toFixed(3));
+        }, { start: 1, end: 0 }));
       }
 
       return () => cleanups.forEach((fn) => fn?.());
     }
   };
+}
+
+/** Pick the botanical form that best suits each ingredient's plant. */
+function encKind(id) {
+  return {
+    'shea-butter': 'branch',
+    'calendula': 'bloom',
+    'cocoa-butter': 'sprig',
+    'kaolin-clay': 'petals',
+    'rosehip-oil': 'bloom',
+    'beeswax': 'seedstem',
+    'olive-oil': 'sprig',
+    'jojoba-oil': 'fern'
+  }[id] || 'sprig';
+}
+
+/* Rotating through forms and placements keeps the shelf from reading as a
+   repeating pattern — the brief is explicit that it must not become wallpaper. */
+const SHELF_LEAVES = ['sprig', 'fern', 'seedstem', 'sprig', 'branch', 'fern'];
+
+function leafPlacement(i) {
+  const spots = [
+    'left:2%;top:4%;width:36%;transform:rotate(-10deg)',
+    'right:0%;top:10%;left:auto;width:30%;transform:rotate(16deg) scaleX(-1)',
+    'left:-2%;top:22%;width:28%;transform:rotate(-22deg)',
+    'right:2%;top:2%;left:auto;width:34%;transform:rotate(9deg)',
+    'left:6%;top:14%;width:26%;transform:rotate(-4deg)',
+    'right:-2%;top:18%;left:auto;width:32%;transform:rotate(22deg) scaleX(-1)',
+    'left:0%;top:8%;width:32%;transform:rotate(-16deg)',
+    'right:4%;top:12%;left:auto;width:28%;transform:rotate(6deg)'
+  ];
+  return spots[i % spots.length];
+}
+
+/** One vessel on the apothecary shelf. */
+function shelfItem(p, i = 0) {
+  const cheapest = Math.min(priceOf(p), ...(p.variants || []).map((v) => v.price ?? p.price));
+  return `
+  <article class="shelf-item" data-reveal="up"
+           style="--tint:${esc(p.art.tint[1])};--tint2:${esc(p.art.tint[0])};--accent-art:${esc(p.art.accent)}">
+    <div class="shelf-item__stage">
+      <span class="shelf-item__halo" aria-hidden="true"></span>
+      <span class="shelf-item__leaf" aria-hidden="true" style="${leafPlacement(i)}">
+        ${botanical(SHELF_LEAVES[i % SHELF_LEAVES.length], { seed: p.id, mode: 'line', stroke: 2.2 })}
+      </span>
+      ${productArt(p, { className: 'shelf-item__art' })}
+      <span class="shelf-item__shadow" aria-hidden="true"></span>
+    </div>
+    <div class="shelf-item__label">
+      <h3 class="shelf-item__name"><a href="#/product/${esc(p.id)}">${esc(p.name)}</a></h3>
+      <p class="shelf-item__note">${esc(p.tagline)}</p>
+      <p class="shelf-item__price">${formatPrice(cheapest)}</p>
+      <span class="shelf-item__cta" aria-hidden="true">View product</span>
+    </div>
+  </article>`;
 }
