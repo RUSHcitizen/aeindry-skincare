@@ -1,0 +1,260 @@
+/* ============================================================
+   AEINDRY SKINCARE — Design Tokens
+   "All Natural Handmade Skincare where Purity is Essence"
+   Direction: Pacific Northwest apothecary / botanical editorial
+   ============================================================ */
+
+:root {
+  /* ---------- Core palette ---------- */
+  --oat-50:   #FBF8F2;
+  --oat-100:  #F6F1E7;
+  --oat-200:  #EFE7D8;
+  --oat-300:  #E4D8C3;
+  --oat-400:  #D3C2A6;
+
+  --forest-950: #0E1A13;
+  --forest-900: #13241A;
+  --forest-800: #1B3123;
+  --forest-700: #24422F;
+  --forest-600: #31573D;
+  --forest-500: #416F4D;
+  --forest-400: #5B8C64;
+  --forest-300: #86AC8B;
+  --forest-200: #B4CCB6;
+  --forest-100: #D9E6DA;
+
+  --clay-700: #7E3F22;
+  --clay-600: #9C5330;
+  --clay-500: #B96A3F;
+  --clay-400: #CE8659;
+  --clay-300: #E0A87F;
+  --clay-200: #EFCCAF;
+  --clay-100: #F8E6D7;
+
+  --gold-600: #A67C2E;
+  --gold-500: #C69B45;
+  --gold-400: #DBB86C;
+  --gold-300: #EBD29C;
+
+  --ink-900: #12140F;
+  --ink-800: #1D211A;
+  --ink-700: #2E332A;
+  --ink-600: #454B41;
+  --ink-500: #626960;
+  --ink-400: #868D83;
+  --ink-300: #ADB3A9;
+
+  /* ---------- Semantic (light — the default) ---------- */
+  --bg:            var(--oat-100);
+  --bg-raised:     var(--oat-50);
+  --bg-sunken:     var(--oat-200);
+  --bg-inverse:    var(--forest-900);
+  --bg-tint:       #FFFFFF;
+
+  --text:          var(--forest-900);
+  --text-soft:     var(--ink-600);
+  --text-muted:    var(--ink-500);
+  --text-faint:    var(--ink-400);
+  --text-inverse:  var(--oat-100);
+
+  --line:          color-mix(in oklab, var(--forest-900) 12%, transparent);
+  --line-soft:     color-mix(in oklab, var(--forest-900) 7%, transparent);
+  --line-strong:   color-mix(in oklab, var(--forest-900) 22%, transparent);
+
+  --accent:        var(--clay-500);
+  --accent-hover:  var(--clay-600);
+  --accent-soft:   var(--clay-100);
+  --leaf:          var(--forest-600);
+  --leaf-soft:     var(--forest-100);
+  --gilt:          var(--gold-500);
+
+  --focus-ring:    var(--clay-500);
+  --shadow-color:  28 45 32;
+
+  /* ---------- Elevation ---------- */
+  --shadow-xs: 0 1px 2px rgb(var(--shadow-color) / .05);
+  --shadow-sm: 0 1px 3px rgb(var(--shadow-color) / .06), 0 1px 2px rgb(var(--shadow-color) / .04);
+  --shadow-md: 0 4px 12px rgb(var(--shadow-color) / .07), 0 2px 4px rgb(var(--shadow-color) / .04);
+  --shadow-lg: 0 12px 32px rgb(var(--shadow-color) / .10), 0 4px 10px rgb(var(--shadow-color) / .05);
+  --shadow-xl: 0 28px 64px rgb(var(--shadow-color) / .14), 0 8px 20px rgb(var(--shadow-color) / .07);
+  --shadow-2xl:0 48px 100px rgb(var(--shadow-color) / .20), 0 14px 32px rgb(var(--shadow-color) / .10);
+  --shadow-glow: 0 0 0 1px color-mix(in oklab, var(--accent) 22%, transparent),
+                 0 10px 40px color-mix(in oklab, var(--accent) 18%, transparent);
+
+  /* ---------- Type ---------- */
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Fluid scale — min 360px viewport, max 1440px */
+  --step--2: clamp(0.694rem, 0.66rem + 0.15vw, 0.79rem);
+  --step--1: clamp(0.833rem, 0.78rem + 0.24vw, 0.988rem);
+  --step-0:  clamp(1rem, 0.92rem + 0.35vw, 1.235rem);
+  --step-1:  clamp(1.2rem, 1.08rem + 0.52vw, 1.544rem);
+  --step-2:  clamp(1.44rem, 1.26rem + 0.76vw, 1.93rem);
+  --step-3:  clamp(1.728rem, 1.47rem + 1.1vw, 2.412rem);
+  --step-4:  clamp(2.074rem, 1.71rem + 1.56vw, 3.015rem);
+  --step-5:  clamp(2.488rem, 1.98rem + 2.19vw, 3.769rem);
+  --step-6:  clamp(2.986rem, 2.29rem + 3.02vw, 4.711rem);
+  --step-7:  clamp(3.583rem, 2.63rem + 4.15vw, 5.889rem);
+  --step-8:  clamp(4.3rem, 3.0rem + 5.66vw, 7.361rem);
+
+  --lh-tight: 0.98;
+  --lh-snug: 1.14;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.72;
+
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --tracking-widest: 0.18em;
+
+  /* ---------- Space ---------- */
+  --space-3xs: clamp(0.25rem, 0.24rem + 0.05vw, 0.31rem);
+  --space-2xs: clamp(0.5rem, 0.47rem + 0.12vw, 0.62rem);
+  --space-xs:  clamp(0.75rem, 0.71rem + 0.18vw, 0.93rem);
+  --space-s:   clamp(1rem, 0.94rem + 0.24vw, 1.24rem);
+  --space-m:   clamp(1.5rem, 1.41rem + 0.37vw, 1.85rem);
+  --space-l:   clamp(2rem, 1.88rem + 0.49vw, 2.47rem);
+  --space-xl:  clamp(3rem, 2.82rem + 0.73vw, 3.71rem);
+  --space-2xl: clamp(4rem, 3.76rem + 0.98vw, 4.94rem);
+  --space-3xl: clamp(6rem, 5.64rem + 1.46vw, 7.41rem);
+  --space-4xl: clamp(8rem, 7.0rem + 4.2vw, 11rem);
+
+  /* ---------- Layout ---------- */
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --measure: 68ch;
+  --max-w: 1440px;
+  --max-w-wide: 1680px;
+  --max-w-text: 76ch;
+  --nav-h: 76px;
+
+  /* ---------- Radii ---------- */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-xl: 32px;
+  --r-2xl: 44px;
+  --r-full: 999px;
+  --r-organic: 62% 38% 46% 54% / 55% 48% 52% 45%;
+
+  /* ---------- Motion ---------- */
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-soft:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-swift:     cubic-bezier(0.25, 1, 0.5, 1);
+
+  --dur-instant: 90ms;
+  --dur-fast: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 560ms;
+  --dur-slower: 880ms;
+  --dur-cinematic: 1200ms;
+
+  /* ---------- Z ---------- */
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-nav: 200;
+  --z-drawer: 300;
+  --z-modal: 400;
+  --z-cursor: 900;
+  --z-preloader: 1000;
+}
+
+/* ============================================================
+   Dark theme — three states honoured:
+   explicit [data-theme], and system default via media query
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:           var(--forest-950);
+    --bg-raised:    var(--forest-900);
+    --bg-sunken:    #0A140E;
+    --bg-inverse:   var(--oat-100);
+    --bg-tint:      var(--forest-800);
+
+    --text:         var(--oat-100);
+    --text-soft:    #C3CFC4;
+    --text-muted:   #9AA89C;
+    --text-faint:   #78877A;
+    --text-inverse: var(--forest-900);
+
+    --line:         color-mix(in oklab, var(--oat-100) 14%, transparent);
+    --line-soft:    color-mix(in oklab, var(--oat-100) 8%, transparent);
+    --line-strong:  color-mix(in oklab, var(--oat-100) 26%, transparent);
+
+    --accent:       var(--clay-400);
+    --accent-hover: var(--clay-300);
+    --accent-soft:  color-mix(in oklab, var(--clay-500) 20%, var(--forest-900));
+    --leaf:         var(--forest-300);
+    --leaf-soft:    color-mix(in oklab, var(--forest-400) 18%, var(--forest-900));
+    --gilt:         var(--gold-400);
+
+    --focus-ring:   var(--clay-300);
+    --shadow-color: 0 0 0;
+
+    --shadow-lg: 0 12px 32px rgb(0 0 0 / .45), 0 4px 10px rgb(0 0 0 / .3);
+    --shadow-xl: 0 28px 64px rgb(0 0 0 / .55), 0 8px 20px rgb(0 0 0 / .35);
+    --shadow-2xl:0 48px 100px rgb(0 0 0 / .65), 0 14px 32px rgb(0 0 0 / .4);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:           var(--forest-950);
+  --bg-raised:    var(--forest-900);
+  --bg-sunken:    #0A140E;
+  --bg-inverse:   var(--oat-100);
+  --bg-tint:      var(--forest-800);
+
+  --text:         var(--oat-100);
+  --text-soft:    #C3CFC4;
+  --text-muted:   #9AA89C;
+  --text-faint:   #78877A;
+  --text-inverse: var(--forest-900);
+
+  --line:         color-mix(in oklab, var(--oat-100) 14%, transparent);
+  --line-soft:    color-mix(in oklab, var(--oat-100) 8%, transparent);
+  --line-strong:  color-mix(in oklab, var(--oat-100) 26%, transparent);
+
+  --accent:       var(--clay-400);
+  --accent-hover: var(--clay-300);
+  --accent-soft:  color-mix(in oklab, var(--clay-500) 20%, var(--forest-900));
+  --leaf:         var(--forest-300);
+  --leaf-soft:    color-mix(in oklab, var(--forest-400) 18%, var(--forest-900));
+  --gilt:         var(--gold-400);
+
+  --focus-ring:   var(--clay-300);
+  --shadow-color: 0 0 0;
+
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / .45), 0 4px 10px rgb(0 0 0 / .3);
+  --shadow-xl: 0 28px 64px rgb(0 0 0 / .55), 0 8px 20px rgb(0 0 0 / .35);
+  --shadow-2xl:0 48px 100px rgb(0 0 0 / .65), 0 14px 32px rgb(0 0 0 / .4);
+}
+
+/* Inverse "band" sections flip tokens locally so any component nests cleanly */
+.band--forest {
+  --bg: var(--forest-900);
+  --bg-raised: var(--forest-800);
+  --bg-sunken: var(--forest-950);
+  --bg-tint: var(--forest-800);
+  --text: var(--oat-100);
+  --text-soft: #C3CFC4;
+  --text-muted: #9AA89C;
+  --text-faint: #78877A;
+  --line: color-mix(in oklab, var(--oat-100) 14%, transparent);
+  --line-soft: color-mix(in oklab, var(--oat-100) 8%, transparent);
+  --line-strong: color-mix(in oklab, var(--oat-100) 26%, transparent);
+  --accent: var(--clay-300);
+  --accent-hover: var(--clay-200);
+  --accent-soft: color-mix(in oklab, var(--clay-500) 26%, var(--forest-900));
+  --leaf: var(--forest-200);
+  --leaf-soft: color-mix(in oklab, var(--forest-400) 22%, var(--forest-900));
+  --gilt: var(--gold-400);
+  --focus-ring: var(--clay-200);
+  background: var(--bg);
+  color: var(--text);
+}
