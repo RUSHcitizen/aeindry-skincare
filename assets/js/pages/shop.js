@@ -5,6 +5,7 @@ import { PRODUCTS, CATEGORIES, priceOf } from '../data/products.js';
 import { productGrid } from '../ui/pcard.js';
 import { initTilt } from '../ui/tilt.js';
 import { initReveal } from '../core/reveal.js';
+import { syncHash } from '../core/router.js';
 import { SCENT_PROFILES } from '../data/content.js';
 
 const SORTS = [
@@ -120,9 +121,9 @@ export default function shop({ query }) {
         if (state.sort !== 'featured') params.set('sort', state.sort);
         if (state.search) params.set('q', state.search);
         const qs = params.toString();
-        // replaceState keeps the filter state shareable without a history entry
-        // per keystroke, and without re-triggering the router.
-        history.replaceState(null, '', `#/shop${qs ? `?${qs}` : ''}`);
+        // Keeps the filter state shareable without a history entry per keystroke,
+        // and without re-triggering the router.
+        syncHash(`#/shop${qs ? `?${qs}` : ''}`);
       }
 
       function paint() {

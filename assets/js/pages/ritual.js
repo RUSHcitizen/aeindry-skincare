@@ -12,6 +12,7 @@ import { addToCart } from '../core/store.js';
 import { toast } from '../ui/toast.js';
 import { initReveal } from '../core/reveal.js';
 import { scrollTo } from '../core/scroll.js';
+import { syncHash } from '../core/router.js';
 
 export default function ritual({ query }) {
   const startTab = query.tab === 'scent' ? 'scent' : 'ritual';
@@ -105,7 +106,7 @@ export default function ritual({ query }) {
           if (on) moveInk(t);
         });
         Object.entries(panels).forEach(([k, p]) => { if (p) p.hidden = k !== id; });
-        if (push) history.replaceState(null, '', `#/ritual${id === 'scent' ? '?tab=scent' : ''}`);
+        if (push) syncHash(`#/ritual${id === 'scent' ? '?tab=scent' : ''}`);
       }
 
       tabs.forEach((t) => t.addEventListener('click', () => selectTab(t.dataset.tab)));

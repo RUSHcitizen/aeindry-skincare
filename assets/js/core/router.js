@@ -148,3 +148,13 @@ export function initRouter() {
 }
 
 export const currentRoute = () => currentPath;
+
+/**
+ * Replace the hash without going through the router.
+ * Sandboxed and cross-origin embeds can throw on history writes, and a failed
+ * URL sync must never take the page's filters down with it.
+ */
+export function syncHash(hash) {
+  try { history.replaceState(null, '', hash); }
+  catch { /* embedded context refused the history write — state still lives in memory */ }
+}

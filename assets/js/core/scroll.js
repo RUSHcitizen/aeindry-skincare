@@ -16,9 +16,14 @@ let target = 0;
 let current = 0;
 let enabled = false;
 let rafId = null;
-let programmatic = false;
 let lastDir = 1;
 let velocity = 0;
+/* Scroll events are asynchronous, so a boolean flag flipped around our own
+   scrollTo() is already false by the time the event lands. Guard by time
+   instead: while the loop is actively driving the scroll, any scroll event is
+   ours. Without this the handler resets `target` every frame and each wheel
+   tick collapses to a single easing step. */
+let drivingUntil = 0;
 
 const EASE = 0.105;          // how hard the view chases the target
 const WHEEL_MULT = 1;
@@ -45,9 +50,8 @@ function loop() {
   }
 
   if (Math.abs(current - window.scrollY) > 0.05) {
-    programmatic = true;
+    drivingUntil = performance.now() + 180;
     window.scrollTo(0, current);
-    programmatic = false;
   }
 
   scrollBus.emit('scroll', getScroll());
@@ -56,8 +60,9 @@ function loop() {
 
 /** Native scroll (keyboard, scrollbar drag, touch) re-syncs the target. */
 function onNativeScroll() {
-  if (programmatic) return;
   const y = window.scrollY;
+  // Our own easing is mid-flight — this event is the echo of it, not input.
+  if (performance.now() < drivingUntil && Math.abs(y - current) < 4) return;
   lastDir = y > current ? 1 : y < current ? -1 : lastDir;
   target = y;
   current = y;
@@ -87,6 +92,7 @@ export function scrollTo(to, { offset = 0, immediate = false } = {}) {
   target = y;
   if (immediate || !enabled) {
     current = y;
+    drivingUntil = performance.now() + 180;
     window.scrollTo(0, y);
     scrollBus.emit('scroll', getScroll());
   }
@@ -96,6 +102,7 @@ export function scrollTo(to, { offset = 0, immediate = false } = {}) {
 export function resetScroll() {
   target = 0;
   current = 0;
+  drivingUntil = performance.now() + 180;
   window.scrollTo(0, 0);
   scrollBus.emit('scroll', getScroll());
 }
