@@ -5,7 +5,7 @@
 import { $, $$, on } from './lib/dom.js';
 import { initTheme, toggleWish, bus } from './core/store.js';
 import { initScroll } from './core/scroll.js';
-import { initCursor, initMagnetic } from './core/cursor.js';
+import { initMagnetic } from './core/cursor.js';
 import { runPreloader } from './core/preloader.js';
 import { defineRoute, defineNotFound, initRouter } from './core/router.js';
 import { initNav } from './ui/nav.js';
@@ -110,7 +110,6 @@ async function boot() {
   installPaper();
   initTheme();
   initScroll();
-  initCursor();
   initMagnetic(document);
   initNav();
   initCart();

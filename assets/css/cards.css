@@ -141,7 +141,7 @@
   font-size: var(--step--2);
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--text-muted);
 }
 .spec__name {
   font-family: var(--font-display);

@@ -93,7 +93,7 @@ export default function home() {
 
     <!-- ═══════════ II. THE PROMISE ═══════════ -->
     <section class="promise-band band--olive" id="promise">
-      ${edge('top', 'var(--parchment)')}
+      ${edge('top', 'var(--band-paper)')}
       ${botField([
         { kind: 'arc', seed: 'pr-a', mode: 'line', stroke: 1.2, x: '-4%', bottom: '-40%', w: '58vw',
           op: 0.14, tone: 'var(--bot-sage)', par: 0.14, cur: 12 },
@@ -184,7 +184,7 @@ export default function home() {
 
     <!-- ═══════════ V. DISCOVER THE BOTANICALS ═══════════ -->
     <section class="botanicals band--olive" id="botanicals">
-      ${edge('top', 'var(--linen)')}
+      ${edge('top', 'var(--band-linen)')}
       ${botField([
         { kind: 'spray', seed: 'bo-a', mode: 'line', stroke: 1, x: '-16%', bottom: '-18%', w: '52vw',
           op: 0.1, tone: 'var(--bot-sage)', par: 0.1, cur: 10 }
@@ -237,7 +237,7 @@ export default function home() {
           </a>
         </div>
       </div>
-      ${edge('bottom', 'var(--parchment)')}
+      ${edge('bottom', 'var(--band-paper)')}
     </section>
 
     <!-- ═══════════ VI. THE STORY ═══════════ -->
@@ -410,7 +410,7 @@ export default function home() {
 
     <!-- ═══════════ X. THE INVITATION ═══════════ -->
     <section class="invite band--olive">
-      ${edge('top', 'var(--parchment)')}
+      ${edge('top', 'var(--band-paper)')}
       ${botField([
         { kind: 'branch', seed: 'iv-a', mode: 'line', stroke: 1.2, x: '-12%', y: '4%', w: '46vw',
           rot: 6, op: 0.16, tone: 'var(--bot-sage)', par: 0.14, cur: 16 },

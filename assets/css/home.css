@@ -26,10 +26,10 @@
   padding-block: calc(var(--nav-h) + var(--space-m)) var(--space-l);
   overflow: hidden;
   background:
-    radial-gradient(120% 80% at 50% -10%, var(--ivory) 0%, transparent 60%),
-    radial-gradient(90% 70% at 88% 8%, color-mix(in oklab, var(--blush) 40%, transparent), transparent 70%),
-    radial-gradient(80% 60% at 4% 92%, color-mix(in oklab, var(--sage-100) 70%, transparent), transparent 72%),
-    var(--parchment);
+    radial-gradient(120% 80% at 50% -10%, var(--band-ivory) 0%, transparent 60%),
+    radial-gradient(90% 70% at 88% 8%, var(--wash-rose), transparent 70%),
+    radial-gradient(80% 60% at 4% 92%, var(--wash-sage), transparent 72%),
+    var(--bg);
 }
 .cover__inner {
   display: grid;
@@ -100,7 +100,7 @@
   text-transform: uppercase;
   color: var(--text-soft);
 }
-.cover__caption-note { font-size: var(--step--2); color: var(--text-faint); font-style: italic; }
+.cover__caption-note { font-size: var(--step--2); color: var(--text-muted); font-style: italic; }
 
 .cover__foot {
   display: grid;
@@ -404,7 +404,7 @@
   font-size: var(--step--2);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--text-muted);
 }
 .enc__uses { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin-top: 0.45rem; }
 .enc__uses a {
@@ -460,8 +460,8 @@
   padding-block: var(--space-4xl);
   overflow: hidden;
   background:
-    radial-gradient(70% 46% at 50% 24%, color-mix(in oklab, var(--sp-tint) 62%, transparent), transparent 72%),
-    linear-gradient(180deg, var(--parchment) 0%, var(--ivory) 44%, var(--parchment) 100%);
+    radial-gradient(70% 46% at 50% 24%, color-mix(in oklab, var(--sp-tint) 40%, transparent), transparent 72%),
+    linear-gradient(180deg, var(--band-paper) 0%, var(--band-ivory) 44%, var(--band-paper) 100%);
 }
 .spotlight__inner { display: grid; justify-items: center; text-align: center; gap: var(--space-s); }
 .spotlight__crown { width: min(360px, 62vw); color: var(--bot-sage); opacity: .55; margin-bottom: calc(var(--space-m) * -1); }
@@ -575,7 +575,7 @@
 .read-row__idx {
   font-size: var(--step--2);
   letter-spacing: var(--tracking-wide);
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 .read-row__leaf { width: 46px; color: var(--jc); opacity: .55; transition: transform var(--dur-slower) var(--ease-out-expo), opacity var(--dur-slow) var(--ease-soft); }
@@ -595,7 +595,7 @@
   line-height: 1.2;
 }
 .read-row__excerpt { font-size: var(--step--1); color: var(--text-muted); max-width: 62ch; }
-.read-row__meta { font-size: var(--step--2); color: var(--text-faint); white-space: nowrap; }
+.read-row__meta { font-size: var(--step--2); color: var(--text-muted); white-space: nowrap; }
 
 /* ════════════════════ X. THE INVITATION ════════════════════ */
 .invite { position: relative; padding-block: var(--space-4xl); overflow: hidden; }
@@ -619,7 +619,7 @@
   }
   .enc__art { max-width: 200px; }
   .enc__list { gap: var(--space-2xl); }
-  .shelf__row { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-l); }
+  .shelf__row { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-xl); }
   .story__cols { columns: 1; }
   .story__stats { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-l); }
 }
@@ -643,6 +643,8 @@
 }
 
 @media (max-width: 520px) {
-  .shelf__row { grid-template-columns: 1fr; }
+  .shelf { --shelf-gap: 0.85rem; }
   .story__stats { grid-template-columns: 1fr; }
+  .shelf-item__note { display: none; }
+  .shelf-item__name { font-size: var(--step-0); }
 }

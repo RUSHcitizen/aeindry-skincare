@@ -54,7 +54,7 @@ export default function ingredients({ query }) {
       </div>
     </section>
 
-    <section class="section never band--forest">
+    <section class="section never band--olive">
       <div class="wrap">
         <header class="sec-head">
           <div>

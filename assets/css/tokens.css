@@ -64,16 +64,16 @@
 
   --text:        var(--olive-900);
   --text-soft:   var(--taupe-800);
-  --text-muted:  var(--taupe-700);
-  --text-faint:  #A0937C;
+  --text-muted:  #6E6455;
+  --text-faint:  #7F7564;
   --text-inverse: var(--cream);
 
   --line:        color-mix(in oklab, var(--olive-900) 13%, transparent);
   --line-soft:   color-mix(in oklab, var(--olive-900) 7%, transparent);
   --line-strong: color-mix(in oklab, var(--olive-900) 24%, transparent);
 
-  --accent:       var(--terracotta-500);
-  --accent-hover: var(--terracotta-600);
+  --accent:       var(--terracotta-600);
+  --accent-hover: #7E4A30;
   --accent-soft:  color-mix(in oklab, var(--terracotta-500) 13%, var(--parchment));
   --leaf:         var(--olive-600);
   --leaf-soft:    color-mix(in oklab, var(--sage-400) 26%, var(--parchment));
@@ -84,6 +84,15 @@
   --bot-rose:  var(--rose-400);
   --bot-sage:  var(--sage-400);
   --bot-taupe: var(--taupe);
+
+  /* Named grounds. A wave edge or gradient refers to the band it is pouring
+     into by name, and the name resolves per theme — never a raw light value. */
+  --band-paper: var(--parchment);
+  --band-ivory: var(--ivory);
+  --band-linen: var(--linen);
+  --band-olive: var(--olive-800);
+  --wash-rose:  color-mix(in oklab, var(--blush) 40%, transparent);
+  --wash-sage:  color-mix(in oklab, var(--sage-100) 70%, transparent);
 
   --focus-ring:   var(--terracotta-500);
   --shadow-color: 62 55 40;
@@ -202,8 +211,8 @@
 
     --text:        var(--cream);
     --text-soft:   #CFC5B3;
-    --text-muted:  #A79C89;
-    --text-faint:  #7E7462;
+    --text-muted:  #B7AC97;
+    --text-faint:  #A0957F;
     --text-inverse: var(--olive-900);
 
     --line:        color-mix(in oklab, var(--cream) 15%, transparent);
@@ -221,6 +230,13 @@
     --bot-rose:  var(--rose-300);
     --bot-sage:  var(--sage-300);
     --bot-taupe: var(--taupe-700);
+
+    --band-paper: var(--bark-900);
+    --band-ivory: var(--bark-800);
+    --band-linen: var(--bark-800);
+    --band-olive: #2A3126;
+    --wash-rose:  color-mix(in oklab, var(--terracotta-500) 16%, transparent);
+    --wash-sage:  color-mix(in oklab, var(--sage-500) 18%, transparent);
 
     --focus-ring:   var(--terracotta-300);
     --shadow-color: 0 0 0;
@@ -241,8 +257,8 @@
 
   --text:        var(--cream);
   --text-soft:   #CFC5B3;
-  --text-muted:  #A79C89;
-  --text-faint:  #7E7462;
+  --text-muted:  #B7AC97;
+  --text-faint:  #A0957F;
   --text-inverse: var(--olive-900);
 
   --line:        color-mix(in oklab, var(--cream) 15%, transparent);
@@ -260,6 +276,13 @@
   --bot-rose:  var(--rose-300);
   --bot-sage:  var(--sage-300);
   --bot-taupe: var(--taupe-700);
+
+  --band-paper: var(--bark-900);
+  --band-ivory: var(--bark-800);
+  --band-linen: var(--bark-800);
+  --band-olive: #2A3126;
+  --wash-rose:  color-mix(in oklab, var(--terracotta-500) 16%, transparent);
+  --wash-sage:  color-mix(in oklab, var(--sage-500) 18%, transparent);
 
   --focus-ring:   var(--terracotta-300);
   --shadow-color: 0 0 0;
@@ -284,8 +307,8 @@
   --bg-tint: var(--olive-700);
   --text: var(--cream);
   --text-soft: #CBD3C3;
-  --text-muted: #A3AE9A;
-  --text-faint: #85907C;
+  --text-muted: #B4BEAA;
+  --text-faint: #A2AC98;
   --line: color-mix(in oklab, var(--cream) 16%, transparent);
   --line-soft: color-mix(in oklab, var(--cream) 9%, transparent);
   --line-strong: color-mix(in oklab, var(--cream) 30%, transparent);

@@ -56,7 +56,7 @@ export default function journal() {
       </div>
     </section>
 
-    <section class="section faq band--forest">
+    <section class="section faq band--olive">
       <div class="wrap wrap--narrow">
         <header class="sec-head sec-head--center">
           <p class="eyebrow eyebrow--bare" data-reveal="fade">Asked often</p>

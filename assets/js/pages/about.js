@@ -55,7 +55,7 @@ export default function about() {
     </section>
 
     <!-- ============ TIMELINE ============ -->
-    <section class="section timeline-sec band--forest" id="story">
+    <section class="section timeline-sec band--olive" id="story">
       <div class="wrap">
         <header class="sec-head sec-head--center">
           <p class="eyebrow eyebrow--bare" data-reveal="fade">The long version</p>
@@ -131,7 +131,7 @@ export default function about() {
     </section>
 
     <!-- ============ MARKETS ============ -->
-    <section class="section markets band--forest">
+    <section class="section markets band--olive">
       <div class="wrap wrap--narrow text-center stack-m">
         <p class="eyebrow eyebrow--bare mx-auto" data-reveal="fade">Come and smell them</p>
         <h2 class="h2" data-split="lines">We would rather you tried before you bought.</h2>

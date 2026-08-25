@@ -98,7 +98,7 @@ export default function shop({ query }) {
       </div>
     </section>
 
-    <section class="section section--tight band--forest help-band">
+    <section class="section section--tight band--olive help-band">
       <div class="wrap wrap--narrow text-center stack-m">
         <p class="eyebrow eyebrow--bare mx-auto" data-reveal="fade">Still deciding?</p>
         <h2 class="h3" data-reveal="up">Four questions and we will build the routine for you.</h2>

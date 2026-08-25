@@ -3,8 +3,10 @@
 A storefront for **Aeindry Skincare** — *"All Natural Handmade Skincare where Purity is Essence"* —
 a small, woman-owned company making 100% natural handmade skincare in the Pacific Northwest.
 
-Built as a dependency-free static site: no framework, no build step, no runtime packages.
-Open `index.html` through any static server and it runs.
+Designed as a modern botanical apothecary: warm paper grounds, editorial serif
+typography, and hand-generated botanical artwork living on a layer behind the
+content. Built dependency-free — no framework, no build step, no runtime
+packages. Open `index.html` through any static server and it runs.
 
 ---
 
@@ -45,6 +47,12 @@ export function productArt(product, opts = {}) { … }   // ← replace with <im
 `price` and the `variants` line-ups in `assets/js/data/products.js` are realistic
 placeholders. Everything else on a product — names, categories, claims, ingredient
 stories, the CBD shipping restriction — comes from aeindryskincare.com.
+
+**3. Customer reviews.** `TESTIMONIALS` in `assets/js/data/content.js` is
+deliberately **empty**, and the "In their words" section renders an explicit
+placeholder saying so. Nothing has been invented to fill it. Adding real entries
+— `{ quote, name, meta, product }` — is the only step needed to switch the
+section on.
 
 The checkout button and the contact form are deliberately inert, and both say so in
 the UI. There is no payment processor and no mail server behind them.
@@ -91,23 +99,43 @@ assets/
     animations.css         reveal system, keyframes, route curtain, reduced-motion
     components.css         buttons, nav, cards, drawer, forms, accordion, marquee
     pages.css              per-page layout + all responsive breakpoints
-    fonts.css              self-hosted Fraunces + Inter (vendored, no CDN)
+    botanical.css          the botanical layer: fields, sway, petals, paper, edges
+    cards.css              the specimen card
+    home.css               the nine home compositions
+    fonts.css              self-hosted Bodoni Moda + Jost (vendored, no CDN)
   fonts/                   woff2 subsets (latin, latin-ext)
   js/
     main.js                boot + route registration
-    core/                  router · scroll · reveal · cursor · preloader · store
-    ui/                    nav · cart · quickview · tilt · carousel · accordion ·
-                           hero-canvas · pcard · toast
-    lib/                   dom helpers · SVG art engine
+    core/                  router · scroll · reveal · magnetic · preloader · store
+    ui/                    nav · cart · quickview · bot-field · carousel ·
+                           accordion · pcard · toast
+    lib/                   dom helpers · product art engine · botanical engine
     data/                  products.js · content.js
     pages/                 one module per route
 ```
 
-**Design tokens** drive everything — colour, type scale, spacing, easing, radii. Dark
-mode is defined three ways (bare `:root`, `prefers-color-scheme` guarded against an
-explicit light choice, and `[data-theme="dark"]`) so the toggle wins in both
-directions and the system default still works. `.band--forest` flips the same tokens
-locally, so any component nests correctly inside a dark section without special cases.
+**Design tokens** drive everything — colour, type scale, spacing, easing, radii.
+The palette runs ivory → parchment → linen → taupe over olive and sage, with
+terracotta as the single accent; neutrals carry a yellow-red bias toward that
+accent so they read as chosen paper rather than default grey. Type is Bodoni
+Moda (display, italic used one word at a time) over Jost (wide-tracked uppercase
+labels and body).
+
+Dark mode is defined three ways (bare `:root`, `prefers-color-scheme` guarded
+against an explicit light choice, and `[data-theme="dark"]`) so the toggle wins
+in both directions and the system default still works. `.band--olive` and its
+siblings flip the same tokens locally, so any component nests correctly inside a
+dark section without special cases. Sections never name a raw colour: a wave
+edge or gradient refers to the ground it pours into through a `--band-*` alias
+that resolves per theme.
+
+**Botanical artwork** is generated, not drawn by hand: stems are cubic curves,
+leaves and petals share one axis/width construction, and a seeded PRNG gives
+each plant its own asymmetry while staying identical between loads
+(`lib/botanical.js` — eight forms, three render modes). Sections carry *fields*
+of oversized, cropped, tinted artwork. Scroll parallax and a cursor lean are
+folded into one JS transform on the outer node while the ambient sway stays in
+CSS on an inner node, so neither can overwrite the other.
 
 **Motion** is opt-in via `data-reveal`, staggered with `data-stagger`, and split into
 lines/words/chars with `data-split`. Everything collapses under
@@ -127,6 +155,8 @@ Checked in headless Chromium at 1440px and 390px, in light and dark:
 - One `<h1>` per route; no unlabelled buttons, no `role="img"` SVG without a label
 - All 13 in-app links resolve to a real route
 - `prefers-reduced-motion` leaves no element stuck at `opacity: 0`
+- A WCAG AA contrast pass over every text node on all eight routes in both
+  themes, measured against the painted backdrop
 
 ---
 
