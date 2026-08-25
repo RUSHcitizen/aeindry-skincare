@@ -11,7 +11,7 @@
 import { $, $$, esc, countUp, clamp } from '../lib/dom.js';
 import { PRODUCTS, getProduct, formatPrice, priceOf } from '../data/products.js';
 import {
-  BRAND, PROMISES, PILLARS, TESTIMONIALS, JOURNAL, STATS, INGREDIENTS, TIMELINE
+  BRAND, PROMISES, PILLARS, TESTIMONIALS, JOURNAL, STATS, INGREDIENTS, TIMELINE, CONCERNS
 } from '../data/content.js';
 import { productArt } from '../lib/art.js';
 import { botanical } from '../lib/botanical.js';
@@ -25,6 +25,8 @@ const SHELF_TWO = ['deodorant', 'powder-to-foam-cleanser', 'essential-oil-bath-b
 const SPOTLIGHT = 'face-cream';
 const HERO_PRODUCT = 'salve';
 const ENCYCLOPEDIA = ['shea-butter', 'calendula', 'cocoa-butter', 'kaolin-clay', 'rosehip-oil', 'beeswax'];
+/* Forms that stay legible at glyph size — the sparser ones turn to specks. */
+const START_LEAVES = ['sprig', 'fern', 'bloom', 'seedstem', 'sprig', 'branch', 'bloom', 'fern'];
 
 export default function home() {
   const hero = getProduct(HERO_PRODUCT);
@@ -177,6 +179,46 @@ export default function home() {
         <div class="sec-foot" data-reveal="up">
           <a class="btn btn--ghost" href="#/shop" data-magnetic="0.16">
             <span class="btn__label">The whole apothecary &mdash; ${PRODUCTS.length} formulas</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ IV·b. WHERE TO START ═══════════ -->
+    <section class="section start band--linen">
+      ${botField([
+        { kind: 'seedstem', seed: 'sb-a', mode: 'line', stroke: 1.3, x: '3%', y: '-6%', w: '13vw',
+          rot: -8, op: 0.18, tone: 'var(--bot-taupe)', par: 0.14, cur: 16, mobile: 'hide' },
+        { kind: 'petals', seed: 'sb-b', mode: 'line', stroke: 1.2, right: '4%', bottom: '2%', w: '20vw',
+          op: 0.15, tone: 'var(--bot-rose)', par: -0.12, cur: 22, mobile: 'hide' }
+      ])}
+      <div class="wrap">
+        <header class="sec-open sec-open--center">
+          <p class="label" data-reveal="fade">Where to start</p>
+          <h2 class="h2" data-split="lines">Tell us what your skin is <em>doing</em></h2>
+          <p class="sec-open__note body-sm" data-reveal="up">
+            Pick the thing that bothers you most and we will put a routine together &mdash;
+            which product, in what order, and honestly why.
+          </p>
+        </header>
+
+        <ul class="start__grid" role="list" data-stagger style="--stagger-step:55ms">
+          ${CONCERNS.map((c, i) => `
+            <li data-reveal="up">
+              <a class="start__tile" href="#/ritual?concern=${esc(c.id)}" data-magnetic="0.1">
+                <span class="start__leaf" aria-hidden="true">
+                  ${botanical(START_LEAVES[i % START_LEAVES.length], { seed: c.id, mode: 'line', stroke: 2.4 })}
+                </span>
+                <span class="start__label">${esc(c.label)}</span>
+                <span class="start__body">${esc(c.body)}</span>
+              </a>
+            </li>`).join('')}
+        </ul>
+
+        <div class="sec-foot" data-reveal="up">
+          <a class="btn-text" href="#/ritual?tab=scent">
+            Or find your scent instead
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
         </div>
       </div>
