@@ -57,7 +57,7 @@ export const PRODUCTS = [
       'Scented with pure essential oil, never fragrance oil'
     ],
     howToUse: 'Lather between wet hands or on a washcloth, work over damp skin, rinse. Keep on a draining dish between washes and the bar will last months.',
-    art: { form: 'bar', tint: ['#FAF4E9', '#E7DAC4'], body: '#C9B79A', cap: '#8E7A5E', accent: '#9B8FC7' }
+    art: { form: 'bar', tint: ['#FCF8FB', '#E9DFF0'], body: '#E6DAD0', cap: '#7E4EAE', accent: '#B98DDB' }
   },
 
   {
@@ -92,7 +92,7 @@ export const PRODUCTS = [
       'Unscented option for reactive skin'
     ],
     howToUse: 'Wet the puck, load a damp brush with 20–30 seconds of swirling, build the lather on your face. Rinse the puck and let it dry open-air.',
-    art: { form: 'puck', tint: ['#F6F1E6', '#DED2BC'], body: '#E8DFCC', cap: '#A08E6E', accent: '#8A5A3B' }
+    art: { form: 'puck', tint: ['#F9F9FD', '#DFE3F0'], body: '#EDE4DC', cap: '#55609E', accent: '#949BCB' }
   },
 
   {
@@ -129,7 +129,7 @@ export const PRODUCTS = [
     ],
     howToUse: 'Warm a small amount between fingertips and press into clean, dry skin. Reapply as often as needed. For the muscle rub, massage into the area and wash hands after.',
     note: 'CBD-Infused Muscle Rub ships within Washington State only.',
-    art: { form: 'tin', tint: ['#F7F0E2', '#E3D3B6'], body: '#B9A379', cap: '#8B7247', accent: '#E0A93F' }
+    art: { form: 'tin', tint: ['#FDF9EF', '#F0E3C8'], body: '#E8DCC6', cap: '#A88322', accent: '#E3C56F' }
   },
 
   {
@@ -164,7 +164,7 @@ export const PRODUCTS = [
       'Handmade in small batches in Washington'
     ],
     howToUse: 'Warm a pea-sized amount between fingertips and press — do not rub — into damp skin, morning and night. Follow a serum, precede sunscreen.',
-    art: { form: 'jar', tint: ['#FBF5EC', '#EADCC9'], body: '#F2E8DA', cap: '#3E5B44', accent: '#D9A2A8' }
+    art: { form: 'jar', tint: ['#FDF6F5', '#F3DEE1'], body: '#F4EBE6', cap: '#A93E5C', accent: '#D96C87' }
   },
 
   {
@@ -198,7 +198,7 @@ export const PRODUCTS = [
       'Travel-safe: nothing to spill, nothing to leak'
     ],
     howToUse: 'Tip half a teaspoon into a wet palm, add a little water and work into a foam. Massage over damp skin for 30 seconds, rinse warm. Keep the jar dry.',
-    art: { form: 'pot', tint: ['#FAF5EA', '#E9DDC6'], body: '#EFE6D4', cap: '#C2A87C', accent: '#E8D9BC' }
+    art: { form: 'pot', tint: ['#FBFBF0', '#EAEACB'], body: '#F0E9DE', cap: '#918C2C', accent: '#E6E27C' }
   },
 
   {
@@ -231,7 +231,7 @@ export const PRODUCTS = [
       'Hangs to dry between uses'
     ],
     howToUse: 'Wet the net, rub the bar into it a few times, squeeze and it foams. For the wipe: soak in warm water, wring, and press over the face to soften the day off.',
-    art: { form: 'net', tint: ['#F4F3EA', '#D8DCCE'], body: '#EDEFE6', cap: '#7C9488', accent: '#9CC3BA' }
+    art: { form: 'net', tint: ['#F5FBFB', '#DCEEEE'], body: '#E9EFEE', cap: '#3D8A8C', accent: '#98D2D3' }
   },
 
   {
@@ -266,7 +266,7 @@ export const PRODUCTS = [
       'No petrolatum, no synthetic flavour'
     ],
     howToUse: 'Swipe over lips as often as you like. Warm the tube in a pocket in deep winter for an easier glide.',
-    art: { form: 'tube', tint: ['#FBF3E4', '#EAD9BD'], body: '#3E5B44', cap: '#C9A85F', accent: '#7FBFA0' }
+    art: { form: 'tube', tint: ['#FDF6F2', '#F5DDD1'], body: '#5C4656', cap: '#C4713A', accent: '#EBAB77' }
   },
 
   {
@@ -300,7 +300,7 @@ export const PRODUCTS = [
       'A jar lasts roughly three months of daily use'
     ],
     howToUse: 'Warm a pea-sized amount between fingertips until it melts, then smooth into clean, dry underarms. Less is genuinely more.',
-    art: { form: 'tin', tint: ['#F8F2E6', '#E5D8C0'], body: '#E9E0CE', cap: '#5E7259', accent: '#A0824F' }
+    art: { form: 'tin', tint: ['#F8FBF4', '#E2EED6'], body: '#E9E5D8', cap: '#6E9450', accent: '#C4E0AC' }
   },
 
   {
@@ -335,7 +335,7 @@ export const PRODUCTS = [
       'Conditions the skin it is worn on'
     ],
     howToUse: 'Swipe a fingertip across the surface and press onto pulse points — wrists, throat, behind the ears. Layer a second pass after a few hours.',
-    art: { form: 'tin-small', tint: ['#FAF2E8', '#E9D6C6'], body: '#D9C4A8', cap: '#9C7B54', accent: '#B4667B' }
+    art: { form: 'tin-small', tint: ['#FCF6FA', '#EFDCEA'], body: '#E9D9E2', cap: '#9A4E86', accent: '#CE8BBC' }
   },
 
   {
@@ -370,7 +370,7 @@ export const PRODUCTS = [
       'Refillable — keep the bottle, replace the blend'
     ],
     howToUse: 'Roll over pulse points, temples or the back of the neck. For Breathe, roll across the chest and cup your hands to inhale.',
-    art: { form: 'roller', tint: ['#F8F3E9', '#E4DAC5'], body: '#8A6A3E', cap: '#3E4A3F', accent: '#9186BC' }
+    art: { form: 'roller', tint: ['#FBF8FC', '#E7DEEE'], body: '#A8763C', cap: '#43303E', accent: '#B98DDB' }
   },
 
   {
@@ -405,7 +405,7 @@ export const PRODUCTS = [
       'Essential-oil strength gentle enough for children'
     ],
     howToUse: 'Run a warm bath, drop the bomb in and let it fizz out fully before you get in. Half a bomb is plenty for a small child.',
-    art: { form: 'sphere', tint: ['#F9F1E9', '#E7D6D0'], body: '#EADCE4', cap: '#C9AEC6', accent: '#9B8FC7' }
+    art: { form: 'sphere', tint: ['#FAF7FD', '#E4DAF1'], body: '#E5DCEE', cap: '#B98DDB', accent: '#7E4EAE' }
   },
 
   {
@@ -440,7 +440,7 @@ export const PRODUCTS = [
       'Fades honestly rather than lingering for days'
     ],
     howToUse: 'Shake well. Mist two or three pumps into the air, or onto linens from about 30 cm. Spot-test delicate or coloured fabrics first.',
-    art: { form: 'spray', tint: ['#F5F3EA', '#DDE0D2'], body: '#8C6E45', cap: '#43503F', accent: '#3F6B4C' }
+    art: { form: 'spray', tint: ['#F7F9FC', '#DEE4EF'], body: '#6F7BB0', cap: '#2E1F2B', accent: '#98D2D3' }
   }
 ];
 

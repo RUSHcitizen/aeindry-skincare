@@ -23,13 +23,11 @@ import { trackProgress } from '../core/scroll.js';
 const SHELF = ['salve', 'specialty-soap', 'face-cream', 'lip-balm'];
 const SHELF_TWO = ['deodorant', 'powder-to-foam-cleanser', 'essential-oil-bath-bomb', 'perfume'];
 const SPOTLIGHT = 'face-cream';
-const HERO_PRODUCT = 'salve';
 const ENCYCLOPEDIA = ['shea-butter', 'calendula', 'cocoa-butter', 'kaolin-clay', 'rosehip-oil', 'beeswax'];
 /* Forms that stay legible at glyph size — the sparser ones turn to specks. */
 const START_LEAVES = ['sprig', 'fern', 'bloom', 'seedstem', 'sprig', 'branch', 'bloom', 'fern'];
 
 export default function home() {
-  const hero = getProduct(HERO_PRODUCT);
   const spotlight = getProduct(SPOTLIGHT);
   const shelf = SHELF.map(getProduct);
   const shelfTwo = SHELF_TWO.map(getProduct);
@@ -45,46 +43,49 @@ export default function home() {
           rot: 8, op: 0.22, tone: 'var(--bot-ink)', par: 0.16, cur: 22, sway: 26, swayDeg: 1.1 },
         { kind: 'fern', seed: 'cover-b', mode: 'line', stroke: 1.3, x: '-10%', y: '18%', w: '30vw',
           rot: -14, op: 0.18, tone: 'var(--bot-sage)', par: -0.1, cur: 14, sway: 30, swayDeg: 1.4, mobile: 'hide' },
-        { kind: 'bloom', seed: 'cover-c', mode: 'line', stroke: 1.1, x: '30%', y: '6%', w: '38vw',
-          op: 0.09, tone: 'var(--bot-rose)', blur: 1.4, par: 0.05, cur: 8, breathe: true, sway: 34 },
-        { kind: 'spray', seed: 'cover-d', mode: 'duo', stroke: 1.1, x: '-8%', bottom: '-14%', w: '38vw',
-          op: 0.16, tone: 'var(--bot-sage)', par: 0.22, cur: 18, sway: 24, swayDeg: 1.2 },
+        /* Kept clear of the centre: the wreath owns that space, and a bloom
+           behind it reads as a smudge rather than as background. */
+        { kind: 'bloom', seed: 'cover-c', mode: 'line', stroke: 1.1, right: '-14%', bottom: '4%', w: '34vw',
+          op: 0.1, tone: 'var(--bot-rose)', blur: 1.4, par: 0.05, cur: 8, breathe: true, sway: 34, mobile: 'hide' },
+        { kind: 'spray', seed: 'cover-d', mode: 'wash', stroke: 1.1, x: '-14%', bottom: '-22%', w: '36vw',
+          op: 0.3, tone: 'var(--leaf-wash)', alt: 'var(--chartreuse-wash)',
+          par: 0.22, cur: 18, sway: 24, swayDeg: 1.2 },
         { kind: 'sprig', seed: 'cover-e', mode: 'line', stroke: 1.4, right: '4%', bottom: '-6%', w: '20vw',
           rot: 20, op: 0.2, tone: 'var(--bot-taupe)', par: 0.3, cur: 26, sway: 20, mobile: 'hide' }
       ])}
       ${petalDrift(7, 'cover')}
 
       <div class="wrap cover__inner">
-        <p class="label cover__label" data-reveal="fade">All Natural &middot; Handmade &middot; ${esc(BRAND.region)}</p>
+        <!-- The wreath is the cover image. Everything else is set around it. -->
+        <figure class="cover__logo" data-reveal="scale">
+          <span class="cover__halo" aria-hidden="true"></span>
+          <img src="assets/img/logo-wreath.png" width="204" height="192" decoding="async" fetchpriority="high"
+               alt="Aeindry Skincare — Purity is Essence">
+        </figure>
 
-        <h1 class="cover__title display-mega" data-split="lines" data-split-step="90">
-          Purity is <em>Essence</em>
+        <h1 class="cover__title display-lg" data-split="lines" data-split-step="90">
+          Plants, butters, and <em>nothing hidden</em>.
         </h1>
 
-        <div class="cover__rule" data-reveal="fade" style="--reveal-delay:600ms">
+        <div class="cover__rule" data-reveal="fade" style="--reveal-delay:480ms">
           <span></span>${botanical('sprig', { seed: 'rule', mode: 'line', stroke: 2.4 })}<span></span>
         </div>
 
-        <figure class="cover__product" data-reveal="scale" style="--reveal-delay:420ms">
-          <span class="cover__glow" aria-hidden="true"></span>
-          ${productArt(hero, { className: 'cover__art' })}
-          <figcaption>
-            <span class="cover__caption-name">${esc(hero.name)}</span>
-            <span class="cover__caption-note">${esc(hero.tagline)}</span>
-          </figcaption>
-        </figure>
-
         <div class="cover__foot">
-          <p class="cover__blurb" data-reveal="up" style="--reveal-delay:520ms">
-            A small, woman-owned company making 100% natural skincare by hand in
-            ${esc(BRAND.city)} &mdash; plant oils, botanical extracts and rich butters,
-            and genuinely nothing else.
+          <p class="cover__blurb" data-reveal="up" style="--reveal-delay:540ms">
+            Handmade in ${esc(BRAND.city)} by a small, woman-owned company &mdash;
+            plant oils, botanical extracts and rich butters, and genuinely nothing else.
           </p>
-          <a class="btn btn--primary btn--lg" href="#/shop" data-magnetic="0.18"
-             data-reveal="up" style="--reveal-delay:620ms">
-            <span class="btn__label">Explore skincare</span>
-            <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
+          <div class="cover__actions">
+            <a class="btn btn--primary btn--lg" href="#/shop" data-magnetic="0.18"
+               data-reveal="up" style="--reveal-delay:620ms">
+              <span class="btn__label">Explore skincare</span>
+              <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn btn--ghost btn--lg" href="#/ritual" data-reveal="up" style="--reveal-delay:680ms">
+              <span class="btn__label">Build a ritual</span>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -99,8 +100,9 @@ export default function home() {
       ${botField([
         { kind: 'arc', seed: 'pr-a', mode: 'line', stroke: 1.2, x: '-4%', bottom: '-40%', w: '58vw',
           op: 0.14, tone: 'var(--bot-sage)', par: 0.14, cur: 12 },
-        { kind: 'seedstem', seed: 'pr-b', mode: 'line', stroke: 1.3, right: '6%', y: '-16%', w: '16vw',
-          rot: 12, op: 0.2, tone: 'var(--bot-sage)', par: -0.12, cur: 16, mobile: 'hide' }
+        { kind: 'seedstem', seed: 'pr-b', mode: 'wash', stroke: 1.3, right: '6%', y: '-16%', w: '16vw',
+          rot: 12, op: 0.4, tone: 'var(--chartreuse-wash)', alt: 'var(--leaf-wash)',
+          par: -0.12, cur: 16, mobile: 'hide' }
       ])}
       <div class="marquee" aria-hidden="true">
         <div class="marquee__track" style="--speed:74s">
@@ -114,8 +116,9 @@ export default function home() {
     <!-- ═══════════ III. CRAFTED WITH INTENTION ═══════════ -->
     <section class="section intention pressed">
       ${botField([
-        { kind: 'fern', seed: 'int-a', mode: 'duo', stroke: 1.1, right: '-12%', y: '-8%', w: '44vw',
-          rot: 16, op: 0.16, tone: 'var(--bot-sage)', par: 0.18, cur: 20, sway: 28, swayDeg: 1.3 },
+        { kind: 'fern', seed: 'int-a', mode: 'wash', stroke: 1.1, right: '-12%', y: '-8%', w: '44vw',
+          rot: 16, op: 0.34, tone: 'var(--teal-wash)', alt: 'var(--leaf-wash)',
+          par: 0.18, cur: 20, sway: 28, swayDeg: 1.3 },
         { kind: 'petals', seed: 'int-b', mode: 'line', stroke: 1.2, x: '4%', bottom: '4%', w: '26vw',
           op: 0.16, tone: 'var(--bot-taupe)', par: -0.14, cur: 24, mobile: 'hide' }
       ])}
@@ -153,8 +156,9 @@ export default function home() {
       ${botField([
         { kind: 'branch', seed: 'sh-a', mode: 'line', stroke: 1.3, x: '-14%', y: '2%', w: '48vw',
           rot: -6, flip: true, op: 0.16, tone: 'var(--bot-ink)', par: 0.12, cur: 16 },
-        { kind: 'bloom', seed: 'sh-b', mode: 'line', stroke: 1, right: '-8%', bottom: '-10%', w: '34vw',
-          op: 0.11, tone: 'var(--bot-rose)', blur: 1, par: 0.2, cur: 12, breathe: true, mobile: 'hide' }
+        { kind: 'bloom', seed: 'sh-b', mode: 'wash', stroke: 1, right: '-8%', bottom: '-10%', w: '34vw',
+          op: 0.34, tone: 'var(--rose-wash)', alt: 'var(--violet-wash)',
+          par: 0.2, cur: 12, breathe: true, mobile: 'hide' }
       ])}
       <div class="wrap">
         <header class="sec-open">
@@ -189,8 +193,9 @@ export default function home() {
       ${botField([
         { kind: 'seedstem', seed: 'sb-a', mode: 'line', stroke: 1.3, x: '3%', y: '-6%', w: '13vw',
           rot: -8, op: 0.18, tone: 'var(--bot-taupe)', par: 0.14, cur: 16, mobile: 'hide' },
-        { kind: 'petals', seed: 'sb-b', mode: 'line', stroke: 1.2, right: '4%', bottom: '2%', w: '20vw',
-          op: 0.15, tone: 'var(--bot-rose)', par: -0.12, cur: 22, mobile: 'hide' }
+        { kind: 'petals', seed: 'sb-b', mode: 'wash', stroke: 1.2, right: '4%', bottom: '2%', w: '20vw',
+          op: 0.38, tone: 'var(--coral-wash)', alt: 'var(--marigold-wash)',
+          par: -0.12, cur: 22, mobile: 'hide' }
       ])}
       <div class="wrap">
         <header class="sec-open sec-open--center">
@@ -228,8 +233,8 @@ export default function home() {
     <section class="botanicals band--olive" id="botanicals">
       ${edge('top', 'var(--band-linen)')}
       ${botField([
-        { kind: 'spray', seed: 'bo-a', mode: 'line', stroke: 1, x: '-16%', bottom: '-18%', w: '52vw',
-          op: 0.1, tone: 'var(--bot-sage)', par: 0.1, cur: 10 }
+        { kind: 'spray', seed: 'bo-a', mode: 'wash', stroke: 1, x: '-16%', bottom: '-18%', w: '52vw',
+          op: 0.28, tone: 'var(--leaf-wash)', alt: 'var(--chartreuse-wash)', par: 0.1, cur: 10 }
       ])}
       <div class="wrap">
         <header class="sec-open sec-open--center">
@@ -289,8 +294,9 @@ export default function home() {
           rot: -10, op: 0.18, tone: 'var(--bot-ink)', par: -0.14, cur: 18, sway: 26 },
         { kind: 'sprig', seed: 'st-b', mode: 'duo', stroke: 1.1, x: '2%', y: '30%', w: '18vw',
           rot: -18, op: 0.15, tone: 'var(--bot-sage)', par: 0.24, cur: 20, mobile: 'hide' },
-        { kind: 'petals', seed: 'st-c', mode: 'line', stroke: 1.2, right: '12%', bottom: '2%', w: '22vw',
-          op: 0.14, tone: 'var(--bot-rose)', par: 0.18, cur: 26, mobile: 'hide' }
+        { kind: 'petals', seed: 'st-c', mode: 'wash', stroke: 1.2, right: '6%', bottom: '2%', w: '20vw',
+          op: 0.26, tone: 'var(--magenta-wash)', alt: 'var(--rose-wash)',
+          par: 0.18, cur: 26, mobile: 'hide' }
       ])}
       <div class="wrap wrap--narrow">
         <p class="label text-center mx-auto" data-reveal="fade">The story</p>
@@ -335,8 +341,9 @@ export default function home() {
     <!-- ═══════════ VII. THE SPOTLIGHT ═══════════ -->
     <section class="spotlight-sec" style="--sp-tint:${esc(spotlight.art.tint[1])};--sp-accent:${esc(spotlight.art.accent)}">
       ${botField([
-        { kind: 'bloom', seed: 'sp-a', mode: 'duo', stroke: 1, x: '50%', y: '-6%', w: '30vw',
-          op: 0.2, tone: 'var(--bot-rose)', par: 0.1, cur: 14, breathe: true, sway: 30 },
+        { kind: 'bloom', seed: 'sp-a', mode: 'wash', stroke: 1, x: '50%', y: '-6%', w: '30vw',
+          op: 0.4, tone: 'var(--rose-wash)', alt: 'var(--violet-wash)',
+          par: 0.1, cur: 14, breathe: true, sway: 30 },
         { kind: 'arc', seed: 'sp-b', mode: 'line', stroke: 1.2, x: '-10%', y: '30%', w: '60vw',
           op: 0.12, tone: 'var(--bot-sage)', par: -0.08, cur: 10 },
         { kind: 'fern', seed: 'sp-c', mode: 'line', stroke: 1.2, x: '-8%', bottom: '-6%', w: '26vw',
@@ -383,8 +390,9 @@ export default function home() {
     <!-- ═══════════ VIII. IN THEIR WORDS ═══════════ -->
     <section class="section words band--linen">
       ${botField([
-        { kind: 'sprig', seed: 'w-a', mode: 'line', stroke: 1.3, x: '6%', y: '10%', w: '16vw',
-          rot: -12, op: 0.18, tone: 'var(--bot-sage)', par: 0.16, cur: 18, mobile: 'hide' },
+        { kind: 'sprig', seed: 'w-a', mode: 'wash', stroke: 1.3, x: '6%', y: '10%', w: '16vw',
+          rot: -12, op: 0.38, tone: 'var(--cobalt-wash)', alt: 'var(--teal-wash)',
+          par: 0.16, cur: 18, mobile: 'hide' },
         { kind: 'sprig', seed: 'w-b', mode: 'line', stroke: 1.3, right: '6%', bottom: '10%', w: '16vw',
           rot: 168, op: 0.18, tone: 'var(--bot-sage)', par: -0.16, cur: 18, mobile: 'hide' }
       ])}
@@ -422,8 +430,9 @@ export default function home() {
     <!-- ═══════════ IX. THE JOURNAL ═══════════ -->
     <section class="section reading">
       ${botField([
-        { kind: 'seedstem', seed: 'rd-a', mode: 'line', stroke: 1.3, right: '3%', y: '-4%', w: '14vw',
-          rot: 10, op: 0.2, tone: 'var(--bot-taupe)', par: 0.18, cur: 20, mobile: 'hide' }
+        { kind: 'seedstem', seed: 'rd-a', mode: 'wash', stroke: 1.3, right: '3%', y: '-4%', w: '14vw',
+          rot: 10, op: 0.4, tone: 'var(--coral-wash)', alt: 'var(--marigold-wash)',
+          par: 0.18, cur: 20, mobile: 'hide' }
       ])}
       <div class="wrap">
         <header class="sec-open">
@@ -458,8 +467,9 @@ export default function home() {
           rot: 6, op: 0.16, tone: 'var(--bot-sage)', par: 0.14, cur: 16 },
         { kind: 'branch', seed: 'iv-b', mode: 'line', stroke: 1.2, right: '-12%', bottom: '2%', w: '46vw',
           rot: 186, op: 0.16, tone: 'var(--bot-sage)', par: -0.14, cur: 16 },
-        { kind: 'bloom', seed: 'iv-c', mode: 'line', stroke: 1, x: '44%', y: '18%', w: '26vw',
-          op: 0.1, tone: 'var(--bot-rose)', blur: 1.2, par: 0.06, cur: 8, breathe: true }
+        { kind: 'bloom', seed: 'iv-c', mode: 'wash', stroke: 1, x: '44%', y: '18%', w: '26vw',
+          op: 0.3, tone: 'var(--marigold-wash)', alt: 'var(--coral-wash)',
+          par: 0.06, cur: 8, breathe: true }
       ])}
       <div class="wrap wrap--narrow invite__inner">
         <span class="invite__mark" data-reveal="scale" aria-hidden="true">

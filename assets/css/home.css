@@ -17,6 +17,43 @@
 .sec-foot { margin-top: var(--space-xl); display: flex; justify-content: center; }
 
 /* ════════════════════ I. THE COVER ════════════════════ */
+.cover__logo {
+  position: relative;
+  margin: 0 0 var(--space-2xs);
+  /* Capped by height as well as width: the cover has to resolve inside one
+     viewport, and the wreath is the piece that would push it over. */
+  width: min(340px, 52vw, 34svh);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+/* A soft bloom of the wreath's own pigment, so the mark sits in light
+   rather than on top of the paper. */
+.cover__halo {
+  position: absolute;
+  inset: -18%;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, color-mix(in oklab, var(--paper-0) 92%, transparent), transparent 74%),
+    radial-gradient(closest-side at 62% 30%, color-mix(in oklab, var(--marigold-wash) 26%, transparent), transparent 68%),
+    radial-gradient(closest-side at 34% 72%, color-mix(in oklab, var(--magenta-wash) 22%, transparent), transparent 70%);
+  filter: blur(26px);
+  opacity: .85;
+  animation: cover-halo 17s var(--ease-soft) infinite alternate;
+}
+@keyframes cover-halo {
+  from { transform: scale(1) rotate(0deg); }
+  to   { transform: scale(1.07) rotate(6deg); }
+}
+.cover__logo img {
+  width: 100%;
+  height: auto;
+  /* The source is a small JPEG knocked out to alpha; a whisper of shadow
+     settles it onto the paper instead of letting it float. */
+  filter: drop-shadow(0 14px 22px rgb(var(--shadow-color) / .16));
+  animation: cover-float 13s var(--ease-soft) infinite alternate;
+}
 .cover {
   --leave: 0;
   position: relative;
@@ -25,10 +62,15 @@
   align-items: center;
   padding-block: calc(var(--nav-h) + var(--space-m)) var(--space-l);
   overflow: hidden;
+  /* Four watercolour blooms in the corners, keyed to the wreath's pigments,
+     over warm paper. Tight radii on purpose: the ground stays neutral and the
+     colour reads as pigment settling, not as a tinted page. */
   background:
-    radial-gradient(120% 80% at 50% -10%, var(--band-ivory) 0%, transparent 60%),
-    radial-gradient(90% 70% at 88% 8%, var(--wash-rose), transparent 70%),
-    radial-gradient(80% 60% at 4% 92%, var(--wash-sage), transparent 72%),
+    radial-gradient(58% 42% at 50% -6%, var(--band-ivory) 0%, transparent 70%),
+    radial-gradient(42% 34% at 86% 10%, var(--wash-gold), transparent 72%),
+    radial-gradient(38% 30% at 94% 46%, var(--wash-rose), transparent 74%),
+    radial-gradient(46% 36% at 4% 88%, var(--wash-sage), transparent 74%),
+    radial-gradient(34% 28% at 12% 20%, var(--wash-violet), transparent 76%),
     var(--bg);
 }
 .cover__inner {
@@ -42,7 +84,10 @@
 
 .cover__title {
   max-width: 16ch;
-  margin-block: 0.04em 0.06em;
+  margin-block: 0.02em 0.04em;
+  /* One notch under display-lg: with the wreath above it, the headline no
+     longer has to carry the whole cover on its own. */
+  font-size: clamp(2.5rem, 6.6vw, 5rem);
 }
 .cover__title em { color: var(--accent); }
 
@@ -62,51 +107,17 @@
 .cover__rule span:last-child { background: linear-gradient(90deg, var(--line-strong), transparent); }
 .cover__rule svg { width: 30px; flex: none; opacity: .8; }
 
-.cover__product {
-  position: relative;
-  /* The art carries its own whitespace, so it is pulled up into the rule. */
-  margin: calc(var(--space-m) * -1) 0 calc(var(--space-m) * -1);
-  width: min(248px, 34vw);
-  display: grid;
-  justify-items: center;
-}
-.cover__glow {
-  position: absolute;
-  inset: 6% 4% 14%;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--terracotta-300) 42%, transparent), transparent 72%);
-  filter: blur(38px);
-  opacity: .6;
-}
-.cover__art {
-  position: relative;
-  width: 100%;
-  filter: drop-shadow(0 34px 34px rgb(var(--shadow-color) / .22));
-  animation: cover-float 11s var(--ease-soft) infinite alternate;
-}
-@keyframes cover-float {
-  from { transform: translate3d(0, 0, 0) rotate(-0.8deg); }
-  to   { transform: translate3d(0, -14px, 0) rotate(0.8deg); }
-}
-.cover__product figcaption {
-  margin-top: 0;
-  display: grid;
-  gap: 2px;
-}
-.cover__caption-name {
-  font-family: var(--font-sans);
-  font-size: var(--step--2);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-  color: var(--text-soft);
-}
-.cover__caption-note { font-size: var(--step--2); color: var(--text-muted); font-style: italic; }
-
 .cover__foot {
   display: grid;
   justify-items: center;
   gap: var(--space-s);
-  margin-top: var(--space-2xs);
+  margin-top: var(--space-xs);
+}
+.cover__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-s);
 }
 .cover__blurb {
   max-width: 44ch;
@@ -281,7 +292,7 @@
   position: absolute;
   inset: 0 0 auto;
   height: 22px;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--olive-900) 8%, transparent), transparent);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--plum-900) 8%, transparent), transparent);
   pointer-events: none;
 }
 .shelf-item__name {
@@ -626,7 +637,9 @@
 
 @media (max-width: 760px) {
   .cover { min-height: auto; padding-block: calc(var(--nav-h) + var(--space-xl)) var(--space-xl); }
-  .cover__product { width: min(280px, 66vw); }
+  /* On a phone the wreath is the whole cover image, so let it breathe. */
+  .cover__logo { width: min(300px, 68vw); }
+  .cover__actions { flex-direction: column; align-items: stretch; width: min(320px, 82vw); }
   .cover__cue { display: none; }
   .read-row {
     grid-template-columns: auto minmax(0, 1fr);

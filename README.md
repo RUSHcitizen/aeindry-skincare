@@ -3,10 +3,11 @@
 A storefront for **Aeindry Skincare** — *"All Natural Handmade Skincare where Purity is Essence"* —
 a small, woman-owned company making 100% natural handmade skincare in the Pacific Northwest.
 
-Designed as a modern botanical apothecary: warm paper grounds, editorial serif
-typography, and hand-generated botanical artwork living on a layer behind the
-content. Built dependency-free — no framework, no build step, no runtime
-packages. Open `index.html` through any static server and it runs.
+Designed as a modern botanical apothecary around the Aeindry wreath: warm paper
+grounds, editorial serif typography, and generated botanical artwork painted in
+the same watercolour hand as the mark. Built dependency-free — no framework, no
+build step, no runtime packages. Open `index.html` through any static server and
+it runs.
 
 ---
 
@@ -115,11 +116,17 @@ assets/
 ```
 
 **Design tokens** drive everything — colour, type scale, spacing, easing, radii.
-The palette runs ivory → parchment → linen → taupe over olive and sage, with
-terracotta as the single accent; neutrals carry a yellow-red bias toward that
-accent so they read as chosen paper rather than default grey. Type is Bodoni
-Moda (display, italic used one word at a time) over Jost (wide-tracked uppercase
-labels and body).
+The palette is sampled from the logo rather than invented: ten pigments read off
+the wreath itself (rose, magenta, violet, cobalt, teal, leaf, chartreuse,
+marigold, coral, vermilion), each in a wash and an ink weight, over a warm paper
+ramp and a plum text ramp. Magenta ink is the accent on paper; a lighter rose
+(`--rose-lit`) takes over on the plum grounds, where the wash weight only reaches
+3.7:1 as small text. Type is Bodoni Moda (display, italic used one word at a
+time) over Jost (wide-tracked uppercase labels and body).
+
+The twelve products each take one pigment family, so the range reads as a
+spectrum the way the wreath does — vessels stay honest materials (cream ceramic,
+kraft, amber glass) and the cap and label carry the colour.
 
 Dark mode is defined three ways (bare `:root`, `prefers-color-scheme` guarded
 against an explicit light choice, and `[data-theme="dark"]`) so the toggle wins
@@ -129,13 +136,28 @@ dark section without special cases. Sections never name a raw colour: a wave
 edge or gradient refers to the ground it pours into through a `--band-*` alias
 that resolves per theme.
 
+**The logo** ships as `assets/img/logo-wreath.png`, a chroma-keyed knockout of
+the supplied `logo-wreath-source.jpg` — chroma separates pigment from JPEG
+ringing more cleanly than luminance does, which matters at this size. The source
+is 204×192 on solid white, so the mark is used at cover and footer scale only;
+the nav carries the wordmark as type. A larger original (SVG, or PNG ≥1000px
+with transparency) would let the wreath run at hero scale and give the nav a
+real mark.
+
 **Botanical artwork** is generated, not drawn by hand: stems are cubic curves,
 leaves and petals share one axis/width construction, and a seeded PRNG gives
 each plant its own asymmetry while staying identical between loads
-(`lib/botanical.js` — eight forms, three render modes). Sections carry *fields*
+(`lib/botanical.js` — eight forms, four render modes). Sections carry *fields*
 of oversized, cropped, tinted artwork. Scroll parallax and a cursor lean are
 folded into one JS transform on the outer node while the ambient sway stays in
 CSS on an inner node, so neither can overwrite the other.
+
+The fourth mode, `wash`, is what ties the artwork to the logo. It paints in the
+order a brush would: a loose underwash in a second pigment that wanders past the
+edge, the body colour ruffled by its own turbulence, a rim — the same outline as
+a wide soft stroke, which is what gives real watercolour its darker edge — and
+the ink drawing last. One layer per section is painted this way and the rest stay
+as line work, which keeps the filter cost down and the page mostly quiet.
 
 **Motion** is opt-in via `data-reveal`, staggered with `data-stagger`, and split into
 lines/words/chars with `data-split`. Everything collapses under

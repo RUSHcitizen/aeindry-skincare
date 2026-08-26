@@ -22,6 +22,7 @@ import { scrollBus } from '../core/scroll.js';
  *   rot, flip             — orientation
  *   op                    — opacity; these sit behind text, so keep it low
  *   tone                  — a --bot-* token
+ *   alt                   — second pigment, used by mode:'wash' for the bleed
  *   blur                  — px, for layers meant to sit far back
  *   par                   — parallax factor; negative moves against the scroll
  *   cur                   — cursor lean in px at full deflection
@@ -33,7 +34,7 @@ export function botLayer(L = {}) {
     kind = 'sprig', seed = 'a', mode = 'line', stroke = 1.5,
     x = 'auto', y = 'auto', right = 'auto', bottom = 'auto',
     w = '28vw', rot = 0, flip = false,
-    op = 0.14, tone = 'var(--bot-ink)', blur = 0,
+    op = 0.14, tone = 'var(--bot-ink)', alt = '', blur = 0,
     par = 0.12, cur = 0, sway = 22, swayDeg = 1.6, delay = 0,
     breathe = false, origin = '50% 90%', mobile = ''
   } = L;
@@ -41,6 +42,7 @@ export function botLayer(L = {}) {
   const style = [
     `left:${x}`, `top:${y}`, `right:${right}`, `bottom:${bottom}`,
     `width:${w}`, `color:${tone}`, `opacity:${op}`,
+    alt ? `--bot-alt:${alt}` : '',
     blur ? `filter:blur(${blur}px)` : ''
   ].filter(Boolean).join(';');
 
@@ -52,7 +54,8 @@ export function botLayer(L = {}) {
   return `<div class="bot-layer" style="${style}"
     data-par="${par}" data-cur="${cur}" ${mobile ? `data-mobile="${mobile}"` : ''}>
     <span class="bot-sway ${breathe ? 'bot-sway--breathe' : ''}" style="${swayStyle}">
-      ${botanical(kind, { seed, mode, stroke, rotate: rot, flip })}
+      ${botanical(kind, { seed, mode, stroke, rotate: rot, flip, wash: L.wash,
+        washFill: L.washFill, washBleed: L.washBleed, washInk: L.washInk })}
     </span>
   </div>`;
 }
@@ -196,12 +199,23 @@ export function initBotField(root = document) {
 
 /** Paper fibre texture, generated once and reused as a CSS variable. */
 export function installPaper() {
+  /* The layer multiplies, so raw turbulence — which sits around mid grey —
+     would take the whole page down a value. The transfer squeezes the noise
+     into the top of the range (0.95–1.0) and pins alpha opaque, leaving about
+     thirteen levels of grain — fibre you can see up close, and no measurable
+     loss of brightness at a glance. */
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240">
     <filter id="p">
       <feTurbulence type="fractalNoise" baseFrequency="0.62 0.9" numOctaves="4" stitchTiles="stitch"/>
       <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.05" intercept="0.95"/>
+        <feFuncG type="linear" slope="0.05" intercept="0.95"/>
+        <feFuncB type="linear" slope="0.05" intercept="0.95"/>
+        <feFuncA type="linear" slope="0" intercept="1"/>
+      </feComponentTransfer>
     </filter>
-    <rect width="240" height="240" filter="url(#p)" opacity="0.5"/>
+    <rect width="240" height="240" filter="url(#p)"/>
   </svg>`;
   document.documentElement.style.setProperty(
     '--paper-url', `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);

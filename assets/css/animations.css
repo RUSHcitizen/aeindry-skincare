@@ -163,7 +163,7 @@
   grid-template-columns: repeat(6, 1fr);
 }
 .curtain__panel {
-  background: var(--olive-900);
+  background: var(--plum-900);
   transform: scaleY(0);
   transform-origin: bottom;
   will-change: transform;

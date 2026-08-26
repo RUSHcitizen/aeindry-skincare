@@ -326,11 +326,32 @@ export const BOTANICAL_KINDS = Object.keys(KINDS);
  * @param {string} kind   one of BOTANICAL_KINDS
  * @param {object} opts
  *   seed    — any string; the same seed always draws the same plant
- *   mode    — 'line' (stroke only), 'solid' (filled), 'duo' (filled + veins)
+ *   mode    — 'line' (stroke only), 'solid' (filled), 'duo' (filled + veins),
+ *             'wash' (watercolour: pigment pooling under a loose ink edge)
  *   stroke  — line weight in viewBox units
  *   className, style, rotate, flip
  * @returns {string} SVG markup
  */
+/* ------------------------------------------------------- watercolour edge */
+
+/* Filter ids have to be unique per document, and these SVGs are inlined many
+   times over. Seed plus a counter keeps them stable within a render and
+   distinct between instances. */
+let washSeq = 0;
+
+/**
+ * A turbulence displacement that ruffles a fill's edge the way pigment creeps
+ * along paper fibres, plus a soft blur so the colour pools instead of sitting
+ * flat. `grain` is the fibre scale, `bleed` how far the pigment wanders.
+ */
+function washFilter(id, { grain = 0.028, bleed = 9, blur = 1.6, octaves = 3 } = {}) {
+  return `<filter id="${id}" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="${grain}" numOctaves="${octaves}" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="${bleed}" xChannelSelector="R" yChannelSelector="G" result="d"/>
+    <feGaussianBlur in="d" stdDeviation="${blur}"/>
+  </filter>`;
+}
+
 export function botanical(kind, opts = {}) {
   const o = { mode: 'line', stroke: 1.6, ...opts };
   // generators branch on o.mode — structure differs between drawn and filled
@@ -344,7 +365,31 @@ export function botanical(kind, opts = {}) {
   ].filter(Boolean).join(' ');
 
   let body = '';
-  if (o.mode === 'solid') {
+  let defs = '';
+  if (o.mode === 'wash') {
+    /* Painted the way the logo is, in the order a brush would do it:
+         1. a loose underwash in the second pigment, wandering past the edge
+         2. the body colour, pulled in and ruffled by its own turbulence
+         3. a rim — the same outline as a wide soft stroke, which is what
+            gives real watercolour its darker edge where pigment strands
+         4. the ink drawing over the top, once the colour has settled.
+       --bot-alt supplies the second pigment; without one both passes take
+       currentColor and the form simply reads as a single-colour wash. */
+    const id = `w${(washSeq++).toString(36)}${String(o.seed ?? kind).replace(/[^a-z0-9]/gi, '').slice(0, 8)}`;
+    defs = `<defs>${washFilter(id, o.wash)}` +
+      `${washFilter(id + 'b', { grain: 0.05, bleed: 16, blur: 4.2, octaves: 2 })}` +
+      `${washFilter(id + 'r', { grain: 0.09, bleed: 5, blur: 2.2, octaves: 2 })}</defs>`;
+    const shapes = fills.map((d) => `<path d="${d}"/>`).join('');
+    body =
+      `<g filter="url(#${id}b)" fill="var(--bot-alt, currentColor)" fill-opacity="${o.washBleed ?? 0.34}" stroke="none">${shapes}</g>` +
+      `<g filter="url(#${id})" fill="currentColor" fill-opacity="${o.washFill ?? 0.4}" stroke="none">${shapes}</g>` +
+      `<g filter="url(#${id}r)" fill="none" stroke="currentColor" stroke-opacity="${o.washRim ?? 0.34}" ` +
+      `stroke-width="${(o.stroke || 1.6) * 3.4}" stroke-linejoin="round">${shapes}</g>` +
+      `<g fill="none" stroke="currentColor" stroke-opacity="${o.washInk ?? 0.66}" stroke-width="${o.stroke}" ` +
+      `stroke-linecap="round" stroke-linejoin="round">` +
+      `${[...lines, ...fills].map((d) => `<path d="${d}"/>`).join('')}</g>` +
+      `<g fill="currentColor" stroke="none">${accents.join('')}</g>`;
+  } else if (o.mode === 'solid') {
     body =
       `<g fill="currentColor" stroke="none">${fills.map((d) => `<path d="${d}"/>`).join('')}` +
       `${accents.join('')}</g>` +
@@ -365,7 +410,7 @@ export function botanical(kind, opts = {}) {
 
   return `<svg class="${o.className || 'botanical'}" viewBox="0 0 400 400" fill="none" aria-hidden="true"
     preserveAspectRatio="${o.fit || 'xMidYMid meet'}"${o.style ? ` style="${o.style}"` : ''}>
-    ${transform ? `<g transform="${transform}">${body}</g>` : body}
+    ${defs}${transform ? `<g transform="${transform}">${body}</g>` : body}
   </svg>`;
 }
 

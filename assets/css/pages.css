@@ -101,7 +101,7 @@
 }
 .ship-meter__bar span {
   display: block; height: 100%;
-  background: linear-gradient(90deg, var(--terracotta-400), var(--terracotta-300));
+  background: linear-gradient(90deg, var(--rose-wash), var(--rose-wash));
   border-radius: inherit;
   transition: width var(--dur-slow) var(--ease-out-expo);
 }
@@ -131,8 +131,8 @@
   height: 70%;
   z-index: -3;
   background:
-    radial-gradient(60% 60% at 22% 30%, color-mix(in oklab, var(--terracotta-300) 32%, transparent), transparent 70%),
-    radial-gradient(50% 50% at 78% 20%, color-mix(in oklab, var(--sage-300) 26%, transparent), transparent 70%);
+    radial-gradient(60% 60% at 22% 30%, color-mix(in oklab, var(--rose-wash) 32%, transparent), transparent 70%),
+    radial-gradient(50% 50% at 78% 20%, color-mix(in oklab, var(--leaf-wash) 26%, transparent), transparent 70%);
   filter: blur(20px);
   animation: drift 26s var(--ease-soft) infinite;
 }
@@ -263,8 +263,8 @@
    PROMISE BAND
    ============================================================ */
 .promise { padding-block: clamp(1.6rem, 3vw, 2.4rem); overflow: hidden; }
-.promise .marquee__item { color: var(--cream); }
-.promise .sep { margin-inline: 0.5em; color: var(--terracotta-300); }
+.promise .marquee__item { color: var(--paper-1); }
+.promise .sep { margin-inline: 0.5em; color: var(--rose-wash); }
 
 /* ============================================================
    ORIGIN
@@ -280,7 +280,7 @@
 .origin__copy .body-lg { max-width: 58ch; }
 
 .origin__botanicals { position: absolute; inset: 0; pointer-events: none; opacity: .12; }
-.origin__sprig { position: absolute; color: var(--cream); }
+.origin__sprig { position: absolute; color: var(--paper-1); }
 .origin__sprig--1 { width: 260px; right: -60px; top: 6%; transform: rotate(18deg); }
 .origin__sprig--2 { width: 200px; left: -40px; bottom: 4%; transform: rotate(-24deg); }
 
@@ -990,7 +990,7 @@
   position: absolute;
   inset: auto -20% -30% -20%;
   height: 60%;
-  background: radial-gradient(50% 100% at 50% 100%, color-mix(in oklab, var(--sage-400) 24%, transparent), transparent 72%);
+  background: radial-gradient(50% 100% at 50% 100%, color-mix(in oklab, var(--leaf-wash) 24%, transparent), transparent 72%);
 }
 .portrait__inner { position: relative; display: grid; gap: var(--space-s); justify-items: center; text-align: center; }
 .portrait__mark { width: 54px; height: 54px; color: var(--leaf); }
@@ -1021,7 +1021,7 @@
 .timeline__spine-fill {
   display: block;
   width: 100%; height: 100%;
-  background: linear-gradient(var(--terracotta-400), var(--terracotta-300), var(--sage-300));
+  background: linear-gradient(var(--rose-wash), var(--rose-wash), var(--leaf-wash));
   transform-origin: top;
   transform: scaleY(0);
 }
@@ -1071,7 +1071,7 @@
   display: grid; place-items: center;
   width: 30px; height: 30px;
   border-radius: 50%;
-  background: color-mix(in oklab, var(--terracotta-500) 14%, transparent);
+  background: color-mix(in oklab, var(--magenta-ink) 14%, transparent);
   color: var(--accent);
   flex: none;
 }
@@ -1327,7 +1327,7 @@
 .quiz__progress span {
   display: block; height: 100%;
   width: 0;
-  background: linear-gradient(90deg, var(--terracotta-400), var(--terracotta-300));
+  background: linear-gradient(90deg, var(--rose-wash), var(--rose-wash));
   border-radius: inherit;
   transition: width 620ms var(--ease-out-expo);
 }
@@ -1438,8 +1438,8 @@
 }
 .contact__form { display: grid; gap: var(--space-s); }
 .contact__form .btn { justify-self: start; }
-.field__error { font-size: var(--step--2); color: var(--terracotta-600); }
-.input.is-invalid, .textarea.is-invalid { border-color: var(--terracotta-500); }
+.field__error { font-size: var(--step--2); color: var(--rose-ink); }
+.input.is-invalid, .textarea.is-invalid { border-color: var(--magenta-ink); }
 .contact__aside { display: grid; gap: 0.85rem; }
 .ccard {
   padding: var(--space-m);
@@ -1480,7 +1480,7 @@
   width: 46px; height: 46px;
   border-radius: 50%;
   background: var(--leaf);
-  color: var(--cream);
+  color: var(--paper-1);
 }
 .form-done__tick svg { width: 22px; height: 22px; }
 
@@ -1495,8 +1495,8 @@
    FOOTER
    ============================================================ */
 .footer {
-  background: var(--olive-900);
-  color: var(--cream);
+  background: var(--plum-900);
+  color: var(--paper-1);
   padding-block: var(--space-2xl) var(--space-l);
   --line: color-mix(in oklab, #F6F1E7 15%, transparent);
   --line-soft: color-mix(in oklab, #F6F1E7 9%, transparent);
@@ -1522,7 +1522,7 @@
 .footer .subscribe { background: transparent; border-color: var(--line-strong); }
 .footer .subscribe input { color: var(--text); }
 .footer .subscribe input::placeholder { color: var(--text-faint); }
-.footer .btn--primary { --btn-bg: var(--cream); --btn-fg: var(--olive-900); --btn-fill: var(--terracotta-400); }
+.footer .btn--primary { --btn-bg: var(--paper-1); --btn-fg: var(--plum-900); --btn-fill: var(--rose-wash); }
 
 .footer__nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-m); }
 .footer__col ul { list-style: none; padding: 0; display: grid; gap: 0.55rem; }

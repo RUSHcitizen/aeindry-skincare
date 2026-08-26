@@ -88,7 +88,9 @@
   inset: 0;
   pointer-events: none;
   z-index: 3;
-  opacity: .42;
+  /* The texture is generated near-white on purpose (see installPaper), so it
+     can sit at full strength and still leave the paper's value alone. */
+  opacity: 1;
   mix-blend-mode: multiply;
   background-image: var(--paper-url);
   background-size: 240px 240px;

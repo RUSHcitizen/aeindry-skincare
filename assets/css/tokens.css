@@ -11,91 +11,85 @@
    ============================================================ */
 
 :root {
-  /* ---------- Warm neutral grounds ----------
-     Every neutral carries a yellow-red bias toward the terracotta
-     accent, so the greys read as chosen paper rather than default grey. */
-  --ivory:      #FDFBF7;
-  --cream:      #F9F4EA;
-  --parchment:  #F4EDE0;
-  --linen:      #EBE2D1;
-  --oat:        #E0D5C0;
-  --beige:      #D2C4AB;
-  --taupe:      #B9AC96;
-  --taupe-deep: #978972;
+  /* ---------- Grounds ----------
+     The logo sits on paper, so the site does too: warm whites with a faint
+     blush cast, which is what the wreath's watercolour is painted on. */
+  --paper-0:  #FFFDFC;
+  --paper-1:  #FDF7F4;
+  --paper-2:  #F9F0EB;
+  --paper-3:  #F3E6DF;
+  --paper-4:  #E9D8D0;
+  --paper-5:  #DAC4BB;
 
-  --taupe-700:  #8B7E68;
-  --taupe-800:  #6B6152;
-  --bark-700:   #443E33;
-  --bark-800:   #322C24;
-  --bark-900:   #241F19;
-  --bark-950:   #191510;
+  /* Ink, pulled from the wordmark's own hue so text belongs to the mark. */
+  --plum-950: #241722;
+  --plum-900: #2E1F2B;
+  --plum-800: #43303E;
+  --plum-700: #5C4656;
+  --plum-600: #7A6274;
+  --plum-500: #9B8494;
 
-  /* ---------- Botanical inks ---------- */
-  --sage-100: #E4E8DE;
-  --sage-200: #CBD3C3;
-  --sage-300: #AEBAA6;
-  --sage-400: #93A28A;
-  --sage-500: #7A8A71;
-  --olive-600: #67735A;
-  --olive-700: #525C48;
-  --olive-800: #3F4738;
-  --olive-900: #2E3429;
-  --eucalypt: #8FA898;
-
-  /* ---------- Floral accents, restrained ---------- */
-  --terracotta-300: #DCA98A;
-  --terracotta-400: #C68F6B;
-  --terracotta-500: #B0714E;
-  --terracotta-600: #96593B;
-  --rose-200: #EBD3CD;
-  --rose-300: #D9B0A9;
-  --rose-400: #C99A94;
-  --blush:    #E8D2CB;
-  --lavender-300: #C6BFD4;
-  --lavender-400: #ADA5C0;
+  /* ---------- Pigments, sampled from the logo ----------
+     Each has the wash as painted, plus a deepened cut that can carry text.
+     Ten colours appear together in exactly one place — the logo itself. */
+  --rose-wash:    #D96C87;   --rose-ink:    #A93E5C;
+  /* A lighter draw of the same rose. --rose-wash reads at only 3.7:1 as
+     small text on the plum grounds; this clears 5.5:1 on all of them. */
+  --rose-lit:     #E59AAC;
+  --magenta-wash: #CE8BBC;   --magenta-ink: #9A4E86;
+  --violet-wash:  #B98DDB;   --violet-ink:  #7E4EAE;
+  --cobalt-wash:  #949BCB;   --cobalt-ink:  #55609E;
+  --teal-wash:    #98D2D3;   --teal-ink:    #3D8A8C;
+  --leaf-wash:    #C4E0AC;   --leaf-ink:    #6E9450;
+  --chartreuse-wash: #E6E27C; --chartreuse-ink: #918C2C;
+  --marigold-wash: #E3C56F;  --marigold-ink: #A88322;
+  --coral-wash:   #EBAB77;   --coral-ink:   #C4713A;
+  --vermilion-wash: #EA8267; --vermilion-ink: #C24A2C;
 
   /* ---------- Semantic (light is the default) ---------- */
-  --bg:          var(--parchment);
-  --bg-raised:   var(--ivory);
-  --bg-sunken:   var(--linen);
-  --bg-tint:     var(--cream);
-  --bg-deep:     var(--olive-800);
-  --bg-inverse:  var(--olive-800);
+  --bg:          var(--paper-1);
+  --bg-raised:   var(--paper-0);
+  --bg-sunken:   var(--paper-2);
+  --bg-tint:     var(--paper-0);
+  --bg-deep:     var(--plum-900);
+  --bg-inverse:  var(--plum-900);
 
-  --text:        var(--olive-900);
-  --text-soft:   var(--taupe-800);
-  --text-muted:  #6E6455;
-  --text-faint:  #7F7564;
-  --text-inverse: var(--cream);
+  --text:        var(--plum-900);
+  --text-soft:   var(--plum-700);
+  --text-muted:  #6B5566;
+  --text-faint:  #7E687A;
+  --text-inverse: var(--paper-1);
 
-  --line:        color-mix(in oklab, var(--olive-900) 13%, transparent);
-  --line-soft:   color-mix(in oklab, var(--olive-900) 7%, transparent);
-  --line-strong: color-mix(in oklab, var(--olive-900) 24%, transparent);
+  --line:        color-mix(in oklab, var(--plum-900) 13%, transparent);
+  --line-soft:   color-mix(in oklab, var(--plum-900) 7%, transparent);
+  --line-strong: color-mix(in oklab, var(--plum-900) 24%, transparent);
 
-  --accent:       var(--terracotta-600);
-  --accent-hover: #7E4A30;
-  --accent-soft:  color-mix(in oklab, var(--terracotta-500) 13%, var(--parchment));
-  --leaf:         var(--olive-600);
-  --leaf-soft:    color-mix(in oklab, var(--sage-400) 26%, var(--parchment));
-  --gilt:         var(--terracotta-400);
+  /* The wordmark is magenta running into violet — so is the interface. */
+  --accent:       var(--magenta-ink);
+  --accent-hover: var(--violet-ink);
+  --accent-soft:  color-mix(in oklab, var(--magenta-wash) 22%, var(--paper-1));
+  --leaf:         var(--leaf-ink);
+  --leaf-soft:    color-mix(in oklab, var(--leaf-wash) 34%, var(--paper-1));
+  --gilt:         var(--marigold-ink);
 
-  /* Botanical artwork ink — used only by the decorative layer. */
-  --bot-ink:   var(--olive-600);
-  --bot-rose:  var(--rose-400);
-  --bot-sage:  var(--sage-400);
-  --bot-taupe: var(--taupe);
+  /* Botanical artwork inks. */
+  --bot-ink:   var(--magenta-wash);
+  --bot-rose:  var(--rose-wash);
+  --bot-sage:  var(--leaf-wash);
+  --bot-taupe: var(--coral-wash);
 
-  /* Named grounds. A wave edge or gradient refers to the band it is pouring
-     into by name, and the name resolves per theme — never a raw light value. */
-  --band-paper: var(--parchment);
-  --band-ivory: var(--ivory);
-  --band-linen: var(--linen);
-  --band-olive: var(--olive-800);
-  --wash-rose:  color-mix(in oklab, var(--blush) 40%, transparent);
-  --wash-sage:  color-mix(in oklab, var(--sage-100) 70%, transparent);
+  /* Named grounds, resolved per theme so nothing names a literal. */
+  --band-paper: var(--paper-1);
+  --band-ivory: var(--paper-0);
+  --band-linen: var(--paper-2);
+  --band-olive: var(--plum-900);
+  --wash-rose:  color-mix(in oklab, var(--rose-wash) 13%, transparent);
+  --wash-sage:  color-mix(in oklab, var(--leaf-wash) 20%, transparent);
+  --wash-gold:  color-mix(in oklab, var(--marigold-wash) 18%, transparent);
+  --wash-violet: color-mix(in oklab, var(--violet-wash) 12%, transparent);
 
-  --focus-ring:   var(--terracotta-500);
-  --shadow-color: 62 55 40;
+  --focus-ring:   var(--magenta-ink);
+  --shadow-color: 62 40 58;
 
   /* ---------- Elevation — soft and low, like daylight ---------- */
   --shadow-xs: 0 1px 2px rgb(var(--shadow-color) / .05);
@@ -202,43 +196,45 @@
    ============================================================ */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg:          var(--bark-900);
-    --bg-raised:   var(--bark-800);
-    --bg-sunken:   var(--bark-950);
-    --bg-tint:     #2B2620;
-    --bg-deep:     var(--bark-950);
-    --bg-inverse:  var(--cream);
+    --bg:          var(--plum-900);
+    --bg-raised:   var(--plum-800);
+    --bg-sunken:   var(--plum-950);
+    --bg-tint:     #382838;
+    --bg-deep:     var(--plum-950);
+    --bg-inverse:  var(--paper-1);
 
-    --text:        var(--cream);
-    --text-soft:   #CFC5B3;
-    --text-muted:  #B7AC97;
-    --text-faint:  #A0957F;
-    --text-inverse: var(--olive-900);
+    --text:        var(--paper-1);
+    --text-soft:   #D6C7D2;
+    --text-muted:  #B9A6B4;
+    --text-faint:  #9C8A98;
+    --text-inverse: var(--plum-900);
 
-    --line:        color-mix(in oklab, var(--cream) 15%, transparent);
-    --line-soft:   color-mix(in oklab, var(--cream) 8%, transparent);
-    --line-strong: color-mix(in oklab, var(--cream) 28%, transparent);
+    --line:        color-mix(in oklab, var(--paper-1) 15%, transparent);
+    --line-soft:   color-mix(in oklab, var(--paper-1) 8%, transparent);
+    --line-strong: color-mix(in oklab, var(--paper-1) 28%, transparent);
 
-    --accent:       var(--terracotta-300);
-    --accent-hover: #EBBF9F;
-    --accent-soft:  color-mix(in oklab, var(--terracotta-500) 24%, var(--bark-900));
-    --leaf:         var(--sage-300);
-    --leaf-soft:    color-mix(in oklab, var(--sage-500) 24%, var(--bark-900));
-    --gilt:         var(--terracotta-300);
+    --accent:       var(--rose-lit);
+    --accent-hover: #E8A8BE;
+    --accent-soft:  color-mix(in oklab, var(--magenta-ink) 24%, var(--plum-900));
+    --leaf:         var(--leaf-wash);
+    --leaf-soft:    color-mix(in oklab, var(--leaf-ink) 24%, var(--plum-900));
+    --gilt:         var(--rose-wash);
 
-    --bot-ink:   var(--sage-400);
-    --bot-rose:  var(--rose-300);
-    --bot-sage:  var(--sage-300);
-    --bot-taupe: var(--taupe-700);
+    --bot-ink:   var(--leaf-wash);
+    --bot-rose:  var(--rose-wash);
+    --bot-sage:  var(--leaf-wash);
+    --bot-taupe: var(--plum-700);
 
-    --band-paper: var(--bark-900);
-    --band-ivory: var(--bark-800);
-    --band-linen: var(--bark-800);
-    --band-olive: #2A3126;
-    --wash-rose:  color-mix(in oklab, var(--terracotta-500) 16%, transparent);
-    --wash-sage:  color-mix(in oklab, var(--sage-500) 18%, transparent);
+    --band-paper: var(--plum-900);
+    --band-ivory: var(--plum-800);
+    --band-linen: var(--plum-800);
+    --band-olive: #332230;
+    --wash-rose:  color-mix(in oklab, var(--magenta-ink) 16%, transparent);
+    --wash-sage:  color-mix(in oklab, var(--leaf-ink) 18%, transparent);
+    --wash-gold:  color-mix(in oklab, var(--marigold-ink) 14%, transparent);
+    --wash-violet: color-mix(in oklab, var(--violet-ink) 16%, transparent);
 
-    --focus-ring:   var(--terracotta-300);
+    --focus-ring:   var(--rose-wash);
     --shadow-color: 0 0 0;
     --shadow-lg: 0 18px 44px rgb(0 0 0 / .45), 0 5px 12px rgb(0 0 0 / .3);
     --shadow-xl: 0 34px 78px rgb(0 0 0 / .55), 0 10px 24px rgb(0 0 0 / .35);
@@ -248,43 +244,45 @@
 }
 
 :root[data-theme="dark"] {
-  --bg:          var(--bark-900);
-  --bg-raised:   var(--bark-800);
-  --bg-sunken:   var(--bark-950);
-  --bg-tint:     #2B2620;
-  --bg-deep:     var(--bark-950);
-  --bg-inverse:  var(--cream);
+  --bg:          var(--plum-900);
+  --bg-raised:   var(--plum-800);
+  --bg-sunken:   var(--plum-950);
+  --bg-tint:     #382838;
+  --bg-deep:     var(--plum-950);
+  --bg-inverse:  var(--paper-1);
 
-  --text:        var(--cream);
-  --text-soft:   #CFC5B3;
-  --text-muted:  #B7AC97;
-  --text-faint:  #A0957F;
-  --text-inverse: var(--olive-900);
+  --text:        var(--paper-1);
+  --text-soft:   #D6C7D2;
+  --text-muted:  #B9A6B4;
+  --text-faint:  #9C8A98;
+  --text-inverse: var(--plum-900);
 
-  --line:        color-mix(in oklab, var(--cream) 15%, transparent);
-  --line-soft:   color-mix(in oklab, var(--cream) 8%, transparent);
-  --line-strong: color-mix(in oklab, var(--cream) 28%, transparent);
+  --line:        color-mix(in oklab, var(--paper-1) 15%, transparent);
+  --line-soft:   color-mix(in oklab, var(--paper-1) 8%, transparent);
+  --line-strong: color-mix(in oklab, var(--paper-1) 28%, transparent);
 
-  --accent:       var(--terracotta-300);
-  --accent-hover: #EBBF9F;
-  --accent-soft:  color-mix(in oklab, var(--terracotta-500) 24%, var(--bark-900));
-  --leaf:         var(--sage-300);
-  --leaf-soft:    color-mix(in oklab, var(--sage-500) 24%, var(--bark-900));
-  --gilt:         var(--terracotta-300);
+  --accent:       var(--rose-lit);
+  --accent-hover: #E8A8BE;
+  --accent-soft:  color-mix(in oklab, var(--magenta-ink) 24%, var(--plum-900));
+  --leaf:         var(--leaf-wash);
+  --leaf-soft:    color-mix(in oklab, var(--leaf-ink) 24%, var(--plum-900));
+  --gilt:         var(--rose-wash);
 
-  --bot-ink:   var(--sage-400);
-  --bot-rose:  var(--rose-300);
-  --bot-sage:  var(--sage-300);
-  --bot-taupe: var(--taupe-700);
+  --bot-ink:   var(--leaf-wash);
+  --bot-rose:  var(--rose-wash);
+  --bot-sage:  var(--leaf-wash);
+  --bot-taupe: var(--plum-700);
 
-  --band-paper: var(--bark-900);
-  --band-ivory: var(--bark-800);
-  --band-linen: var(--bark-800);
-  --band-olive: #2A3126;
-  --wash-rose:  color-mix(in oklab, var(--terracotta-500) 16%, transparent);
-  --wash-sage:  color-mix(in oklab, var(--sage-500) 18%, transparent);
+  --band-paper: var(--plum-900);
+  --band-ivory: var(--plum-800);
+  --band-linen: var(--plum-800);
+  --band-olive: #332230;
+  --wash-rose:  color-mix(in oklab, var(--magenta-ink) 16%, transparent);
+  --wash-sage:  color-mix(in oklab, var(--leaf-ink) 18%, transparent);
+  --wash-gold:  color-mix(in oklab, var(--marigold-ink) 14%, transparent);
+  --wash-violet: color-mix(in oklab, var(--violet-ink) 16%, transparent);
 
-  --focus-ring:   var(--terracotta-300);
+  --focus-ring:   var(--rose-wash);
   --shadow-color: 0 0 0;
   --shadow-lg: 0 18px 44px rgb(0 0 0 / .45), 0 5px 12px rgb(0 0 0 / .3);
   --shadow-xl: 0 34px 78px rgb(0 0 0 / .55), 0 10px 24px rgb(0 0 0 / .35);
@@ -296,32 +294,32 @@
    Ground bands — a section can change the room it sits in, and
    every nested component follows without a special case.
    ============================================================ */
-.band--ivory     { --bg: var(--ivory);     --bg-raised: var(--cream);   --bg-sunken: var(--parchment); background: var(--bg); }
-.band--parchment { --bg: var(--parchment); --bg-raised: var(--ivory);   --bg-sunken: var(--linen);     background: var(--bg); }
-.band--linen     { --bg: var(--linen);     --bg-raised: var(--cream);   --bg-sunken: var(--oat);       background: var(--bg); }
+.band--ivory     { --bg: var(--paper-0);     --bg-raised: var(--paper-1);   --bg-sunken: var(--paper-1); background: var(--bg); }
+.band--parchment { --bg: var(--paper-1); --bg-raised: var(--paper-0);   --bg-sunken: var(--paper-2);     background: var(--bg); }
+.band--linen     { --bg: var(--paper-2);     --bg-raised: var(--paper-1);   --bg-sunken: var(--paper-3);       background: var(--bg); }
 
 .band--olive {
-  --bg: var(--olive-800);
-  --bg-raised: var(--olive-700);
-  --bg-sunken: var(--olive-900);
-  --bg-tint: var(--olive-700);
-  --text: var(--cream);
-  --text-soft: #CBD3C3;
-  --text-muted: #B4BEAA;
-  --text-faint: #A2AC98;
-  --line: color-mix(in oklab, var(--cream) 16%, transparent);
-  --line-soft: color-mix(in oklab, var(--cream) 9%, transparent);
-  --line-strong: color-mix(in oklab, var(--cream) 30%, transparent);
-  --accent: var(--terracotta-300);
-  --accent-hover: var(--blush);
-  --accent-soft: color-mix(in oklab, var(--terracotta-500) 30%, var(--olive-800));
-  --leaf: var(--sage-200);
-  --leaf-soft: color-mix(in oklab, var(--sage-400) 24%, var(--olive-800));
-  --bot-ink: var(--sage-300);
-  --bot-rose: var(--rose-300);
-  --bot-sage: var(--sage-200);
-  --bot-taupe: var(--sage-500);
-  --focus-ring: var(--terracotta-300);
+  --bg: var(--plum-800);
+  --bg-raised: var(--plum-700);
+  --bg-sunken: var(--plum-900);
+  --bg-tint: var(--plum-700);
+  --text: var(--paper-1);
+  --text-soft: #D6C7D2;
+  --text-muted: #BCA9B8;
+  --text-faint: #A08FA0;
+  --line: color-mix(in oklab, var(--paper-1) 16%, transparent);
+  --line-soft: color-mix(in oklab, var(--paper-1) 9%, transparent);
+  --line-strong: color-mix(in oklab, var(--paper-1) 30%, transparent);
+  --accent: var(--rose-lit);
+  --accent-hover: var(--rose-lit);
+  --accent-soft: color-mix(in oklab, var(--magenta-ink) 30%, var(--plum-800));
+  --leaf: var(--leaf-wash);
+  --leaf-soft: color-mix(in oklab, var(--leaf-wash) 24%, var(--plum-800));
+  --bot-ink: var(--leaf-wash);
+  --bot-rose: var(--rose-wash);
+  --bot-sage: var(--leaf-wash);
+  --bot-taupe: var(--leaf-ink);
+  --focus-ring: var(--rose-wash);
   background: var(--bg);
   color: var(--text);
 }
@@ -329,11 +327,11 @@
 /* Dark theme softens the olive band so it does not become a black hole. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .band--ivory,
-  :root:not([data-theme="light"]) .band--parchment { --bg: var(--bark-900); --bg-raised: var(--bark-800); --bg-sunken: var(--bark-950); background: var(--bg); }
-  :root:not([data-theme="light"]) .band--linen { --bg: var(--bark-800); --bg-raised: #322C24; --bg-sunken: var(--bark-900); background: var(--bg); }
-  :root:not([data-theme="light"]) .band--olive { --bg: #2A3126; --bg-raised: #333B2E; --bg-sunken: #222819; background: var(--bg); }
+  :root:not([data-theme="light"]) .band--parchment { --bg: var(--plum-900); --bg-raised: var(--plum-800); --bg-sunken: var(--plum-950); background: var(--bg); }
+  :root:not([data-theme="light"]) .band--linen { --bg: var(--plum-800); --bg-raised: #322C24; --bg-sunken: var(--plum-900); background: var(--bg); }
+  :root:not([data-theme="light"]) .band--olive { --bg: #332230; --bg-raised: #3E2B3A; --bg-sunken: #241722; background: var(--bg); }
 }
 :root[data-theme="dark"] .band--ivory,
-:root[data-theme="dark"] .band--parchment { --bg: var(--bark-900); --bg-raised: var(--bark-800); --bg-sunken: var(--bark-950); background: var(--bg); }
-:root[data-theme="dark"] .band--linen { --bg: var(--bark-800); --bg-raised: #322C24; --bg-sunken: var(--bark-900); background: var(--bg); }
-:root[data-theme="dark"] .band--olive { --bg: #2A3126; --bg-raised: #333B2E; --bg-sunken: #222819; background: var(--bg); }
+:root[data-theme="dark"] .band--parchment { --bg: var(--plum-900); --bg-raised: var(--plum-800); --bg-sunken: var(--plum-950); background: var(--bg); }
+:root[data-theme="dark"] .band--linen { --bg: var(--plum-800); --bg-raised: #322C24; --bg-sunken: var(--plum-900); background: var(--bg); }
+:root[data-theme="dark"] .band--olive { --bg: #332230; --bg-raised: #3E2B3A; --bg-sunken: #241722; background: var(--bg); }
