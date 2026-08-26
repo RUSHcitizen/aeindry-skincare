@@ -12,7 +12,7 @@ import { initNav } from './ui/nav.js';
 import { initCart, initCheckout } from './ui/cart.js';
 import { initQuickview } from './ui/quickview.js';
 import { initAccordion } from './ui/accordion.js';
-import { installPaper } from './ui/bot-field.js';
+import { installPaper, installFloralCanvas } from './ui/bot-field.js';
 import { toast } from './ui/toast.js';
 
 import home from './pages/home.js';
@@ -108,6 +108,7 @@ function initGlobalHandlers() {
 async function boot() {
   installGrain();
   installPaper();
+  installFloralCanvas();  // once, outside the router's subtree
   initTheme();
   initScroll();
   initMagnetic(document);

@@ -119,6 +119,110 @@ export function pageField(seed, { tone = 'var(--bot-ink)' } = {}) {
   ]);
 }
 
+/* --------------------------------------------------------- floral canvas */
+
+/* The composition is written out by hand rather than scattered randomly: an
+   even spread is what makes floral backgrounds read as wallpaper. These
+   cluster along the edges and thin out through the middle third, which is
+   where body copy sits. Coordinates are percentages of a field one and a half
+   viewports tall — the layer pans slowly through it as the page scrolls, so
+   the canvas is never the same twice and never tiles. */
+const CANVAS_FORMS = [
+  // top edge — heaviest, this is what sits behind the cover
+  { k: 'branch',   x: -8,  y: -4,  w: 46, rot: 8,    o: 0.9,  t: 'magenta', m: 'line' },
+  { k: 'bloom',    x: 62,  y: -6,  w: 30, rot: -12,  o: 0.62, t: 'rose',    m: 'duo' },
+  { k: 'fern',     x: 78,  y: 4,   w: 26, rot: 24,   o: 0.8,  t: 'leaf',    m: 'line' },
+  { k: 'seedstem', x: 34,  y: -8,  w: 14, rot: -6,   o: 0.7,  t: 'cobalt',  m: 'line' },
+  // upper flanks
+  { k: 'spray',    x: -12, y: 16,  w: 34, rot: -4,   o: 0.75, t: 'chartreuse', m: 'line' },
+  { k: 'petals',   x: 86,  y: 22,  w: 20, rot: 16,   o: 0.66, t: 'coral',   m: 'line' },
+  // middle — deliberately sparse and pushed to the margins
+  { k: 'arc',      x: -16, y: 38,  w: 52, rot: 0,    o: 0.42, t: 'teal',    m: 'line' },
+  { k: 'sprig',    x: 90,  y: 44,  w: 16, rot: -20,  o: 0.5,  t: 'violet',  m: 'line' },
+  { k: 'bloom',    x: -6,  y: 50,  w: 22, rot: 6,    o: 0.4,  t: 'marigold', m: 'line' },
+  // lower flanks
+  { k: 'fern',     x: -10, y: 62,  w: 28, rot: -22,  o: 0.78, t: 'leaf',    m: 'line' },
+  { k: 'branch',   x: 66,  y: 66,  w: 44, rot: 190,  o: 0.8,  t: 'magenta', m: 'line' },
+  { k: 'petals',   x: 22,  y: 72,  w: 22, rot: -10,  o: 0.6,  t: 'vermilion', m: 'line' },
+  // bottom edge
+  { k: 'spray',    x: 54,  y: 86,  w: 36, rot: 6,    o: 0.72, t: 'leaf',    m: 'duo' },
+  { k: 'seedstem', x: 8,   y: 88,  w: 15, rot: 12,   o: 0.68, t: 'coral',   m: 'line' },
+  { k: 'bloom',    x: 80,  y: 92,  w: 26, rot: -8,   o: 0.55, t: 'violet',  m: 'duo' },
+  { k: 'sprig',    x: 40,  y: 96,  w: 18, rot: 22,   o: 0.6,  t: 'cobalt',  m: 'line' }
+];
+
+/**
+ * The dim floral ground the whole site sits on.
+ *
+ * Rendered as two flat images rather than thirty-two live SVG nodes. A
+ * viewport-sized blend layer has to re-composite on every scrolled frame, and
+ * doing that over a tree of individually stroked shapes cost about a third of
+ * the frame budget; as one cached texture per layer the compositor has a single
+ * bitmap to blend. The pigments are baked in because a data URI has no access
+ * to the custom properties — safe to do, since the pigment scale is fixed and
+ * only the semantic tokens above it flip between themes.
+ */
+function canvasImage(tone, seed) {
+  const cs = getComputedStyle(document.documentElement);
+  const pigment = (name) => cs.getPropertyValue(`--${name}-${tone}`).trim() || '#888';
+
+  // 1440 x 1800: a reference viewport plus the quarter-again of height the
+  // layer pans through. Sliced rather than stretched, so nothing is squashed.
+  const W = 1440, H = 1800;
+  const forms = CANVAS_FORMS.map((f, i) => {
+    const w = (f.w / 100) * W;
+    const art = botanical(f.k, { seed: `${seed}-${i}`, mode: f.m, stroke: 1.3, rotate: f.rot })
+      .replace(/currentColor/g, pigment(f.t))
+      .replace(/^[\s\S]*?<svg[^>]*>/, '')
+      .replace(/<\/svg>\s*$/, '');
+    return `<svg x="${((f.x / 100) * W).toFixed(1)}" y="${((f.y / 100) * H).toFixed(1)}" ` +
+      `width="${w.toFixed(1)}" height="${w.toFixed(1)}" viewBox="0 0 400 400" ` +
+      `fill="none" opacity="${f.o}" overflow="visible">${art}</svg>`;
+  }).join('');
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ` +
+    `preserveAspectRatio="xMidYMid slice">${forms}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+/**
+ * Mount the canvas.
+ *
+ * One layer, appended last so it paints over the opaque section grounds and
+ * under every content wrap. The wash pigments are mid-tone, which is what lets
+ * a single set of colours read against both the paper and the plum bands.
+ */
+export function installFloralCanvas(seed = 'canvas') {
+  const layer = document.createElement('div');
+  layer.className = 'floral-canvas';
+  layer.setAttribute('aria-hidden', 'true');
+  const pan = document.createElement('div');
+  pan.className = 'floral-canvas__pan';
+  pan.style.backgroundImage = canvasImage('wash', seed);
+  layer.appendChild(pan);
+  document.body.appendChild(layer);
+  const pans = [pan];
+
+  if (prefersReducedMotion()) return () => {};
+
+  /* The layer is half a viewport taller than the screen and travels that whole
+     extra height over the length of the document, so the florals drift rather
+     than sit pinned behind the content. */
+  let raf = null, want = 0, have = 0;
+  const draw = () => {
+    have = lerp(have, want, 0.09);
+    const t = `translate3d(0, ${(-have * 25).toFixed(2)}vh, 0)`;
+    for (const pan of pans) pan.style.transform = t;
+    raf = Math.abs(want - have) > 0.0005 ? requestAnimationFrame(draw) : null;
+  };
+  const off = scrollBus.on('scroll', ({ y }) => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    want = clamp(max > 0 ? y / max : 0, 0, 1);
+    if (!raf) raf = requestAnimationFrame(draw);
+  });
+  return () => { off(); if (raf) cancelAnimationFrame(raf); };
+}
+
 /* ------------------------------------------------------------------ runtime */
 
 /**

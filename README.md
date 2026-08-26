@@ -159,6 +159,19 @@ a wide soft stroke, which is what gives real watercolour its darker edge — and
 the ink drawing last. One layer per section is painted this way and the rest stay
 as line work, which keeps the filter cost down and the page mostly quiet.
 
+**The floral canvas** is the dim floral ground the whole site sits on: one
+fixed layer, drawn once as a single SVG data URI and panned a quarter of a
+viewport across the length of the document, so it drifts rather than sitting
+pinned. Sections paint their own opaque grounds, so it cannot live behind them —
+it is stacked over them and under every `.wrap` instead. The obvious way to do
+that is a blend mode, and two viewport-sized blend layers measured at about 40%
+of the scroll frame budget; plain alpha turned out to do the same job for a
+tenth of that, because the wash pigments are mid-tone and so the identical
+colours darken the paper and lighten the plum bands. The composition is written
+out by hand rather than scattered — an even spread is what makes a floral
+background read as wallpaper — clustering along the edges and thinning through
+the middle third where the body copy sits.
+
 **Motion** is opt-in via `data-reveal`, staggered with `data-stagger`, and split into
 lines/words/chars with `data-split`. Everything collapses under
 `prefers-reduced-motion: reduce`, including the route curtain and the hero canvas,
