@@ -8,7 +8,7 @@
  * continuous environment — branches leave one section and arrive in the next.
  */
 
-import { $, $$, esc, countUp, clamp } from '../lib/dom.js';
+import { $, $$, esc, countUp, clamp, prefersReducedMotion } from '../lib/dom.js';
 import { PRODUCTS, getProduct, formatPrice, priceOf } from '../data/products.js';
 import {
   BRAND, PROMISES, PILLARS, TESTIMONIALS, JOURNAL, STATS, INGREDIENTS, TIMELINE, CONCERNS
@@ -59,12 +59,12 @@ export default function home() {
         <!-- The wreath is the cover image. Everything else is set around it. -->
         <figure class="cover__logo" data-reveal="scale">
           <span class="cover__halo" aria-hidden="true"></span>
-          <img src="assets/img/logo-wreath.png" width="204" height="192" decoding="async" fetchpriority="high"
+          <img src="assets/img/logo-wreath.webp" width="816" height="768" decoding="async" fetchpriority="high"
                alt="Aeindry Skincare — Purity is Essence">
         </figure>
 
-        <h1 class="cover__title display-lg" data-split="lines" data-split-step="90">
-          Plants, butters, and <em>nothing hidden</em>.
+        <h1 class="cover__title display-lg" data-reveal="ink" data-split="words" data-split-step="120">
+          Purity is <em>Essence</em>
         </h1>
 
         <div class="cover__rule" data-reveal="fade" style="--reveal-delay:480ms">
@@ -526,10 +526,37 @@ export default function home() {
         const counter = $('[data-enc-count] span', enc);
         let active = -1;
 
+        /* Each plate draws itself on the way in, the way a specimen sheet gets
+           inked. Path lengths differ wildly between forms, so every path gets
+           its own dash length rather than one guessed constant — and the
+           delay is spread down the drawing so the stem leads the leaves. */
+        const drawable = new Map();
+        if (!prefersReducedMotion()) {
+          plates.forEach((plate) => {
+            const paths = $$('svg path', plate).filter((n) => n.getAttribute('stroke') !== null
+              || getComputedStyle(n).stroke !== 'none');
+            paths.forEach((path, pi) => {
+              let len = 0;
+              try { len = path.getTotalLength(); } catch { /* non-renderable path */ }
+              if (!len || len > 6000) return;
+              path.style.setProperty('--len', len.toFixed(1));
+              path.style.setProperty('--draw-delay', `${Math.min(pi * 26, 620)}ms`);
+              path.classList.add('is-drawable');
+            });
+            drawable.set(plate, paths.length);
+          });
+        }
+
         const setActive = (i) => {
           if (i === active) return;
           active = i;
-          plates.forEach((p, pi) => p.classList.toggle('is-on', pi === i));
+          plates.forEach((p, pi) => {
+            const on = pi === i;
+            // Restart the draw by taking the class off and forcing a reflow.
+            if (on && drawable.has(p)) { p.classList.remove('is-drawn'); void p.offsetWidth; }
+            p.classList.toggle('is-on', on);
+            if (on) p.classList.add('is-drawn');
+          });
           entriesEls.forEach((e, ei) => e.classList.toggle('is-on', ei === i));
           if (counter) counter.textContent = String(i + 1).padStart(2, '0');
         };

@@ -22,7 +22,7 @@
   margin: 0 0 var(--space-2xs);
   /* Capped by height as well as width: the cover has to resolve inside one
      viewport, and the wreath is the piece that would push it over. */
-  width: min(340px, 52vw, 34svh);
+  width: min(400px, 56vw, 40svh);
   display: grid;
   place-items: center;
   isolation: isolate;
@@ -49,10 +49,47 @@
 .cover__logo img {
   width: 100%;
   height: auto;
-  /* The source is a small JPEG knocked out to alpha; a whisper of shadow
-     settles it onto the paper instead of letting it float. */
+  /* A whisper of shadow settles the mark onto the paper rather than letting
+     it float. */
   filter: drop-shadow(0 14px 22px rgb(var(--shadow-color) / .16));
-  animation: cover-float 13s var(--ease-soft) infinite alternate;
+  animation:
+    cover-bloom 1900ms var(--ease-out-expo) both,
+    cover-float 13s var(--ease-soft) 1900ms infinite alternate;
+}
+
+/* The wreath opens the way it was painted: from the centre outward. The mask
+   is a growing disc, so the ring appears to be laid down rather than faded in. */
+@keyframes cover-bloom {
+  from {
+    opacity: 0;
+    transform: scale(0.88) rotate(-5deg);
+    -webkit-mask-image: radial-gradient(circle at 50% 52%, #000 0%, #000 3%, transparent 11%);
+            mask-image: radial-gradient(circle at 50% 52%, #000 0%, #000 3%, transparent 11%);
+  }
+  60% { opacity: 1; }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    /* Both stops past the far corner, so the mask ends fully opaque. Ending on
+       `#000 100%` leaves the corners exactly on the boundary and Chromium
+       clips the mark to a rectangle. */
+    -webkit-mask-image: radial-gradient(circle at 50% 52%, #000 0%, #000 150%, transparent 210%);
+            mask-image: radial-gradient(circle at 50% 52%, #000 0%, #000 150%, transparent 210%);
+  }
+}
+
+/* As the cover leaves, the wreath turns and recedes rather than simply
+   scrolling away — `--leave` is written by the scroll handler below. */
+.cover__logo {
+  transform: rotate(calc(var(--leave, 0) * 14deg)) scale(calc(1 - var(--leave, 0) * 0.14));
+  opacity: calc(1 - var(--leave, 0) * 0.85);
+  transform-origin: 50% 52%;
+}
+
+/* Scroll-linked, so it is a live transform rather than an animation and the
+   blanket reduced-motion rule cannot reach it. */
+@media (prefers-reduced-motion: reduce) {
+  .cover__logo { transform: none; opacity: 1; }
 }
 .cover {
   --leave: 0;
@@ -357,6 +394,15 @@
   pointer-events: none;
 }
 .enc__plate.is-on { opacity: 1; transform: none; }
+
+/* The plates crossfade over 900ms, which suits line art but not the latin
+   name: two crisp italic captions on top of each other read as a glitch, not
+   a dissolve. The outgoing one leaves quickly and the incoming one waits. */
+.enc__latin { opacity: 0; transition: opacity 240ms var(--ease-soft); }
+.enc__plate.is-on .enc__latin {
+  opacity: 1;
+  transition: opacity 520ms var(--ease-soft) 420ms;
+}
 .enc__plate svg { width: 100%; height: 100%; }
 .enc__halo {
   position: absolute;

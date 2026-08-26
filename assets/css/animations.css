@@ -203,3 +203,65 @@
   .split-line__inner, .split-word, .split-char { opacity: 1 !important; transform: none !important; filter: none !important; }
   .curtain { display: none !important; }
 }
+
+/* ---------- Ink reveal ----------
+   A heavier blur than the default, clearing as the words settle. Reads as
+   type coming into focus rather than sliding in, which suits a headline set
+   above a hand-painted mark. */
+[data-reveal="ink"] {
+  --reveal-y: 22px;
+  --reveal-blur: 16px;
+  --reveal-scale: 1.03;
+}
+
+/* ---------- Specimen line-draw ----------
+   Each path is given its own --len in JS from getTotalLength(), because a
+   single guessed dash length finishes early on short paths and never finishes
+   on long ones. */
+.is-drawable {
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+}
+.is-drawn .is-drawable {
+  animation: specimen-draw 1500ms var(--ease-out-expo) var(--draw-delay, 0ms) forwards;
+}
+@keyframes specimen-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ---------- Watercolour sweep on the primary button ----------
+   A pigment wash crossing the button rather than a flat colour change. */
+.btn--primary { position: relative; overflow: hidden; isolation: isolate; }
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  inset: -40% -10%;
+  z-index: -1;
+  background:
+    radial-gradient(closest-side at 30% 50%, var(--magenta-ink), transparent 70%),
+    radial-gradient(closest-side at 62% 46%, var(--violet-ink), transparent 72%),
+    radial-gradient(closest-side at 88% 56%, var(--rose-ink), transparent 70%);
+  opacity: 0;
+  transform: translateX(-34%) scale(1.1);
+  transition: opacity var(--dur-slow) var(--ease-soft), transform var(--dur-cinematic) var(--ease-out-expo);
+}
+.btn--primary:hover::after,
+.btn--primary:focus-visible::after { opacity: .9; transform: translateX(0) scale(1.16); }
+
+/* ---------- Rules that draw themselves ----------
+   The cover's rule opens outward from the sprig set into its middle. */
+.cover__rule span {
+  transform: scaleX(0);
+  transition: transform var(--dur-cinematic) var(--ease-out-expo) var(--reveal-delay, 0ms);
+}
+.cover__rule span:first-child  { transform-origin: right center; }
+.cover__rule span:last-child   { transform-origin: left center; }
+.cover__rule.is-in span        { transform: scaleX(1); }
+
+/* The blanket rule above already collapses every animation to 0.01ms, so these
+   only need to undo the *static* from-states that would otherwise stick. */
+@media (prefers-reduced-motion: reduce) {
+  .is-drawable { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .cover__rule span { transform: scaleX(1); }
+  .btn--primary::after { display: none; }
+}

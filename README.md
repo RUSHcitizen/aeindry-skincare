@@ -136,13 +136,21 @@ dark section without special cases. Sections never name a raw colour: a wave
 edge or gradient refers to the ground it pours into through a `--band-*` alias
 that resolves per theme.
 
-**The logo** ships as `assets/img/logo-wreath.png`, a chroma-keyed knockout of
-the supplied `logo-wreath-source.jpg` — chroma separates pigment from JPEG
-ringing more cleanly than luminance does, which matters at this size. The source
-is 204×192 on solid white, so the mark is used at cover and footer scale only;
-the nav carries the wordmark as type. A larger original (SVG, or PNG ≥1000px
-with transparency) would let the wreath run at hero scale and give the nav a
-real mark.
+**The logo** ships as `assets/img/logo-wreath.webp` (816×768, 223 KB), produced
+from the supplied 204×192 JPEG by `tools/remaster-art.mjs`. A naive knockout
+left 1104 isolated half-transparent pixels — 2.8% of the image — and those are
+what read as grain the moment the mark is enlarged. The tool denoises the JPEG
+ringing before keying, finds the ground by flooding in from the border rather
+than by thresholding lightness, un-blends the partial edges so they do not go
+milky on a coloured ground, and resamples up with Catmull-Rom on premultiplied
+RGBA. `logo-wreath.png` is the lossless master; the site serves the WebP, which
+is visually identical at a quarter the weight. Re-run the tool for any artwork
+that arrives on a white background, product photography included.
+
+The source is still a 204×192 thumbnail, so the remaster is an honest upscale
+rather than new detail. A larger original — SVG, or PNG ≥1000px with
+transparency — would let the wreath run bigger still, and a simplified
+small-size mark would let the nav and favicon carry the logo instead of type.
 
 **Botanical artwork** is generated, not drawn by hand: stems are cubic curves,
 leaves and petals share one axis/width construction, and a seeded PRNG gives
@@ -173,9 +181,19 @@ background read as wallpaper — clustering along the edges and thinning through
 the middle third where the body copy sits.
 
 **Motion** is opt-in via `data-reveal`, staggered with `data-stagger`, and split into
-lines/words/chars with `data-split`. Everything collapses under
-`prefers-reduced-motion: reduce`, including the route curtain and the hero canvas,
-which falls back to a single static composition.
+lines/words/chars with `data-split`. On top of that the cover's wreath blooms
+open from its centre through an animating mask and then turns and recedes as the
+cover leaves; the headline resolves out of a blur (`data-reveal="ink"`); the
+encyclopedia's specimen plates ink themselves in, each path given its own dash
+length from `getTotalLength()` because one guessed constant finishes early on
+short paths and never finishes on long ones; the primary button fills with a
+watercolour sweep; and the cover's rule opens outward from the sprig set into it.
+
+Everything collapses under `prefers-reduced-motion: reduce`. One blanket rule
+drops every animation to 0.01ms, so the reduced-motion blocks only need to undo
+static from-states that would otherwise stick — plus the wreath's scroll-linked
+turn, which is a live transform rather than an animation and so has to be
+overridden in `home.css`, after the rule it is countermanding.
 
 ---
 
