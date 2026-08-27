@@ -13,7 +13,7 @@
  * always wins. Optimism is a rendering technique, not an accounting one.
  *
  * Slugs are the bridge between the two worlds. The front end addresses products
- * by the same human slugs the catalogue has always used ('face-cream'); the Woo
+ * by the same human slugs the catalogue has always used ('hand-butter'); the Woo
  * driver resolves those to WooCommerce numeric ids once, at load, from the
  * store's own `slug` field. Nothing in the pages needs to know Woo's ids exist.
  */

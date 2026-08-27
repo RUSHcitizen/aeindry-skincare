@@ -17,6 +17,7 @@ import { toast } from './ui/toast.js';
 
 import home from './pages/home.js';
 import shop from './pages/shop.js';
+import sets from './pages/sets.js';
 import product from './pages/product.js';
 import about from './pages/about.js';
 import ingredients from './pages/ingredients.js';
@@ -32,6 +33,7 @@ import notFound from './pages/not-found.js';
 function registerRoutes() {
   defineRoute('/', home);
   defineRoute('/shop', shop);
+  defineRoute('/sets', sets);
   defineRoute('/product/:id', product);
   defineRoute('/about', about);
   defineRoute('/ingredients', ingredients);

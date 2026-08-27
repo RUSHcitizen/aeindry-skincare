@@ -1,7 +1,12 @@
 /**
  * Editorial content — brand story, ingredient library, quiz logic, FAQs.
  * Brand facts (founder, dates, location, contact) are from aeindryskincare.com.
+ *
+ * This file reads the catalogue but is never read by it: the dependency runs
+ * one way, so an ingredient can say which jar it is in without the catalogue
+ * needing to know the encyclopedia exists.
  */
+import { PRODUCTS } from './products.js';
 
 export const BRAND = {
   name: 'Aeindry',
@@ -98,168 +103,174 @@ export const TIMELINE = [
   {
     year: 'Today',
     title: 'Still the same kitchen logic',
-    body: 'Twelve products, small batches, local markets around Seattle and a growing shelf of regulars. Every formula still has to pass the original test: would you put it on a child with eczema?',
+    body: 'Eight products, small batches, local markets around Seattle and a growing shelf of regulars. Every formula still has to pass the original test: would you put it on a child with eczema?',
     accent: '#86AC8B'
   }
 ];
 
-/** Ingredient library — the interactive explorer. */
-export const INGREDIENTS = [
+/**
+ * Ingredient library — the interactive explorer.
+ *
+ * Every entry is something printed on a label in the range. `foundIn` is not
+ * written here: it is derived below from each product's own `keyIngredients`,
+ * so the encyclopedia and the catalogue cannot say different things about
+ * which jar an ingredient is in.
+ */
+const INGREDIENT_ENTRIES = [
+  /* ── Butters ─────────────────────────────────────────────────────────── */
   {
     id: 'shea-butter', name: 'Shea Butter', latin: 'Butyrospermum parkii', origin: 'West Africa',
     family: 'butter', color: '#E8D9B8',
     role: 'Barrier repair',
-    body: 'Unrefined and cold-pressed, shea is roughly 10% unsaponifiables — the fraction that actually calms inflamed skin rather than just sitting on it. It is the backbone of almost everything we make.',
-    foundIn: ['specialty-soap', 'salve', 'face-cream', 'deodorant', 'perfume', 'shave-soap']
+    body: 'Unrefined and cold-pressed, shea is roughly 10% unsaponifiables — the fraction that calms inflamed skin rather than just sitting on it. It is the backbone of almost everything here.'
   },
   {
     id: 'cocoa-butter', name: 'Cocoa Butter', latin: 'Theobroma cacao', origin: 'West Africa & South America',
     family: 'butter', color: '#E3C79B',
     role: 'Occlusive hold',
-    body: 'Solid at room temperature and melting at exactly body heat, cocoa butter is what makes a lip balm stay put in wind and a bath bomb leave the water soft.',
-    foundIn: ['lip-balm', 'specialty-soap', 'essential-oil-bath-bomb']
+    body: 'Solid at room temperature and melting at exactly body heat. It is what lets a whipped butter hold its shape in the tin and then give way the moment it touches skin.'
   },
   {
-    id: 'mango-butter', name: 'Mango Butter', latin: 'Mangifera indica', origin: 'South Asia',
-    family: 'butter', color: '#F0DFAE',
-    role: 'Rich, non-greasy',
-    body: 'Lighter than shea and far less waxy than cocoa. It gives the face cream its richness without the shine — the reason the cream disappears matte.',
-    foundIn: ['face-cream']
+    id: 'cupuacu-butter', name: 'Cupuaçu Butter', latin: 'Theobroma grandiflorum', origin: 'The Amazon basin',
+    family: 'butter', color: '#EFE0C6',
+    role: 'Holds water in hair',
+    body: 'A cousin of cocoa, and unusual among butters for how much water it will take up and hold. That is the property the hair mask is built on — it conditions by keeping moisture in the strand rather than coating it.'
   },
+  {
+    id: 'murumuru-butter', name: 'Murumuru Butter', latin: 'Astrocaryum murumuru', origin: 'Amazonian palm',
+    family: 'butter', color: '#F2E8D4',
+    role: 'Slip and shine',
+    body: 'Pressed from the seed of an Amazonian palm and high in lauric and myristic acids. It melts thin, so a heavy treatment can go through hair without dragging it down.'
+  },
+
+  /* ── Oils ────────────────────────────────────────────────────────────── */
   {
     id: 'coconut-oil', name: 'Organic Virgin Coconut Oil', latin: 'Cocos nucifera', origin: 'South & Southeast Asia',
     family: 'oil', color: '#F6F0E2',
     role: 'Cleansing & antibacterial',
-    body: 'In soap it is what makes lather. On skin, its lauric acid does quiet antibacterial work — which is why the deodorant does not need anything harsher.',
-    foundIn: ['specialty-soap', 'lip-balm', 'deodorant', 'shave-soap']
+    body: 'In soap it is what makes lather. On skin, its lauric acid does quiet antibacterial work — which is why the deodorant does not need anything harsher in it.'
   },
   {
     id: 'olive-oil', name: 'Olive Oil', latin: 'Olea europaea', origin: 'Mediterranean',
     family: 'oil', color: '#C8CE8E',
-    role: 'The infusion base',
-    body: 'Gentle enough for the most reactive skin, and stable enough to sit for six weeks drawing the good out of calendula and comfrey. Every salve starts here.',
-    foundIn: ['salve', 'specialty-soap', 'shave-soap']
-  },
-  {
-    id: 'castor-oil', name: 'Castor Oil', latin: 'Ricinus communis', origin: 'East Africa & India',
-    family: 'oil', color: '#EFE6C4',
-    role: 'Lather & shine',
-    body: 'A little makes soap lather creamy instead of bubbly, and gives lip balm its faint natural gloss. Too much makes everything sticky — the craft is in the percentage.',
-    foundIn: ['lip-balm', 'specialty-soap', 'shave-soap']
-  },
-  {
-    id: 'avocado-oil', name: 'Avocado Oil', latin: 'Persea americana', origin: 'Central America',
-    family: 'oil', color: '#C3D3A0',
-    role: 'Deep conditioning',
-    body: 'Heavy in oleic acid and unusually rich in vitamins A, D and E. It penetrates further than most oils, which is what dry, cracked skin actually needs.',
-    foundIn: ['lip-balm', 'shave-soap']
+    role: 'The soap base',
+    body: 'Gentle enough for the most reactive skin, and stable enough to sit for six weeks drawing the good out of dried calendula. It is the base of the herbal infusions and the backbone of the bar.'
   },
   {
     id: 'rosehip-oil', name: 'Rosehip Seed Oil', latin: 'Rosa canina', origin: 'Chile & the Andes',
     family: 'oil', color: '#E9B08C',
     role: 'Tone & texture',
-    body: 'Naturally high in trans-retinoic acid precursors — the gentle, plant-side of the vitamin A story. Cold-pressed, kept in the dark, used at a real percentage.',
-    foundIn: ['face-cream']
+    body: 'Naturally high in the precursors to trans-retinoic acid — the gentle, plant-side of the vitamin A story. Cold-pressed, kept in the dark, and used at a percentage you can feel.'
   },
   {
-    id: 'jojoba-oil', name: 'Jojoba', latin: 'Simmondsia chinensis', origin: 'Sonoran Desert',
-    family: 'oil', color: '#EBD79A',
-    role: 'Skin-identical',
-    body: 'Technically a liquid wax, and close enough to human sebum that skin treats it as its own. It never goes rancid, which is why it belongs in a preservative-free formula.',
-    foundIn: ['face-cream', 'perfume', 'essential-oil']
+    id: 'raspberry-seed-oil', name: 'Raspberry Seed Oil', latin: 'Rubus idaeus', origin: 'Northern Europe & North America',
+    family: 'oil', color: '#D98A9A',
+    role: 'Where the antioxidants come from',
+    body: 'Cold-pressed from the seed left after the fruit is pressed. Very high in vitamin E and in alpha-linolenic acid, which is what makes a berry-seed oil worth the trouble of pressing it.'
+  },
+
+  /* ── Extracts & actives ──────────────────────────────────────────────── */
+  {
+    id: 'bakuchiol', name: 'Bakuchiol', latin: 'Psoralea corylifolia', origin: 'India & Sri Lanka',
+    family: 'extract', color: '#C9A8D8',
+    role: 'The plant side of retinol',
+    body: 'Used for the same reasons retinol is used, and without the sting, the flaking or the sun sensitivity that comes with it. It is the reason the face oil can be a nightly thing rather than a twice-weekly one.'
   },
   {
-    id: 'sea-buckthorn', name: 'Sea Buckthorn', latin: 'Hippophae rhamnoides', origin: 'Himalaya & Northern Europe',
-    family: 'oil', color: '#E68A3C',
-    role: 'Repair & radiance',
-    body: 'Brilliant orange, extraordinarily high in omega-7. A few drops per batch is all the face cream needs — any more and you would notice the colour on your face.',
-    foundIn: ['face-cream']
+    id: 'oat-extract', name: 'Oat Extract', latin: 'Avena sativa', origin: 'Northern Europe',
+    family: 'extract', color: '#EFE4CC',
+    role: 'Settles skin that reacts',
+    body: 'The avenanthramides in oat are what make it the old, reliable answer to itch. It is the quiet workhorse of the hand butter — what makes a rich butter calm rather than merely greasy.'
   },
+  {
+    id: 'arrowroot', name: 'Arrowroot Powder', latin: 'Maranta arundinacea', origin: 'Central & South America',
+    family: 'extract', color: '#F4EFE6',
+    role: 'Moisture management',
+    body: 'A fine, silky starch that handles damp without the respiratory questions that hang over talc. It is what gives the cream deodorant a dry finish instead of a slick one.'
+  },
+  {
+    id: 'pine-tar', name: 'Pine Tar', latin: 'Pinus sylvestris', origin: 'Northern forests',
+    family: 'extract', color: '#4A3728',
+    role: 'The oldest answer to itch',
+    body: 'Made by heating pine wood without oxygen until the resin runs. It has been put into soap for angry, itchy skin for a very long time, and the smell of the bar is the tar itself — nothing is added to it.'
+  },
+
+  /* ── Herbs ───────────────────────────────────────────────────────────── */
   {
     id: 'calendula', name: 'Calendula', latin: 'Calendula officinalis', origin: 'Our own garden',
     family: 'herb', color: '#E7A93A',
-    role: 'The salve herb',
-    body: 'The single most important herb in the salve. Petals are dried, steeped in olive oil for six weeks, then pressed — a slow infusion that has been made this way for a very long time.',
-    foundIn: ['salve', 'powder-to-foam-cleanser']
+    role: 'The herb for angry skin',
+    body: 'Petals are dried, steeped in olive oil for six weeks, then pressed — a slow infusion made this way for a very long time. It is the extract in the Bud of Rose tin, where the other four carry oat.'
   },
   {
-    id: 'marshmallow-root', name: 'Marshmallow Root', latin: 'Althaea officinalis', origin: 'Europe & West Asia',
-    family: 'herb', color: '#DCCDB0',
-    role: 'Slip & softness',
-    body: 'A natural mucilage that turns water silky. It is why a powder cleanser can foam without a single stripping surfactant doing the work.',
-    foundIn: ['powder-to-foam-cleanser']
+    id: 'rosemary', name: 'Rosemary', latin: 'Salvia rosmarinus', origin: 'Mediterranean',
+    family: 'herb', color: '#7E9A72',
+    role: 'Scalp circulation',
+    body: 'The herb with the longest history of being rubbed into a scalp, and one of the few with modern work behind it. In the hair mask it is the scalp half of the formula rather than the conditioning half.'
   },
   {
-    id: 'colloidal-oat', name: 'Colloidal Oatmeal', latin: 'Avena sativa', origin: 'Temperate everywhere',
-    family: 'herb', color: '#EADCBD',
-    role: 'Soft and soothing',
-    body: 'Finely milled to a colloid so it suspends in water instead of sinking to the bottom, which is what gives an oat wash its silky, softening feel.',
-    foundIn: ['powder-to-foam-cleanser', 'specialty-soap']
+    id: 'neem', name: 'Neem', latin: 'Azadirachta indica', origin: 'The Indian subcontinent',
+    family: 'herb', color: '#6E8C5A',
+    role: 'Keeps a scalp clean',
+    body: 'Bitter, green and unmistakable. Neem has been used on scalps and skin across South Asia for centuries for its antibacterial and antifungal reputation, and it is why the mask can sit on skin for an hour.'
   },
   {
-    id: 'kaolin-clay', name: 'Kaolin Clay', latin: 'Kaolinite', origin: 'Cornwall & Georgia, USA',
-    family: 'mineral', color: '#F0E9E0',
-    role: 'Gentle draw',
-    body: 'The mildest of the cosmetic clays. It absorbs excess oil without stripping, and gives soap and deodorant their silky, non-chalky feel.',
-    foundIn: ['specialty-soap', 'powder-to-foam-cleanser', 'deodorant', 'shave-soap', 'essential-oil-bath-bomb']
+    id: 'fenugreek', name: 'Fenugreek', latin: 'Trigonella foenum-graecum', origin: 'The Mediterranean & South Asia',
+    family: 'herb', color: '#D9C07A',
+    role: 'Slip and strength',
+    body: 'Soaked seeds go slippery — a natural mucilage, the same trick as marshmallow root — which is what lets a thick butter comb through hair instead of tangling in it.'
   },
   {
-    id: 'bentonite-clay', name: 'Bentonite Clay', latin: 'Montmorillonite', origin: 'Wyoming',
-    family: 'mineral', color: '#CFC7B4',
-    role: 'Blade slip',
-    body: 'Swells in water into something genuinely slippery. In shave soap it is the difference between a blade gliding and a blade dragging.',
-    foundIn: ['shave-soap']
+    id: 'moringa', name: 'Moringa', latin: 'Moringa oleifera', origin: 'The Himalayan foothills',
+    family: 'herb', color: '#8FA96B',
+    role: 'Root nourishment',
+    body: 'The leaf is one of the densest plant sources of vitamins and minerals anyone has measured, which is why it turns up in a formula aimed at the root rather than the length.'
+  },
+
+  /* ── Aromatics ───────────────────────────────────────────────────────── */
+  {
+    id: 'lemongrass', name: 'Lemongrass', latin: 'Cymbopogon citratus', origin: 'South & Southeast Asia',
+    family: 'aroma', color: '#C4CF6E',
+    role: 'Sharp, green, awake',
+    body: 'Citral-rich and far greener than a true citrus. In steam it is the note that carries furthest, which is exactly what a shower steamer needs it to do.'
   },
   {
-    id: 'magnesium', name: 'Magnesium Hydroxide', latin: 'Mg(OH)₂', origin: 'Seawater',
-    family: 'mineral', color: '#E4EAEA',
-    role: 'Odour, without the burn',
-    body: 'Neutralises odour-causing bacteria at a pH skin can live with — unlike baking soda, which works and then, for a lot of people, starts to burn.',
-    foundIn: ['deodorant']
+    id: 'sweet-orange', name: 'Sweet Orange', latin: 'Citrus sinensis', origin: 'Cold-pressed peel',
+    family: 'aroma', color: '#E8A64C',
+    role: 'The warm half of citrus',
+    body: 'Cold-pressed from the peel rather than distilled, which is why it smells like the fruit and not like a cleaning product. It rounds off lemongrass’s edge.'
   },
   {
-    id: 'arrowroot', name: 'Arrowroot Powder', latin: 'Maranta arundinacea', origin: 'Caribbean & South America',
-    family: 'mineral', color: '#F4F1E8',
-    role: 'Moisture management',
-    body: 'A fine, silky starch that handles damp without the respiratory questions that hang over talc. It gives the deodorant its dry finish.',
-    foundIn: ['deodorant']
+    id: 'mandarin', name: 'Mandarin', latin: 'Citrus reticulata', origin: 'Cold-pressed peel',
+    family: 'aroma', color: '#EFB878',
+    role: 'The soft one',
+    body: 'The gentlest of the citrus oils and the one most often chosen for children. It is the third note in the steamers, and the reason they read as warm rather than sharp.'
   },
   {
-    id: 'rice-powder', name: 'Rice Powder', latin: 'Oryza sativa', origin: 'East & South Asia',
-    family: 'herb', color: '#F2ECDD',
-    role: 'Soft polish',
-    body: 'Ground fine enough to polish rather than scratch. Centuries older than any exfoliating acid, and considerably kinder to a compromised barrier.',
-    foundIn: ['powder-to-foam-cleanser']
+    id: 'essential-oils', name: 'Pure Essential Oils', latin: 'Various', origin: 'Steam-distilled & cold-pressed',
+    family: 'aroma', color: '#B7C4A0',
+    role: 'Scent, and more',
+    body: 'Never fragrance oil. Every scent in the range comes from steam-distilled or cold-pressed plant material, used at percentages that respect what these compounds actually do on skin.'
   },
+
+  /* ── Wax ─────────────────────────────────────────────────────────────── */
   {
     id: 'beeswax', name: 'Beeswax', latin: 'Cera alba', origin: 'Local Washington apiaries',
     family: 'wax', color: '#E9C97A',
     role: 'Structure & seal',
-    body: 'It sets a balm, holds a perfume solid, and forms a breathable seal that keeps water in the skin instead of evaporating off it.',
-    foundIn: ['lip-balm', 'salve', 'perfume']
-  },
-  {
-    id: 'epsom-salt', name: 'Epsom Salt', latin: 'Magnesium sulfate', origin: 'Epsom, England',
-    family: 'mineral', color: '#EFF3F2',
-    role: 'The long soak',
-    body: 'Dissolves warm and soft. Whether the magnesium truly crosses the skin is still argued over; that a hot Epsom bath unknots a back is not.',
-    foundIn: ['essential-oil-bath-bomb']
-  },
-  {
-    id: 'vitamin-e', name: 'Vitamin E', latin: 'Tocopherol', origin: 'Sunflower-derived',
-    family: 'oil', color: '#E5C766',
-    role: 'Keeps oils honest',
-    body: 'Not a preservative — it cannot stop microbes. It is an antioxidant that keeps the oils themselves from turning, which is the only kind of spoiling an anhydrous formula can do.',
-    foundIn: ['face-cream', 'lip-balm', 'salve', 'deodorant', 'perfume']
-  },
-  {
-    id: 'essential-oils', name: 'Pure Essential Oils', latin: 'Steam-distilled botanicals', origin: 'Sourced worldwide',
-    family: 'aroma', color: '#B5C4A0',
-    role: 'Scent, and more',
-    body: 'Never fragrance oil. Every scent in the range comes from steam-distilled or cold-pressed plant material, used at percentages that respect what these compounds actually do on skin.',
-    foundIn: ['specialty-soap', 'salve', 'perfume', 'essential-oil', 'room-and-linen-spray', 'essential-oil-bath-bomb', 'deodorant', 'lip-balm']
+    body: 'It sets a balm and forms a breathable seal that keeps water in the skin instead of letting it evaporate off. Poured on its own with a cotton wick, it is also the candle.'
   }
 ];
+
+/**
+ * Which products each ingredient is in, read off the catalogue rather than
+ * repeated by hand. An ingredient nobody lists is kept — it is still true of
+ * the ingredient — but it renders with no "found in" row.
+ */
+export const INGREDIENTS = INGREDIENT_ENTRIES.map((ing) => ({
+  ...ing,
+  foundIn: PRODUCTS.filter((p) => (p.keyIngredients || []).includes(ing.id)).map((p) => p.id)
+}));
 
 export const INGREDIENT_MAP = new Map(INGREDIENTS.map((i) => [i.id, i]));
 
@@ -267,10 +278,10 @@ export const INGREDIENT_FAMILIES = [
   { id: 'all',     label: 'All' },
   { id: 'butter',  label: 'Butters' },
   { id: 'oil',     label: 'Oils' },
+  { id: 'extract', label: 'Extracts & Actives' },
   { id: 'herb',    label: 'Herbs' },
-  { id: 'mineral', label: 'Clays & Minerals' },
-  { id: 'wax',     label: 'Waxes' },
-  { id: 'aroma',   label: 'Aromatics' }
+  { id: 'aroma',   label: 'Aromatics' },
+  { id: 'wax',     label: 'Waxes' }
 ];
 
 /** What we will never use — the counter-list. */
@@ -279,7 +290,7 @@ export const NEVER_LIST = [
   { name: 'Formaldehyde donors', why: 'Slow-release preservatives. A known sensitiser, common in "gentle" products.' },
   { name: 'Silicones', why: 'They make skin feel smooth by coating it. Feel is not repair.' },
   { name: 'Synthetic fragrance', why: 'A single "fragrance" on a label can hide dozens of undisclosed compounds.' },
-  { name: 'Baking soda', why: 'Common in natural deodorant, and at pH 9 it irritates a lot of people. Magnesium is gentler on the skin.' },
+  { name: 'Baking soda', why: 'Common in natural deodorant, and at pH 9 it irritates a lot of people. Arrowroot handles the damp instead.' },
   { name: 'Petrolatum', why: 'It seals, but it gives skin nothing. Butters do both.' },
   { name: 'Synthetic dyes', why: 'Clays, roots and botanicals colour everything we make. They also rinse out of towels.' },
   { name: 'SLS & harsh detergents', why: 'They clean by stripping. A compromised barrier cannot afford it.' }
@@ -302,135 +313,141 @@ export const ROUTINES = {
     title: 'The Calm Barrier ritual',
     intro: 'This is the routine the company was built to solve. Strip nothing, seal everything, and keep the ingredient list short enough to rule things out.',
     steps: [
-      { step: 'Cleanse', productId: 'powder-to-foam-cleanser', variantId: 'oat-original', why: 'Waterless, so there is no preservative in the jar at all, and colloidal oat keeps the wash soft rather than stripping.' },
-      { step: 'Wash',    productId: 'specialty-soap', variantId: 'lavender-oat', why: 'Glycerin-rich cold process instead of a stripping detergent bar.' },
-      { step: 'Treat',   productId: 'salve', variantId: 'calendula', why: 'A six-week calendula infusion — the kind of formula the whole company grew out of.' },
-      { step: 'Seal',    productId: 'face-cream', variantId: 'fragrance-free', why: 'Fragrance-free, so nothing volatile touches broken skin.' }
+      { step: 'Wash',  productId: 'pine-tar-soap', why: 'Unscented, and pine tar has been used on angry skin for a very long time. Nothing volatile in the bar at all.' },
+      { step: 'Calm',  productId: 'hand-butter', variantId: 'bud-of-rose', why: 'Calendula extract rather than oat in this one — the tin to reach for when skin is already reacting.' },
+      { step: 'Seal',  productId: 'hair-butter', why: 'Cupuaçu and murumuru are the heaviest butters we work with. Used sparingly, they hold everything else in.' }
     ]
   },
   dry: {
     title: 'The Deep Winter ritual',
-    intro: 'Pacific Northwest damp outside, dry heat inside. The answer is butters, and applying them to damp skin so there is water to seal in.',
+    intro: 'Dryness is a leak, not a shortage. Wash gently, then put back more than the day takes out.',
     steps: [
-      { step: 'Soften', productId: 'essential-oil-bath-bomb', variantId: 'lavender-dream', why: 'The cocoa butter heart melts into the water, so you come out conditioned rather than stripped.' },
-      { step: 'Wash',   productId: 'specialty-soap', variantId: 'turmeric-honey', why: 'Rich butters in the bar itself — cleansing that does not undo the bath.' },
-      { step: 'Face',   productId: 'face-cream', variantId: 'rose-frank', why: 'Mango, kokum and shea. Press it into damp skin, do not rub.' },
-      { step: 'Lips',   productId: 'lip-balm', variantId: 'vanilla-cocoa', why: 'Cocoa butter holds through wind in a way petrolatum never quite does.' }
+      { step: 'Wash',  productId: 'pine-tar-soap', why: 'Glycerin-rich and unscented, so it cleans without stripping the lipids you are trying to keep.' },
+      { step: 'Feed',  productId: 'hand-butter', variantId: 'vanilla', why: 'The richest tin in the range, and the one people come back for in January.' },
+      { step: 'Treat', productId: 'hair-butter', why: 'Scalp and ends both go dry in winter. This is the weekly reset.' },
+      { step: 'Face',  productId: 'face-oil-berry-bakuchiol', why: 'Berry-seed oils are light enough for a face that is dry rather than dehydrated.' }
     ]
   },
   sensitive: {
     title: 'The Nothing-Added ritual',
-    intro: 'When everything stings, the fix is subtraction. Every product here has a fragrance-free or near-neutral option so you can isolate what your skin is reacting to.',
+    intro: 'The shortest ingredient list we can manage. If your skin argues with products, start here and add nothing for a fortnight.',
     steps: [
-      { step: 'Cleanse', productId: 'powder-to-foam-cleanser', variantId: 'oat-original', why: 'No water, no preservatives, no surfactant harsh enough to matter.' },
-      { step: 'Tools',   productId: 'face-wipe-washing-net', variantId: 'set', why: 'Soft double-gauze instead of a disposable round that drags.' },
-      { step: 'Moisturise', productId: 'face-cream', variantId: 'blue-tansy', why: 'Blue tansy and aloe for skin that flushes.' },
-      { step: 'Underarms', productId: 'deodorant', variantId: 'unscented', why: 'No baking soda, no fragrance — the two usual culprits.' }
+      { step: 'Wash',  productId: 'pine-tar-soap', why: 'No essential oil at all. The only smell is the pine tar itself.' },
+      { step: 'Calm',  productId: 'hand-butter', variantId: 'bud-of-rose', why: 'Calendula, and very little else.' },
+      { step: 'Daily', productId: 'deodorant-creme', variantId: 'lavender-meadows', why: 'No aluminium and no alcohol — and a cream, so no drag on skin you have just shaved.' }
     ]
   },
   oily: {
-    title: 'The Clear & Balanced ritual',
-    intro: 'Oily skin is usually over-stripped skin overcompensating. Clarify with clay and charcoal, then — counter-intuitively — keep moisturising.',
+    title: 'The Clear Morning ritual',
+    intro: 'Oil is not the enemy; stripping it and triggering more is. Keep it simple and let the skin settle.',
     steps: [
-      { step: 'Wash',    productId: 'specialty-soap', variantId: 'charcoal-tea', why: 'Activated charcoal and tea tree, without the drying detergents.' },
-      { step: 'Cleanse', productId: 'powder-to-foam-cleanser', variantId: 'rice-clay', why: 'Rice and rose clay polish and absorb without scratching.' },
-      { step: 'Hydrate', productId: 'face-cream', variantId: 'blue-tansy', why: 'Light and matte. Skipping moisturiser is what made it oily.' },
-      { step: 'Freshen', productId: 'room-and-linen-spray', variantId: 'lemon-sage', why: 'Mist the pillowcase between washes.' }
+      { step: 'Wash',  productId: 'pine-tar-soap', why: 'A properly cured bar rinses clean without the squeak that makes skin overproduce.' },
+      { step: 'Treat', productId: 'face-oil-berry-bakuchiol', why: 'Bakuchiol for texture and congestion, without the peeling a retinol brings.' },
+      { step: 'Daily', productId: 'deodorant-creme', variantId: 'smoky-citrus', why: 'Citrus and woodsmoke, and nothing that blocks a pore.' }
     ]
   },
   aging: {
-    title: 'The Slow Glow ritual',
-    intro: 'Rosehip and sea buckthorn do the tone-and-texture work, gently and over months. Everything here is about consistency rather than intensity.',
+    title: 'The Long Game ritual',
+    intro: 'Nothing here works in a week. All of it works over a year.',
     steps: [
-      { step: 'Cleanse', productId: 'powder-to-foam-cleanser', variantId: 'rice-clay', why: 'A soft weekly polish that never compromises the barrier.' },
-      { step: 'Treat',   productId: 'face-cream', variantId: 'rose-frank', why: 'Rosehip for the plant-side of the vitamin A story, sea buckthorn for radiance.' },
-      { step: 'Wash',    productId: 'specialty-soap', variantId: 'rose-clay', why: 'Rose clay and geranium — gentle enough for daily use on the body.' },
-      { step: 'Scent',   productId: 'perfume', variantId: 'rose-oud', why: 'Alcohol-free, so it conditions the skin it wears on.' }
+      { step: 'Treat', productId: 'face-oil-berry-bakuchiol', why: 'Bakuchiol is the plant side of the retinol conversation, and berry-seed oils bring the antioxidants.' },
+      { step: 'Hands', productId: 'hand-butter', variantId: 'orange-blossom', why: 'Hands age faster than faces and get a fraction of the attention.' },
+      { step: 'Hair',  productId: 'hair-butter', why: 'Rosemary, fenugreek and moringa — the scalp half of the formula, used weekly.' }
     ]
   },
   muscle: {
-    title: 'The Recovery ritual',
-    intro: 'Heat, magnesium and the warming oils — arnica, camphor, menthol, ginger. Built for the evening after a long week.',
+    title: 'The After-Effort ritual',
+    intro: 'Heat, steam and something to work into the parts that ache.',
     steps: [
-      { step: 'Soak',    productId: 'essential-oil-bath-bomb', variantId: 'eucalyptus-mint', why: 'Epsom salt and a long, slow fizz.' },
-      { step: 'Rub',     productId: 'salve', variantId: 'muscle-rub', why: 'Arnica, camphor and menthol in a fast-penetrating base.' },
-      { step: 'Roll',    productId: 'essential-oil', variantId: 'ease', why: 'Copaiba and ginger, pre-diluted, for the shoulders at your desk.' },
-      { step: 'Wash',    productId: 'specialty-soap', variantId: 'cedar-moss', why: 'Cedarwood and moss — grounding, forest-green.' }
+      { step: 'Steam', productId: 'shower-steamers', why: 'Menthol and lemongrass, at the far end of the shower floor where the steam does the work.' },
+      { step: 'Work',  productId: 'hand-butter', variantId: 'citrus-mint', why: 'Mint, and enough slip to actually work into a shoulder.' },
+      { step: 'Settle', productId: 'beeswax-candle', variantId: 'hearth-and-hive', why: 'Warm and close. The signal that the day is over.' }
     ]
   },
   sleep: {
     title: 'The Wind-Down ritual',
-    intro: 'Scent is the fastest route to the nervous system. Lavender and chamomile, layered from the bath to the pillow.',
+    intro: 'Three things, in order, ending somewhere quiet.',
     steps: [
-      { step: 'Bath',   productId: 'essential-oil-bath-bomb', variantId: 'lavender-dream', why: 'Start the signal an hour before bed.' },
-      { step: 'Wash',   productId: 'specialty-soap', variantId: 'lavender-oat', why: 'Lavender and colloidal oat — calm on both counts.' },
-      { step: 'Roll',   productId: 'essential-oil', variantId: 'calm', why: 'Lavender and chamomile at the temples and wrists.' },
-      { step: 'Linens', productId: 'room-and-linen-spray', variantId: 'lavender-linen', why: 'Two pumps on the pillowcase, ten minutes before you lie down.' }
+      { step: 'Steam',   productId: 'shower-steamers', why: 'Citrus first — it clears the head before anything is asked to calm it.' },
+      { step: 'Soften',  productId: 'hand-butter', variantId: 'lavender-lemon', why: 'Lavender, done last thing, on hands you will smell as you fall asleep.' },
+      { step: 'Diffuse', productId: 'room-diffuser', variantId: 'calming-mind', why: 'Palo santo, lemon and rosewood, left to fill the room while you stop paying attention to it.' }
     ]
   },
   daily: {
-    title: 'The Everyday Essentials',
-    intro: 'The four things most people end up reordering. No concern to solve — just honest basics that do what they say.',
+    title: 'The Honest Basics ritual',
+    intro: 'The three you will actually finish, and nothing you will not.',
     steps: [
-      { step: 'Wash',    productId: 'specialty-soap', variantId: 'lavender-oat', why: 'The bestseller. Six-week cure, glycerin left in.' },
-      { step: 'Face',    productId: 'face-cream', variantId: 'rose-frank', why: 'Rich in the jar, matte on the skin.' },
-      { step: 'Lips',    productId: 'lip-balm', variantId: 'peppermint', why: 'Five ingredients, all edible.' },
-      { step: 'Underarms', productId: 'deodorant', variantId: 'bergamot-cedar', why: 'A jar lasts about three months.' }
+      { step: 'Wash',  productId: 'pine-tar-soap', why: 'One bar, no decisions.' },
+      { step: 'Hands', productId: 'hand-butter', variantId: 'citrus-mint', why: 'Kept by the sink, used without thinking about it.' },
+      { step: 'Daily', productId: 'deodorant-creme', variantId: 'smoky-citrus', why: 'A fingertip is a whole application.' }
     ]
   }
 };
 
-/** Scent quiz — three questions, weighted scoring onto scent families. */
+/**
+ * Scent quiz — three questions, weighted onto the families below.
+ *
+ * The weights only name families that products actually carry. A quiz that can
+ * land on a family with nothing in it is a quiz that sometimes recommends an
+ * empty shelf, so `tools/check-catalogue.mjs` checks every family here has at
+ * least one match and at least one product.
+ */
 export const SCENT_QUIZ = [
   {
     id: 'place',
     question: 'Where would you rather wake up?',
     options: [
-      { label: 'A cabin under Douglas firs',   sub: 'Damp bark, cold air',   weights: { woody: 3, earthy: 2 } },
-      { label: 'A garden after the rain',      sub: 'Wet petals, green stems', weights: { floral: 3, herbal: 2 } },
-      { label: 'A lemon grove at noon',        sub: 'Warm rind, bright light', weights: { citrus: 3, floral: 1 } },
-      { label: 'A herb kitchen mid-morning',   sub: 'Rosemary, sage, steam',   weights: { herbal: 3, earthy: 1 } }
+      { label: 'A cabin under Douglas firs',  sub: 'Damp bark, cold air',      weights: { woody: 3, unscented: 1 } },
+      { label: 'A garden after the rain',     sub: 'Wet petals, green stems',  weights: { floral: 3, herbal: 2 } },
+      { label: 'A lemon grove at noon',       sub: 'Warm rind, bright light',  weights: { citrus: 3, fruity: 1 } },
+      { label: 'A kitchen mid-morning',       sub: 'Rosemary, steam, honey',   weights: { herbal: 3, sweet: 1 } }
     ]
   },
   {
     id: 'want',
     question: 'What do you want the scent to do?',
     options: [
-      { label: 'Settle me',      sub: 'Lower the volume',      weights: { floral: 2, herbal: 2, earthy: 1 } },
-      { label: 'Wake me up',     sub: 'Sharpen the morning',   weights: { citrus: 3, herbal: 1 } },
-      { label: 'Ground me',      sub: 'Feet on the floor',     weights: { woody: 3, earthy: 2 } },
-      { label: 'Barely be there', sub: 'Clean, and that is all', weights: { unscented: 4 } }
+      { label: 'Settle me',       sub: 'Lower the volume',        weights: { floral: 2, herbal: 2, woody: 1 } },
+      { label: 'Wake me up',      sub: 'Sharpen the morning',     weights: { citrus: 3, herbal: 1 } },
+      { label: 'Comfort me',      sub: 'Vanilla, honey, close',   weights: { sweet: 3, fruity: 1 } },
+      { label: 'Barely be there', sub: 'Clean, and that is all',  weights: { unscented: 4 } }
     ]
   },
   {
     id: 'time',
     question: 'When will you reach for it?',
     options: [
-      { label: 'First thing',    sub: 'Before the day begins', weights: { citrus: 2, herbal: 2 } },
-      { label: 'Through the day', sub: 'At the desk, in the car', weights: { woody: 2, citrus: 1, floral: 1 } },
-      { label: 'Last thing',     sub: 'Bath, bed, quiet',      weights: { floral: 2, herbal: 2, earthy: 1 } },
-      { label: 'On the flare-ups', sub: 'When skin misbehaves', weights: { unscented: 4 } }
+      { label: 'First thing',      sub: 'Before the day begins',   weights: { citrus: 2, herbal: 2 } },
+      { label: 'Through the day',  sub: 'At the desk, in the car', weights: { fruity: 2, citrus: 1, floral: 1 } },
+      { label: 'Last thing',       sub: 'Shower, candle, quiet',   weights: { woody: 2, sweet: 2, floral: 1 } },
+      { label: 'On the flare-ups', sub: 'When skin misbehaves',    weights: { unscented: 4 } }
     ]
   }
 ];
 
+/**
+ * The seven families. Every note listed is one printed on a label in the
+ * range — nothing here describes a scent we do not actually sell.
+ */
 export const SCENT_PROFILES = {
-  woody:     { label: 'Woody & Grounding', body: 'Cedar, vetiver, fir and sandalwood. Quiet, warm, and closer to the forest floor than the flower bed.', color: '#7A6249' },
-  floral:    { label: 'Floral & Soft',     body: 'Rose, geranium, lavender and neroli. Gentle without being sweet — the scents that read as calm.',      color: '#C98E8E' },
-  citrus:    { label: 'Citrus & Bright',   body: 'Sweet orange, bergamot, lemon. The scent equivalent of opening a window.',                            color: '#E8A64C' },
-  herbal:    { label: 'Herbal & Clear',    body: 'Rosemary, peppermint, sage, eucalyptus. Clean, green, and slightly medicinal in the best way.',       color: '#5E9E7A' },
-  earthy:    { label: 'Earthy & Deep',     body: 'Moss, clay, patchouli and oakmoss. For people who like the smell of rain on soil.',                   color: '#5C7355' },
-  unscented: { label: 'Unscented & Pure',  body: 'Nothing added. For reactive skin, shared offices, and anyone who has had enough of being marketed a mood.', color: '#D3C2A6' }
+  citrus:    { label: 'Citrus & Bright',   body: 'Lemongrass, sweet orange, mandarin, grapefruit and bergamot. The scent equivalent of opening a window.',                     color: '#E8A64C' },
+  floral:    { label: 'Floral & Soft',     body: 'Rose bud, orange blossom, lavender, lilac and almond blossom. Gentle without being sweet — the scents that read as calm.',    color: '#C98E8E' },
+  herbal:    { label: 'Herbal & Clear',    body: 'Mint, lavender, lemongrass, rosemary and menthol. Clean, green, and slightly medicinal in the best way.',                     color: '#5E9E7A' },
+  woody:     { label: 'Woody & Grounding', body: 'Pine tar, palo santo, rosewood, amber and woodsmoke. Quiet, warm, and closer to the forest floor than the flower bed.',       color: '#7A6249' },
+  sweet:     { label: 'Sweet & Warm',      body: 'Vanilla, honey, coconut and brown sugar. Comfort rather than dessert — the ones you notice at the end of the day.',           color: '#C8961E' },
+  fruity:    { label: 'Fruity & Fresh',    body: 'Pear, peach, apricot and berry seed. Light, juicy, and gone before it can turn cloying.',                                     color: '#D98A6A' },
+  unscented: { label: 'Unscented & Pure',  body: 'Nothing added. For reactive skin, shared offices, and anyone who has had enough of being marketed a mood.',                    color: '#D3C2A6' }
 };
 
 /** Which variants to recommend per scent family. */
 export const SCENT_MATCHES = {
-  woody:     [['perfume','vetiver-vanilla'], ['specialty-soap','cedar-moss'], ['room-and-linen-spray','cedar-smoke'], ['deodorant','bergamot-cedar']],
-  floral:    [['perfume','rose-oud'], ['specialty-soap','rose-clay'], ['face-cream','rose-frank'], ['essential-oil-bath-bomb','rose-garden']],
-  citrus:    [['lip-balm','sweet-orange'], ['room-and-linen-spray','lemon-sage'], ['essential-oil-bath-bomb','citrus-grove'], ['deodorant','bergamot-cedar']],
-  herbal:    [['essential-oil','focus'], ['specialty-soap','lavender-oat'], ['salve','chest-rub'], ['deodorant','lavender-sage']],
-  earthy:    [['specialty-soap','cedar-moss'], ['room-and-linen-spray','douglas-fir'], ['perfume','vetiver-vanilla'], ['salve','calendula']],
-  unscented: [['lip-balm','unscented'], ['face-cream','fragrance-free'], ['deodorant','unscented'], ['shave-soap','unscented']]
+  citrus:    [['hand-butter','citrus-mint'], ['shower-steamers', null], ['deodorant-creme','smoky-citrus'], ['room-diffuser','peachy-summer']],
+  floral:    [['hand-butter','bud-of-rose'], ['deodorant-creme','lavender-meadows'], ['room-diffuser','almond-blossom'], ['beeswax-candle','summer-meadow']],
+  herbal:    [['hand-butter','lavender-lemon'], ['hair-butter', null], ['shower-steamers', null], ['deodorant-creme','lavender-meadows']],
+  woody:     [['pine-tar-soap', null], ['room-diffuser','calming-mind'], ['room-diffuser','bright-and-deep'], ['hair-butter', null]],
+  sweet:     [['hand-butter','vanilla'], ['beeswax-candle','hearth-and-hive'], ['room-diffuser','island-comfort'], ['room-diffuser','almond-blossom']],
+  fruity:    [['deodorant-creme','plush-pear'], ['room-diffuser','peachy-summer'], ['face-oil-berry-bakuchiol', null], ['hand-butter','orange-blossom']],
+  unscented: [['pine-tar-soap', null], ['hair-butter', null], ['face-oil-berry-bakuchiol', null], ['hand-butter','vanilla']]
 };
 
 /**
@@ -444,10 +461,10 @@ export const SCENT_MATCHES = {
 export const TESTIMONIALS = [];
 
 export const FAQS = [
-  { q: 'Why are there no preservatives?', a: 'Because most of what we make contains no water. Microbes need water to grow, so an anhydrous formula — a balm, a salve, a solid perfume, a powder cleanser — has nothing to preserve against. Where a formula does contain water, like the Room & Linen Spray, we say so and use a trace of grain alcohol. We would rather reformulate around the problem than add a preservative to solve it.' },
-  { q: 'Is this safe for children and eczema-prone skin?', a: 'This is the skin the company was built for. Our son\'s eczema is the reason any of it exists. Start with the fragrance-free and unscented options, patch test on a small area for a few days, and introduce one product at a time so you can tell what is helping. The bath bombs are formulated at an essential-oil strength that is gentle enough for children.' },
+  { q: 'Why are there no preservatives?', a: 'Because almost nothing we make contains water. Microbes need water to grow, so an anhydrous formula — a whipped butter, a face oil, a cream deodorant, a bar of soap — has nothing to preserve against. We would rather reformulate around the problem than add a preservative to solve it.' },
+  { q: 'Is this safe for children and eczema-prone skin?', a: 'This is the skin the company was built for. Our son\'s eczema is the reason any of it exists. Start with the Pine Tar Soap, which is unscented, and the Bud of Rose hand butter, which carries calendula rather than oat. Patch test on a small area for a few days and introduce one product at a time so you can tell what is helping.' },
   { q: 'How long do the products last?', a: 'Anhydrous products keep 12–18 months from the date on the base — vitamin E slows the oils from turning, which is the only kind of spoiling they can do. Soap only improves: a cured bar gets harder and milder with age. Keep everything out of direct sun and away from a steamy shower shelf.' },
-  { q: 'Why can I only get the CBD Muscle Rub in Washington?', a: 'State law. Hemp-derived CBD in topical products is regulated state by state, and we ship it only within Washington State so that we stay comfortably on the right side of it. Every other salve variant ships anywhere we ship.' },
+  { q: 'Is everything scented with essential oil?', a: 'Everything that is scented at all, yes — essential oil rather than fragrance oil, which is why some of the scents are quieter and why they fade rather than hang about. The Pine Tar Soap has no essential oil in it whatsoever; what you can smell is the pine tar.' },
   { q: 'What does "cured six weeks" actually mean?', a: 'Cold process soap is safe to use after about 48 hours, but it is still soft and full of water. Six weeks on a curing rack lets that water evaporate: the bar gets harder, lathers better, and lasts two or three times longer in the shower. It is the least glamorous part of the process and the one that matters most.' },
   { q: 'Do you test on animals?', a: 'Never. Formulas are tested on the founder, her family, and a very patient circle of friends. Nothing we make contains an animal-derived ingredient other than beeswax and honey, both from local Washington apiaries.' },
   { q: 'Where can I find you in person?', a: 'We sell at markets around the Seattle area through the season, including the Redmond Saturday Market, and through local handmade markets in Bothell. Follow along on Instagram for the current schedule — that is where dates get posted first.' },
@@ -513,7 +530,7 @@ export const JOURNAL = [
 
 export const STATS = [
   { value: 2012, suffix: '', label: 'The year the research started', prefix: '', group: false },
-  { value: 12,   suffix: '',  label: 'Formulas, made in small batches', prefix: '' },
+  { value: 8,    suffix: '',  label: 'Formulas, made in small batches', prefix: '' },
   { value: 6,    suffix: ' wks', label: 'Cure time on every soap bar', prefix: '' },
   { value: 100,  suffix: '%', label: 'Natural, with nothing hidden', prefix: '' }
 ];

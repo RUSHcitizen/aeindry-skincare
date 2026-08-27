@@ -192,7 +192,8 @@
   will-change: transform;
 }
 .hero__item a { display: block; }
-.hero__item svg.product-art { width: 100%; filter: drop-shadow(0 18px 26px rgb(28 45 32 / .22)); }
+.hero__item svg.product-art,
+.hero__item img.product-photo { width: 100%; filter: drop-shadow(0 18px 26px rgb(28 45 32 / .22)); }
 .hero__item figcaption {
   margin-top: 0.35rem;
   text-align: center;
@@ -867,10 +868,15 @@
 .pdp__info { display: grid; gap: var(--space-s); align-content: start; }
 .pdp__title { font-size: var(--step-5); line-height: 1.02; margin-block: 0.2rem; }
 .pdp__tagline { color: var(--text-soft); max-width: 42ch; }
-.pdp__rating { --gap: 0.6rem; }
-.stars { display: inline-flex; gap: 2px; }
-.stars svg { width: 15px; height: 15px; fill: var(--line-strong); }
-.stars svg.is-on { fill: var(--gilt); }
+.pdp__meta { --gap: 0.6rem; align-items: center; }
+.pdp__brand {
+  font: 600 0.72rem/1 var(--font-sans);
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--gilt-text);
+}
+.pdp__meta-dot {
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--line-strong); opacity: 0.7;
+}
 .pdp__price { font-family: var(--font-display); font-size: var(--step-3); font-variant-numeric: tabular-nums; }
 .pdp__price small { font-size: 0.44em; color: var(--text-faint); font-family: var(--font-sans); }
 .pdp__desc { max-width: 56ch; }
@@ -1910,4 +1916,150 @@ body:has(.invoice-page) .backdrop { display: none; }
   /* A line item split across a page break is a line item somebody disputes. */
   .inv-table tr { break-inside: avoid; }
   a[href^="#"]::after { content: ""; }
+}
+
+
+/* ============================================================
+   PRODUCT PHOTOGRAPHY
+   The generated vessels were SVGs that scaled to their box. A
+   photograph has to be told to, and told not to stretch — every
+   shot in the range is square, so `contain` keeps a tall bottle
+   tall inside a wider card rather than fattening it.
+   ============================================================ */
+.product-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  /* The shoot is on a white sweep and the site's ground is ivory. Multiply
+     drops that sweep into the page instead of stamping a white tile onto it,
+     which works because everything behind a product card here is lighter
+     than the product standing on it. */
+  mix-blend-mode: multiply;
+}
+/* On a dark ground multiply has nothing to do but crush the product to black,
+   so the sweep is softened with a little transparency instead. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .product-photo {
+    mix-blend-mode: normal; opacity: .94; border-radius: var(--r-md);
+  }
+}
+:root[data-theme="dark"] .product-photo {
+  mix-blend-mode: normal; opacity: .94; border-radius: var(--r-md);
+}
+.band--olive .product-photo { mix-blend-mode: normal; border-radius: var(--r-md); }
+
+/* ============================================================
+   SETS  ·  #/sets
+   Several products bought together for one reason. The card is
+   deliberately not a product card: it is a printed list with a
+   price at the bottom, closer to a menu than to a shop tile.
+   ============================================================ */
+.page-head__aside {
+  margin-top: 0.9rem;
+  font: 400 0.95rem/1.6 var(--font-sans);
+  color: var(--text-muted);
+}
+.page-head__aside a { color: var(--text); text-decoration: underline; text-underline-offset: 0.22em; }
+.page-head__aside a:hover { color: var(--gilt); }
+
+.sets {
+  display: grid;
+  gap: clamp(1.2rem, 2.4vw, 2rem);
+  /* 460px is chosen so four sets land two-by-two on a desktop wrap rather than
+     three-and-a-gap, and so a card is wide enough for a product name, a
+     variant and a price to sit on one line. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+}
+
+.set {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.4rem, 2.6vw, 2.1rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--paper-0) 78%, transparent);
+  backdrop-filter: blur(6px);
+  transition: border-color .5s var(--ease-out-expo), box-shadow .5s var(--ease-out-expo);
+}
+.set:hover { border-color: var(--line-strong); box-shadow: var(--shadow-lg); }
+
+.set__head { padding-bottom: 1.1rem; border-bottom: 1px solid var(--line); }
+.set__for {
+  font: 600 0.68rem/1 var(--font-sans);
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--gilt-text);
+  margin-bottom: 0.7rem;
+}
+.set__name { font: 400 clamp(1.5rem, 2.4vw, 1.95rem)/1.15 var(--font-display); color: var(--text); }
+.set__tagline { margin-top: 0.35rem; font: 400 1rem/1.5 var(--font-display); font-style: italic; color: var(--text-soft); }
+.set__blurb { margin-top: 0.65rem; font: 400 0.92rem/1.65 var(--font-sans); color: var(--text-muted); }
+
+.set__items { list-style: none; margin: 0; padding: 0.4rem 0 0; flex: 1; }
+.set__item {
+  display: grid;
+  grid-template-columns: 62px 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+.set__item:last-child { border-bottom: 0; }
+
+.set__media {
+  display: block;
+  width: 62px; height: 62px;
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--paper-1) 70%, transparent);
+  overflow: hidden;
+  transition: transform .45s var(--ease-out-expo);
+}
+.set__media:hover { transform: translateY(-2px) scale(1.04); }
+.set__media > * { width: 100%; height: 100%; object-fit: contain; }
+
+.set__item-name { font: 500 0.95rem/1.35 var(--font-sans); color: var(--text); }
+.set__item-name a { color: inherit; }
+.set__item-name a:hover { color: var(--gilt); }
+.set__item-variant { margin-top: 0.12rem; font: 400 0.8rem/1.3 var(--font-sans); color: var(--text-faint); }
+.set__item-price { font: 400 0.9rem/1 var(--font-display); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+.set__foot {
+  margin-top: 1.2rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 0.9rem;
+}
+.set__price { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+.set__price-now {
+  font: 400 1.5rem/1 var(--font-display); color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.set__price-was {
+  font: 400 0.95rem/1 var(--font-display); color: var(--text-faint);
+  text-decoration: line-through; font-variant-numeric: tabular-nums;
+}
+.set__save {
+  font: 600 0.66rem/1 var(--font-sans);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gilt-text);
+  padding: 0.32em 0.6em;
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  border-radius: 999px;
+}
+.set__foot .btn { flex: 0 0 auto; }
+
+.sets__more {
+  margin-top: clamp(2rem, 4vw, 3.2rem);
+  padding: clamp(1.4rem, 2.6vw, 2rem);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-lg);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 1rem;
+}
+.sets__more p { max-width: 46ch; font: 400 1rem/1.6 var(--font-sans); color: var(--text-soft); }
+
+@media (max-width: 520px) {
+  .set__foot { flex-direction: column; align-items: stretch; }
+  .set__foot .btn { width: 100%; justify-content: center; }
 }

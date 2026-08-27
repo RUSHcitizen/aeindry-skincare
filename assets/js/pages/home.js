@@ -20,9 +20,9 @@ import { initTilt } from '../ui/tilt.js';
 import { trackProgress } from '../core/scroll.js';
 
 /* The shelf, the spotlight and the encyclopedia all pull from real data. */
-const SHELF = ['salve', 'specialty-soap', 'face-cream', 'lip-balm'];
-const SHELF_TWO = ['deodorant', 'powder-to-foam-cleanser', 'essential-oil-bath-bomb', 'perfume'];
-const SPOTLIGHT = 'face-cream';
+const SHELF = ['hand-butter', 'pine-tar-soap', 'face-oil-berry-bakuchiol', 'deodorant-creme'];
+const SHELF_TWO = ['hair-butter', 'shower-steamers', 'beeswax-candle', 'room-diffuser'];
+const SPOTLIGHT = 'hand-butter';
 const ENCYCLOPEDIA = ['shea-butter', 'calendula', 'cocoa-butter', 'kaolin-clay', 'rosehip-oil', 'beeswax'];
 /* Forms that stay legible at glyph size — the sparser ones turn to specks. */
 const START_LEAVES = ['sprig', 'fern', 'bloom', 'seedstem', 'sprig', 'branch', 'bloom', 'fern'];

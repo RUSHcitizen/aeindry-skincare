@@ -1,450 +1,338 @@
 /**
- * Product catalogue — Aeindry Skincare
+ * Product catalogue — Aeindry Skincare and Bloom In Clover
  *
- * Names, categories, product claims and ingredient stories are taken from
- * aeindryskincare.com. Prices and variant line-ups are representative
- * placeholders (see README) — swap `price` / `variants` for live values.
+ * Every product here is one that exists and has been photographed. Names,
+ * scent notes, sizes and ingredient lists are read off the labels in the
+ * shoot; nothing is invented to fill a category out. Where a label does not
+ * say something, this file does not say it either.
  *
- * `art` drives the generated SVG illustration in lib/art.js:
- *   form  — which vessel to draw
- *   tint  — [from, to] background wash for the card media
- *   body  — main product colour
- *   cap   — lid / cap colour
- *   accent— highlight used for swirls, labels and glow
+ * ── PRICES ARE NOT FROM THE LABELS ────────────────────────────────────────
+ * The photographs show what the products are, not what they cost. Every
+ * `price` below is a placeholder carrying `pricePending: true`, and
+ * `tools/check-prices.mjs` lists them. Set the real ones before selling.
+ * When a WooCommerce store is connected the store's own prices win anyway —
+ * these only drive the catalogue preview.
+ *
+ * `photo` is the white-sweep product shot; `art` still drives the generated
+ * SVG, which is the fallback wherever a photo has not been taken yet.
  */
 
 export const CATEGORIES = [
-  { id: 'all',        label: 'Everything' },
-  { id: 'face',       label: 'Face Care' },
-  { id: 'soap',       label: 'Soaps' },
-  { id: 'body',       label: 'Body & Bath' },
-  { id: 'aroma',      label: 'Aromatherapy' },
-  { id: 'home',       label: 'Home' }
+  { id: 'all',    label: 'Everything' },
+  { id: 'body',   label: 'Body & Hands' },
+  { id: 'face',   label: 'Face' },
+  { id: 'soap',   label: 'Soap & Bath' },
+  { id: 'home',   label: 'Home & Aroma' }
 ];
+
+/** Photographed but priced provisionally — see the note above. */
+const PENDING = true;
 
 export const PRODUCTS = [
   {
-    id: 'specialty-soap',
-    name: 'Specialty Soap',
-    category: 'soap',
-    categoryLabel: 'Soaps',
-    tagline: 'Cold-pressed, clay-swirled, cured six weeks',
-    blurb: 'Handmade with plant-extracted colours and clays, scented with pure essential oil.',
-    description:
-      'Our specialty soaps are made the slow way. Exotic butters and herb-infused oils are blended with plant-extracted colours and mineral clays, scented only with pure essential oil, then cured for six full weeks so every bar lathers rich and rinses clean. No detergents, no synthetic fragrance, no dyes — just soap the way it was made before shortcuts existed.',
-    price: 12,
-    compareAt: null,
-    rating: 4.9,
-    reviews: 214,
-    badges: ['Bestseller'],
-    weight: '4.5 oz bar',
-    scentFamily: ['herbal', 'floral', 'earthy'],
-    concerns: ['eczema', 'dry', 'sensitive', 'daily'],
-    variants: [
-      { id: 'lavender-oat',   label: 'Lavender & Oat',        swatch: '#9B8FC7', note: 'Calming, colloidal oatmeal' },
-      { id: 'charcoal-tea',   label: 'Charcoal & Tea Tree',   swatch: '#3B3F43', note: 'Clarifying, for oily skin' },
-      { id: 'rose-clay',      label: 'Rose Clay & Geranium',  swatch: '#C98E8E', note: 'Gentle, for sensitive skin' },
-      { id: 'turmeric-honey', label: 'Turmeric & Honey',      swatch: '#D8A54A', note: 'Brightening, warm' },
-      { id: 'cedar-moss',     label: 'Cedarwood & Moss',      swatch: '#5C7355', note: 'Grounding, forest-green' }
-    ],
-    keyIngredients: ['shea-butter', 'cocoa-butter', 'olive-oil', 'coconut-oil', 'kaolin-clay', 'essential-oils'],
-    ingredients:
-      'Saponified oils of olive, organic virgin coconut, sustainable palm, castor and sweet almond; shea butter, cocoa butter, herb-infused oils, kaolin & rose clay, French green clay, activated charcoal, madder root, annatto, pure essential oils.',
-    benefits: [
-      'Six-week cure for a harder, longer-lasting bar',
-      'Naturally glycerin-rich — soap that moisturises as it cleans',
-      'Coloured only with clays, roots and botanicals',
-      'Scented with pure essential oil, never fragrance oil'
-    ],
-    howToUse: 'Lather between wet hands or on a washcloth, work over damp skin, rinse. Keep on a draining dish between washes and the bar will last months.',
-    art: { form: 'bar', tint: ['#FCF8FB', '#E9DFF0'], body: '#E6DAD0', cap: '#7E4EAE', accent: '#B98DDB' }
-  },
-
-  {
-    id: 'shave-soap',
-    name: 'Shave Soap',
-    category: 'soap',
-    categoryLabel: 'Soaps',
-    tagline: 'A closer pass, without the burn after',
-    blurb: 'Helps with a great shave — and saves you from the burning sensation afterward.',
-    description:
-      'Whipped to a dense, slippery lather that cushions the blade instead of foaming away under it. Bentonite clay adds the slip, kaolin adds the glide, and a base of shea and tallow-free butters keeps the skin conditioned so the pass after the pass does not sting. Built for a brush, forgiving without one.',
-    price: 14,
-    compareAt: null,
-    rating: 4.8,
-    reviews: 96,
-    badges: [],
-    weight: '3.5 oz puck',
-    scentFamily: ['woody', 'herbal'],
-    concerns: ['sensitive', 'daily'],
-    variants: [
-      { id: 'bay-rum',      label: 'Bay Rum',          swatch: '#8A5A3B', note: 'Classic, spiced' },
-      { id: 'sandal-vet',   label: 'Sandalwood & Vetiver', swatch: '#9C8663', note: 'Warm, woody' },
-      { id: 'unscented',    label: 'Unscented',        swatch: '#E3DAC9', note: 'For reactive skin' }
-    ],
-    keyIngredients: ['shea-butter', 'bentonite-clay', 'kaolin-clay', 'castor-oil'],
-    ingredients:
-      'Saponified oils of olive, coconut, castor and avocado; shea butter, bentonite clay, kaolin clay, glycerin, aloe vera, pure essential oils.',
-    benefits: [
-      'Dense, cushioning lather that will not collapse mid-shave',
-      'Bentonite clay for genuine blade slip',
-      'No drying detergents or synthetic foaming agents',
-      'Unscented option for reactive skin'
-    ],
-    howToUse: 'Wet the puck, load a damp brush with 20–30 seconds of swirling, build the lather on your face. Rinse the puck and let it dry open-air.',
-    art: { form: 'puck', tint: ['#F9F9FD', '#DFE3F0'], body: '#EDE4DC', cap: '#55609E', accent: '#949BCB' }
-  },
-
-  {
-    id: 'salve',
-    name: 'Herbal Salve',
+    id: 'hand-butter',
+    name: 'Botanical Hand Butter',
+    brand: 'Aeindry',
     category: 'body',
-    categoryLabel: 'Body & Bath',
-    tagline: 'Herb-infused oils, slowly drawn',
-    blurb: 'Made with skin-loving herb-infused oils — fast penetrating, moisturising, and infused with essential oil for added benefit.',
+    categoryLabel: 'Body & Hands',
+    tagline: 'Deep nourishing, with oat extract',
+    blurb: 'A dense, slow-melting butter for hands that work. Five scents, one tin.',
     description:
-      'Calendula, plantain, comfrey and chamomile steeped in oil for six weeks, then set with beeswax into a balm that melts on contact. Fast-penetrating rather than greasy — it sinks into cracked knuckles, weathered elbows and wind-burned cheeks and stays put. This is the formula the whole company grew out of.',
-    price: 18,
-    compareAt: null,
-    rating: 5.0,
-    reviews: 341,
-    badges: ['Bestseller', 'Where it began'],
+      'Whipped rather than poured, so it goes on light and then sinks in. Oat extract is the '
+      + 'quiet workhorse — it is what makes a rich butter calm rather than merely greasy — and the '
+      + 'Bud of Rose tin carries calendula instead. Made in small batches in Washington.',
+    price: 14, pricePending: PENDING,
     weight: '2 oz tin',
-    scentFamily: ['herbal', 'earthy'],
-    concerns: ['eczema', 'dry', 'sensitive', 'muscle'],
+    photo: 'hand-butter',
+    scentFamily: ['citrus', 'floral', 'herbal', 'sweet'],
+    concerns: ['dry', 'eczema', 'daily', 'sensitive'],
     variants: [
-      { id: 'calendula',    label: 'Calendula Rescue',    swatch: '#E0A93F', note: 'Eczema, cracked skin', price: 18 },
-      { id: 'muscle-rub',   label: 'Muscle Rub',          swatch: '#4E7C59', note: 'Arnica, camphor, menthol', price: 20 },
-      { id: 'cbd-muscle',   label: 'CBD-Infused Muscle Rub', swatch: '#2F5D3A', note: 'Ships to Washington State only', price: 34, restricted: 'WA' },
-      { id: 'chest-rub',    label: 'Chest Rub',           swatch: '#5E9BA8', note: 'Eucalyptus, easy breathing', price: 18 }
+      { id: 'citrus-mint',     label: 'Citrus Mint',     swatch: '#A8C63C', note: 'With oat extract' },
+      { id: 'lavender-lemon',  label: 'Lavender Lemon',  swatch: '#7B2E86', note: 'With oat extract' },
+      { id: 'orange-blossom',  label: 'Orange Blossom',  swatch: '#C8961E', note: 'With oat extract' },
+      { id: 'bud-of-rose',     label: 'Bud of Rose',     swatch: '#E8A0B4', note: 'With calendula extract' },
+      { id: 'vanilla',         label: 'Vanilla',         swatch: '#D9CDBA', note: 'With mango flower extract' }
     ],
-    keyIngredients: ['calendula', 'beeswax', 'shea-butter', 'olive-oil', 'essential-oils'],
-    ingredients:
-      'Olive oil infused with calendula, plantain, comfrey and chamomile; shea butter, beeswax, vitamin E, pure essential oils. CBD variant adds full-spectrum hemp extract.',
+    keyIngredients: ['shea-butter', 'cocoa-butter', 'oat-extract', 'calendula'],
+    ingredients: 'See the tin — full ingredient list is printed on every label.',
     benefits: [
-      'Six-week herbal infusion, never a quick heat extraction',
-      'Absorbs fast — conditions without a greasy film',
-      'Beeswax seals in moisture through the workday',
-      'Nothing but oil, wax and plants'
+      'Whipped, so it absorbs rather than sits',
+      'Oat extract to settle skin that reacts',
+      'Small batches, made in Washington'
     ],
-    howToUse: 'Warm a small amount between fingertips and press into clean, dry skin. Reapply as often as needed. For the muscle rub, massage into the area and wash hands after.',
-    note: 'CBD-Infused Muscle Rub ships within Washington State only.',
-    art: { form: 'tin', tint: ['#FDF9EF', '#F0E3C8'], body: '#E8DCC6', cap: '#A88322', accent: '#E3C56F' }
+    howToUse: 'Warm a little between your fingers and work into hands and cuticles. Best last thing at night.',
+    art: { form: 'tin', tint: ['#FAF6EE', '#EDE3D2'], body: '#EFE7D8', cap: '#A8C63C', accent: '#C8961E' }
   },
 
   {
-    id: 'face-cream',
-    name: 'Face Cream',
-    category: 'face',
-    categoryLabel: 'Face Care',
-    tagline: 'Exotic butters, ultra moisturising',
-    blurb: 'All-natural plant-based ultra moisturising face cream made with exotic butters and skin-loving oils.',
-    description:
-      'A rich, plant-based cream built on mango, kokum and shea butters with rosehip, jojoba and sea buckthorn oils. Thick in the jar, it thins to nothing on warm skin and leaves a soft, matte finish rather than a shine. Made in Washington in small batches, with no silicon, no formaldehyde donors and no harsh chemicals.',
-    price: 34,
-    compareAt: 39,
-    rating: 4.9,
-    reviews: 187,
-    badges: ['Bestseller'],
-    weight: '1.7 oz jar',
-    scentFamily: ['floral', 'unscented'],
-    concerns: ['dry', 'sensitive', 'aging', 'daily'],
-    variants: [
-      { id: 'rose-frank',  label: 'Rose & Frankincense', swatch: '#D9A2A8', note: 'Mature, dry skin' },
-      { id: 'blue-tansy',  label: 'Blue Tansy & Aloe',   swatch: '#7FA3C4', note: 'Reactive, redness-prone' },
-      { id: 'fragrance-free', label: 'Fragrance Free',   swatch: '#EDE4D5', note: 'Pure, for eczema' }
-    ],
-    keyIngredients: ['shea-butter', 'mango-butter', 'rosehip-oil', 'jojoba-oil', 'sea-buckthorn', 'vitamin-e'],
-    ingredients:
-      'Mango butter, kokum butter, shea butter, rosehip seed oil, jojoba oil, sea buckthorn oil, sweet almond oil, aloe vera, vitamin E, pure essential oils.',
-    benefits: [
-      'NO silicon, formaldehyde or harsh chemicals',
-      'Sinks in matte — wears cleanly under make-up',
-      'Sea buckthorn and rosehip for tone and texture',
-      'Handmade in small batches in Washington'
-    ],
-    howToUse: 'Warm a pea-sized amount between fingertips and press — do not rub — into damp skin, morning and night. Follow a serum, precede sunscreen.',
-    art: { form: 'jar', tint: ['#FDF6F5', '#F3DEE1'], body: '#F4EBE6', cap: '#A93E5C', accent: '#D96C87' }
-  },
-
-  {
-    id: 'powder-to-foam-cleanser',
-    name: 'Powder to Foam Cleanser',
-    category: 'face',
-    categoryLabel: 'Face Care',
-    tagline: 'Water-activated, waterless in the jar',
-    blurb: 'All natural and gentle on facial skin — a must-have for your daily facial care routine.',
-    description:
-      'A dry botanical powder that turns to soft foam the moment it meets water. Because there is no water in the jar there is no need for a preservative system, so the formula stays exactly as gentle as its ingredient list: oat, rice, kaolin and marshmallow root, ground fine and blended with a plant-derived foamer. Cleanses without stripping and doubles as a weekly gentle exfoliant.',
-    price: 26,
-    compareAt: null,
-    rating: 4.8,
-    reviews: 118,
-    badges: ['Preservative free'],
-    weight: '2.1 oz jar',
-    scentFamily: ['unscented', 'herbal'],
-    concerns: ['sensitive', 'daily', 'oily'],
-    variants: [
-      { id: 'oat-original', label: 'Oat & Marshmallow', swatch: '#E8D9BC', note: 'Everyday, all skin types' },
-      { id: 'rice-clay',    label: 'Rice & Rose Clay',  swatch: '#DDB6AE', note: 'Brightening' }
-    ],
-    keyIngredients: ['colloidal-oat', 'kaolin-clay', 'marshmallow-root', 'rice-powder'],
-    ingredients:
-      'Colloidal oatmeal, rice powder, kaolin clay, marshmallow root, chamomile, sodium cocoyl isethionate (coconut-derived), calendula, pure essential oils.',
-    benefits: [
-      'Waterless — so no preservatives are needed at all',
-      'Foams gently without stripping the skin barrier',
-      'Doubles as a soft weekly exfoliant',
-      'Travel-safe: nothing to spill, nothing to leak'
-    ],
-    howToUse: 'Tip half a teaspoon into a wet palm, add a little water and work into a foam. Massage over damp skin for 30 seconds, rinse warm. Keep the jar dry.',
-    art: { form: 'pot', tint: ['#FBFBF0', '#EAEACB'], body: '#F0E9DE', cap: '#918C2C', accent: '#E6E27C' }
-  },
-
-  {
-    id: 'face-wipe-washing-net',
-    name: 'Face Wipe & Washing Net',
-    category: 'face',
-    categoryLabel: 'Face Care',
-    tagline: 'The small tools that make the ritual',
-    blurb: 'A soft reusable face wipe and a foaming net that turns any bar into a cloud of lather.',
-    description:
-      'Two humble things that quietly upgrade everything else. The washing net whips a soap bar or a scoop of cleanser into a dense, air-light foam in seconds, so you use less product and get a better cleanse. The face wipe is soft double-gauze cotton — warm it under the tap to melt off the day, cool it to calm a flushed face. Both wash and reuse for years.',
-    price: 8,
-    compareAt: null,
-    rating: 4.7,
-    reviews: 64,
-    badges: ['Reusable'],
-    weight: 'Set of 2',
-    scentFamily: ['unscented'],
-    concerns: ['daily', 'sensitive'],
-    variants: [
-      { id: 'set',      label: 'Wipe + Net Set', swatch: '#E7E1D3', note: 'Both, together' },
-      { id: 'net-only', label: 'Washing Net only', swatch: '#CFE0DB', note: 'For your soap bar', price: 5 }
-    ],
-    keyIngredients: [],
-    ingredients: 'Double-gauze cotton face wipe. Foaming net: soft polyester mesh with a drawstring.',
-    benefits: [
-      'Turns a soap bar into rich foam in about ten seconds',
-      'Uses noticeably less product per wash',
-      'Machine washable — replaces disposable rounds',
-      'Hangs to dry between uses'
-    ],
-    howToUse: 'Wet the net, rub the bar into it a few times, squeeze and it foams. For the wipe: soak in warm water, wring, and press over the face to soften the day off.',
-    art: { form: 'net', tint: ['#F5FBFB', '#DCEEEE'], body: '#E9EFEE', cap: '#3D8A8C', accent: '#98D2D3' }
-  },
-
-  {
-    id: 'lip-balm',
-    name: 'Lip Balm',
+    id: 'hair-butter',
+    name: 'Hair Butter & Intensive Treatment Mask',
+    brand: 'Aeindry',
     category: 'body',
-    categoryLabel: 'Body & Bath',
-    tagline: 'Cocoa butter and beeswax, nothing clever',
-    blurb: 'All natural, made with highly moisturising cocoa butter, castor oil, avocado oil, organic virgin coconut oil and beeswax.',
+    categoryLabel: 'Body & Hands',
+    tagline: 'Root strength, botanical power',
+    blurb: 'A weekly mask for scalp and lengths, built on cupuaçu and murumuru.',
     description:
-      'Five ingredients, all of which you could eat. Cocoa butter for staying power, castor oil for that faint natural gloss, avocado and organic virgin coconut oil to soften, and beeswax to hold it all in place through a Pacific Northwest winter. It goes on smooth rather than waxy and does not need reapplying every ten minutes.',
-    price: 7,
-    compareAt: null,
-    rating: 4.9,
-    reviews: 428,
-    badges: ['Bestseller'],
-    weight: '0.15 oz tube',
-    scentFamily: ['citrus', 'herbal', 'unscented'],
-    concerns: ['dry', 'daily', 'sensitive'],
-    variants: [
-      { id: 'peppermint', label: 'Peppermint',      swatch: '#7FBFA0', note: 'Cooling, classic' },
-      { id: 'sweet-orange', label: 'Sweet Orange',  swatch: '#E8A64C', note: 'Bright, cheerful' },
-      { id: 'vanilla-cocoa', label: 'Vanilla Cocoa', swatch: '#B98A62', note: 'Warm, dessert-soft' },
-      { id: 'unscented',  label: 'Unscented',       swatch: '#EFE3CE', note: 'For the sensitive' }
-    ],
-    keyIngredients: ['cocoa-butter', 'castor-oil', 'avocado-oil', 'coconut-oil', 'beeswax'],
-    ingredients: 'Cocoa butter, castor oil, avocado oil, organic virgin coconut oil, beeswax, vitamin E, pure essential oil.',
+      'A thick treatment rather than a conditioner. Coconut oil and the cupuaçu and murumuru '
+      + 'butters do the conditioning; rosemary, neem, fenugreek and moringa are the scalp half of '
+      + 'the formula. Left on long enough it behaves like a mask, which is what it is.',
+    price: 24, pricePending: PENDING,
+    weight: '4 oz jar',
+    photo: 'hair-butter',
+    /* Cropped out of one panel of a three-panel listing image — the only frame
+       of this product on file — so 740 is as large as it honestly goes. */
+    photoWidths: [480, 740],
+    scentFamily: ['herbal', 'woody'],
+    concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: ['coconut-oil', 'cupuacu-butter', 'murumuru-butter', 'rosemary', 'neem', 'fenugreek', 'moringa'],
+    ingredients: 'Coconut oil, cupuaçu butter, murumuru butter, rosemary, neem, fenugreek, moringa.',
     benefits: [
-      'Five food-grade ingredients, nothing else',
-      'Cocoa butter holds through wind and cold',
-      'A natural sheen without any wax drag',
-      'No petrolatum, no synthetic flavour'
+      'Cupuaçu and murumuru — deeply restoring, rich in fatty acids',
+      'Rosemary and neem for the scalp, not just the lengths',
+      'Fenugreek and moringa, traditionally used for thinning'
     ],
-    howToUse: 'Swipe over lips as often as you like. Warm the tube in a pocket in deep winter for an easier glide.',
-    art: { form: 'tube', tint: ['#FDF6F2', '#F5DDD1'], body: '#5C4656', cap: '#C4713A', accent: '#EBAB77' }
+    howToUse: 'Work through damp hair from the scalp down. Leave twenty minutes, or overnight, then shampoo out.',
+    art: { form: 'jar', tint: ['#F6F2E8', '#E4DCC8'], body: '#EFE9DA', cap: '#6E7263', accent: '#A8C63C' }
   },
 
   {
-    id: 'deodorant',
-    name: 'Deodorant Cream',
+    id: 'deodorant-creme',
+    name: 'Natural Deodorant Creme',
+    brand: 'Aeindry',
     category: 'body',
-    categoryLabel: 'Body & Bath',
-    tagline: 'Baking-soda free, works all day',
-    blurb: 'All natural and free of baking soda, parabens, formaldehyde and silicon. Naturally scented, works all day without clogging your pores.',
+    categoryLabel: 'Body & Hands',
+    tagline: 'All natural, and it actually works',
+    blurb: 'A cream deodorant in a jar. No aluminium, no alcohol, no stick.',
     description:
-      'Most natural deodorants that fail do so for one of two reasons: they use baking soda, which burns, or they stop working by lunch. This one uses magnesium hydroxide and kaolin instead of soda to neutralise odour, arrowroot to handle moisture, and coconut oil for its own quiet antibacterial work. A pea-sized amount, smoothed in with fingertips, holds a full day.',
-    price: 16,
-    compareAt: null,
-    rating: 4.7,
-    reviews: 203,
-    badges: ['No baking soda'],
-    weight: '2 oz jar',
-    scentFamily: ['citrus', 'woody', 'unscented'],
+      'Applied with a fingertip rather than swiped. It is a cream, so it goes on without the drag '
+      + 'a stick leaves on freshly shaved skin, and there is no aluminium in it at all.',
+    price: 16, pricePending: PENDING,
+    weight: '2.15 oz jar',
+    photo: 'deodorant-lavender-meadows',
+    scentFamily: ['floral', 'herbal', 'fruity', 'citrus'],
     concerns: ['sensitive', 'daily'],
     variants: [
-      { id: 'bergamot-cedar', label: 'Bergamot & Cedar', swatch: '#A0824F', note: 'Fresh, unisex' },
-      { id: 'lavender-sage',  label: 'Lavender & Sage',  swatch: '#9E9BC0', note: 'Soft, herbal' },
-      { id: 'unscented',      label: 'Unscented',        swatch: '#EFE7D8', note: 'For freshly shaved skin' }
+      { id: 'lavender-meadows', label: 'Lavender Meadows', swatch: '#9B8FC7', note: 'Soft, herbal, calm',
+        photo: 'deodorant-lavender-meadows' },
+      { id: 'plush-pear',       label: 'Plush Pear',       swatch: '#C9D4A0', note: 'Soft · juicy · elegant' },
+      { id: 'smoky-citrus',     label: 'Smoky Citrus',     swatch: '#C4713A', note: 'Orange, lemon, woodsmoke',
+        photo: 'deodorant-smoky-citrus' }
     ],
-    keyIngredients: ['arrowroot', 'magnesium', 'kaolin-clay', 'coconut-oil', 'shea-butter'],
-    ingredients: 'Organic virgin coconut oil, shea butter, arrowroot powder, magnesium hydroxide, kaolin clay, candelilla wax, vitamin E, pure essential oils.',
-    benefits: [
-      'No baking soda — no stinging, no rash',
-      'Free of parabens, formaldehyde and silicon',
-      'Deodorises without blocking pores',
-      'A jar lasts roughly three months of daily use'
-    ],
-    howToUse: 'Warm a pea-sized amount between fingertips until it melts, then smooth into clean, dry underarms. Less is genuinely more.',
-    art: { form: 'tin', tint: ['#F8FBF4', '#E2EED6'], body: '#E9E5D8', cap: '#6E9450', accent: '#C4E0AC' }
+    keyIngredients: ['shea-butter', 'arrowroot', 'coconut-oil', 'essential-oils'],
+    ingredients: 'See the jar — full ingredient list is printed on every label.',
+    benefits: ['No aluminium', 'A cream, so no drag on shaved skin', 'Scented with essential oil only'],
+    howToUse: 'A pea-sized amount, warmed between fingertips and smoothed on. Less than you think.',
+    art: { form: 'jar', tint: ['#F7F4FA', '#E7E1F0'], body: '#F2EDE6', cap: '#9B8FC7', accent: '#C4713A' }
   },
 
   {
-    id: 'perfume',
-    name: 'Solid Perfume',
-    category: 'aroma',
-    categoryLabel: 'Aromatherapy',
-    tagline: 'Essential oil, set in butter and beeswax',
-    blurb: 'All natural essential oil perfume in solid form, made with skin-loving butter oil and beeswax.',
+    id: 'face-oil-berry-bakuchiol',
+    name: 'Berry Bakuchiol Face Oil',
+    brand: 'Aeindry',
+    category: 'face',
+    categoryLabel: 'Face',
+    tagline: 'Face oil loaded with antioxidants',
+    blurb: 'Bakuchiol and berry-seed oils, for skin that wants results without the sting.',
     description:
-      'Perfume without the alcohol, the sting, or the plume that fills a lift. Pure essential oils are blended into a base of shea butter, jojoba and beeswax, so the scent lifts off warm skin slowly and stays close. It sits in a pocket, survives a handbag, and never spills — and because the base is a balm, it conditions the skin it wears on.',
-    price: 22,
-    compareAt: null,
-    rating: 4.8,
-    reviews: 129,
-    badges: ['Alcohol free'],
-    weight: '0.5 oz tin',
-    scentFamily: ['floral', 'woody', 'citrus'],
-    concerns: ['daily', 'sensitive'],
-    variants: [
-      { id: 'rose-oud',    label: 'Rose & Oud',        swatch: '#B4667B', note: 'Deep, romantic' },
-      { id: 'neroli-fig',  label: 'Neroli & Fig',      swatch: '#C7B06B', note: 'Green, sunlit' },
-      { id: 'vetiver-vanilla', label: 'Vetiver & Vanilla', swatch: '#8B6B4A', note: 'Warm, woody' },
-      { id: 'lavender-bergamot', label: 'Lavender & Bergamot', swatch: '#9186BC', note: 'Clean, calming' }
-    ],
-    keyIngredients: ['shea-butter', 'jojoba-oil', 'beeswax', 'essential-oils'],
-    ingredients: 'Shea butter, jojoba oil, beeswax, sweet almond oil, vitamin E, pure essential oil blend.',
+      'Bakuchiol is the plant-side of the retinol conversation — it is used for the same reasons '
+      + 'and does not carry the same irritation. Blended here into berry-seed oils, which is where '
+      + 'the antioxidants come from.',
+    price: 34, pricePending: PENDING,
+    weight: '1 oz dropper bottle',
+    photo: 'face-oil-berry-bakuchiol',
+    scentFamily: ['fruity', 'unscented'],
+    concerns: ['aging', 'daily'],
+    variants: [],
+    keyIngredients: ['bakuchiol', 'rosehip-oil', 'raspberry-seed-oil'],
+    ingredients: 'See the bottle — full ingredient list is printed on the label.',
     benefits: [
-      'No alcohol, no synthetic fixatives, no phthalates',
-      'Wears close to the skin — considerate in shared spaces',
-      'Spill-proof for travel and handbags',
-      'Conditions the skin it is worn on'
+      'Bakuchiol rather than retinol — no sting, no peeling',
+      'Berry-seed oils for antioxidants',
+      'A few drops is a whole application'
     ],
-    howToUse: 'Swipe a fingertip across the surface and press onto pulse points — wrists, throat, behind the ears. Layer a second pass after a few hours.',
-    art: { form: 'tin-small', tint: ['#FCF6FA', '#EFDCEA'], body: '#E9D9E2', cap: '#9A4E86', accent: '#CE8BBC' }
+    howToUse: 'Two or three drops pressed into damp skin at night. Follow with a cream if you use one.',
+    art: { form: 'dropper', tint: ['#F7F2F6', '#E9DCE8'], body: '#C9A8D8', cap: '#7E4EAE', accent: '#B32644' }
   },
 
   {
-    id: 'essential-oil',
-    name: 'Essential Oil Roller',
-    category: 'aroma',
-    categoryLabel: 'Aromatherapy',
-    tagline: 'Pre-diluted, pocket-sized, ready to use',
-    blurb: 'Pure essential oil blends pre-diluted in fractionated coconut oil, in a steel roller bottle.',
+    id: 'pine-tar-soap',
+    name: 'Pine Tar Soap',
+    brand: 'Aeindry',
+    category: 'soap',
+    categoryLabel: 'Soap & Bath',
+    tagline: 'Unscented, all natural, handmade artisan soap',
+    blurb: 'The plainest bar we make, and the one people come back for.',
     description:
-      'Blended for a job rather than a mood board. Each roller carries a pure essential oil blend already diluted to a skin-safe strength in fractionated coconut oil, so there is nothing to measure and no risk of a burn. Stainless steel rollerball, amber glass to protect the oils from light, and a cap that has never once come loose in a bag.',
-    price: 18,
-    compareAt: null,
-    rating: 4.8,
-    reviews: 152,
-    badges: [],
-    weight: '10 ml roller',
-    scentFamily: ['herbal', 'citrus', 'woody'],
-    concerns: ['sleep', 'focus', 'muscle', 'daily'],
-    variants: [
-      { id: 'calm',   label: 'Calm — Lavender & Chamomile',   swatch: '#9186BC', note: 'Wind down' },
-      { id: 'focus',  label: 'Focus — Rosemary & Peppermint', swatch: '#5E9E7A', note: 'Desk hours' },
-      { id: 'breathe',label: 'Breathe — Eucalyptus & Ravensara', swatch: '#5E9BA8', note: 'Cold season' },
-      { id: 'ease',   label: 'Ease — Copaiba & Ginger',       swatch: '#C08A4B', note: 'Aching shoulders' }
-    ],
-    keyIngredients: ['essential-oils', 'coconut-oil', 'jojoba-oil'],
-    ingredients: 'Fractionated coconut oil, jojoba oil, pure essential oil blend. Amber glass bottle, stainless steel rollerball.',
-    benefits: [
-      'Pre-diluted to a skin-safe strength — no maths',
-      'Amber glass keeps the oils from degrading in light',
-      'Steel rollerball stays cool on the temples',
-      'Refillable — keep the bottle, replace the blend'
-    ],
-    howToUse: 'Roll over pulse points, temples or the back of the neck. For Breathe, roll across the chest and cup your hands to inhale.',
-    art: { form: 'roller', tint: ['#FBF8FC', '#E7DEEE'], body: '#A8763C', cap: '#43303E', accent: '#B98DDB' }
+      'Pine tar soap has been made for a very long time for a reason. This one is unscented — '
+      + 'the smell is the pine tar itself — and stamped by hand. Nothing added to make it prettier.',
+    price: 12, pricePending: PENDING,
+    weight: '4 oz bar',
+    photo: 'pine-tar-soap',
+    /* No essential oil in the bar at all; what you smell is the pine tar. */
+    scentFamily: ['unscented', 'woody'],
+    concerns: ['eczema', 'sensitive', 'dry'],
+    variants: [],
+    keyIngredients: ['pine-tar', 'olive-oil', 'coconut-oil', 'shea-butter'],
+    ingredients: 'See the label — full ingredient list is printed on every bar.',
+    benefits: ['Unscented — no essential oil at all', 'Hand-stamped, cured, cut by hand', 'Long-standing traditional formula'],
+    howToUse: 'Lather on a cloth or between wet hands. Keep it on a draining dish and it will last.',
+    art: { form: 'bar', tint: ['#F4EFE7', '#DFD3C2'], body: '#6B4A32', cap: '#3F3B31', accent: '#8B6444' }
   },
 
   {
-    id: 'essential-oil-bath-bomb',
-    name: 'Essential Oil Bath Bomb',
-    category: 'body',
-    categoryLabel: 'Body & Bath',
-    tagline: 'Natural colour, real fizz, safe for kids',
-    blurb: 'All natural bath bombs made with natural colours and fragrance that fizz and foam — and are safe to use with kids.',
+    id: 'shower-steamers',
+    name: 'Shower Steamers',
+    brand: 'Aeindry',
+    category: 'soap',
+    categoryLabel: 'Soap & Bath',
+    tagline: 'Lemongrass & orange',
+    blurb: 'Drop one on the shower floor and stand in it.',
     description:
-      'Coloured with clays and botanical powders rather than dyes, so nothing stains the tub or the towels, and scented only with essential oil at a strength that is gentle enough for children. Packed dense so the fizz lasts minutes rather than seconds, with a heart of cocoa butter that melts out and leaves the water soft.',
-    price: 9,
-    compareAt: null,
-    rating: 4.9,
-    reviews: 176,
-    badges: ['Kid safe'],
-    weight: '5 oz bomb',
-    scentFamily: ['floral', 'citrus', 'herbal'],
-    concerns: ['dry', 'sleep', 'muscle'],
-    variants: [
-      { id: 'lavender-dream', label: 'Lavender Dream',   swatch: '#9B8FC7', note: 'Bedtime' },
-      { id: 'citrus-grove',   label: 'Citrus Grove',     swatch: '#E8A64C', note: 'Morning soak' },
-      { id: 'eucalyptus-mint',label: 'Eucalyptus Mint',  swatch: '#6FAE9B', note: 'Stuffy heads' },
-      { id: 'rose-garden',    label: 'Rose Garden',      swatch: '#D48C9B', note: 'Soft and floral' }
-    ],
-    keyIngredients: ['cocoa-butter', 'epsom-salt', 'kaolin-clay', 'essential-oils'],
-    ingredients: 'Sodium bicarbonate, citric acid, Epsom salt, cornstarch, cocoa butter, kaolin clay, botanical colour (butterfly pea, madder root, spirulina, annatto), pure essential oils.',
-    benefits: [
-      'Botanical colour — no tub ring, no stained towels',
-      'Dense-packed for a long, slow fizz',
-      'Cocoa butter heart softens the water',
-      'Essential-oil strength gentle enough for children'
-    ],
-    howToUse: 'Run a warm bath, drop the bomb in and let it fizz out fully before you get in. Half a bomb is plenty for a small child.',
-    art: { form: 'sphere', tint: ['#FAF7FD', '#E4DAF1'], body: '#E5DCEE', cap: '#B98DDB', accent: '#7E4EAE' }
+      'Bicarbonate and citric acid with lemongrass, sweet orange and mandarin essential oils. '
+      + 'Not a bath bomb — these are made for a shower, where the steam does the work.',
+    price: 14, pricePending: PENDING,
+    weight: '5.6 oz',
+    photo: 'shower-steamers',
+    scentFamily: ['citrus', 'herbal'],
+    concerns: ['sleep', 'daily'],
+    variants: [],
+    keyIngredients: ['lemongrass', 'sweet-orange', 'mandarin', 'essential-oils'],
+    ingredients:
+      'Sodium bicarbonate, citric acid, cornstarch, sunflower oil, L-menthol, lemongrass essential oil, '
+      + 'sweet orange essential oil, mandarin essential oil.',
+    benefits: ['Essential oil, never fragrance oil', 'Menthol for a genuinely open-airways steam', 'Made for showers, not baths'],
+    howToUse: 'Place one at the far end of the shower floor, out of the direct stream. It will last the wash.',
+    art: { form: 'bomb', tint: ['#FAF7EC', '#EDE6CE'], body: '#F2EDDF', cap: '#A8C63C', accent: '#C8961E' }
   },
 
   {
-    id: 'room-and-linen-spray',
-    name: 'Room & Linen Spray',
+    id: 'beeswax-candle',
+    name: 'Beeswax Candle',
+    brand: 'Aeindry',
     category: 'home',
-    categoryLabel: 'Home',
-    tagline: 'Freshen the room, keep toxins at bay',
-    blurb: 'All natural Room and Linen Spray helps to freshen your space with the aroma of essential oils, keeping toxins at bay.',
+    categoryLabel: 'Home & Aroma',
+    tagline: 'All-natural wax, hand-poured in Washington',
+    blurb: 'Beeswax, a cotton wick, and a jar you will keep.',
     description:
-      'Distilled water, a little plant-derived solubiliser and pure essential oil — that is the whole formula. It freshens a room, a pillow, a gym bag or a car without the aerosol propellants, phthalates and synthetic musks that most air fresheners are built from. Fine mist, amber glass, and a scent that fades honestly instead of hanging for days.',
-    price: 16,
-    compareAt: null,
-    rating: 4.7,
-    reviews: 88,
-    badges: [],
-    weight: '4 oz bottle',
-    scentFamily: ['herbal', 'citrus', 'woody'],
+      'Beeswax burns slower and cleaner than paraffin and smells faintly of honey before it is '
+      + 'scented at all. Hand-poured in small batches.',
+    price: 26, pricePending: PENDING,
+    weight: '8 oz jar',
+    photo: 'candle-summer-meadow',
+    scentFamily: ['floral', 'sweet'],
+    concerns: ['sleep'],
+    variants: [
+      { id: 'summer-meadow', label: 'Summer Meadow', swatch: '#C9D4A0', note: 'Green, open, light',
+        photo: 'candle-summer-meadow' },
+      { id: 'hearth-and-hive', label: 'Hearth & Hive', swatch: '#C8961E', note: 'Honey, warm, close',
+        photo: 'candle-hearth-and-haze' }
+    ],
+    keyIngredients: ['beeswax', 'essential-oils'],
+    ingredients: 'Beeswax, cotton wick, essential oils.',
+    benefits: ['Beeswax, not paraffin or soy blend', 'Cotton wick', 'Hand-poured in Washington'],
+    howToUse: 'First burn, let the melt pool reach the edge — it sets how the rest of the candle burns.',
+    art: { form: 'jar', tint: ['#FBF7EC', '#F0E7D2'], body: '#F3EBD8', cap: '#C8961E', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'room-diffuser',
+    name: 'Room Diffuser',
+    brand: 'Bloom In Clover',
+    category: 'home',
+    categoryLabel: 'Home & Aroma',
+    tagline: '100% natural, made in USA',
+    blurb: 'Reed diffusers in five scents. They fill a room and then stay out of the way.',
+    description:
+      'A glass bottle, rattan reeds and a natural base. Turn the reeds when the scent fades and it '
+      + 'lifts again. From Bloom In Clover, our sister line.',
+    price: 22, pricePending: PENDING,
+    weight: '4 fl oz',
+    photo: 'diffuser-calming-mind',
+    scentFamily: ['woody', 'citrus', 'floral', 'sweet', 'fruity'],
     concerns: ['sleep', 'daily'],
     variants: [
-      { id: 'douglas-fir',  label: 'Douglas Fir',      swatch: '#3F6B4C', note: 'The Pacific Northwest, bottled' },
-      { id: 'lavender-linen', label: 'Lavender Linen', swatch: '#9186BC', note: 'Pillows and sheets' },
-      { id: 'lemon-sage',   label: 'Lemon & Sage',     swatch: '#B8C46E', note: 'Kitchens' },
-      { id: 'cedar-smoke',  label: 'Cedar & Smoke',    swatch: '#7A6249', note: 'Evenings in' }
+      { id: 'calming-mind',    label: 'Calming Mind',    swatch: '#8B8474', note: 'Palo santo · lemon · rosewood',
+        photo: 'diffuser-calming-mind' },
+      { id: 'bright-and-deep', label: 'Bright and Deep', swatch: '#5F6355', note: 'Bergamot · musk · amber',
+        photo: 'diffuser-bright-and-deep' },
+      { id: 'almond-blossom',  label: 'Almond Blossom',  swatch: '#E8D9C0', note: 'Almond blossom · vanilla · lilac',
+        photo: 'diffuser-almond-blossom' },
+      { id: 'island-comfort',  label: 'Island Comfort',  swatch: '#D9CDBA', note: 'Coconut · vanilla · brown sugar',
+        photo: 'diffuser-island-comfort' },
+      { id: 'peachy-summer',   label: 'Peachy Summer',   swatch: '#E5B98C', note: 'Grapefruit · peach · apricot',
+        photo: 'diffuser-peachy-summer' }
     ],
     keyIngredients: ['essential-oils'],
-    ingredients: 'Distilled water, polysorbate-20 (plant-derived solubiliser), pure essential oils, a trace of grain alcohol as a natural preservative.',
-    benefits: [
-      'No aerosol propellants, phthalates or synthetic musk',
-      'Safe on cotton and linen at a short distance',
-      'Amber glass protects the oils',
-      'Fades honestly rather than lingering for days'
-    ],
-    howToUse: 'Shake well. Mist two or three pumps into the air, or onto linens from about 30 cm. Spot-test delicate or coloured fabrics first.',
-    art: { form: 'spray', tint: ['#F7F9FC', '#DEE4EF'], body: '#6F7BB0', cap: '#2E1F2B', accent: '#98D2D3' }
+    ingredients: 'See the bottle — full ingredient list is printed on the label.',
+    benefits: ['No flame, no electricity', 'Turn the reeds to refresh', '100% natural, made in USA'],
+    howToUse: 'Put the reeds in and leave them an hour to draw. Turn them once a week.',
+    art: { form: 'bottle', tint: ['#FBFAF6', '#EFEADC'], body: '#F5F1E6', cap: '#C8961E', accent: '#A8C63C' }
   }
 ];
 
-/** Fast lookup by id. */
+/**
+ * Sets — several products bought together for one reason.
+ *
+ * Built out of `concerns` on the products above rather than a second hand-kept
+ * list, so a set can never quietly reference something that has left the
+ * catalogue. Price is the honest sum of the parts less the saving.
+ */
+export const SETS = [
+  {
+    id: 'dry-skin',
+    name: 'The Dry Skin Set',
+    concern: 'dry',
+    tagline: 'For skin that drinks everything and stays thirsty',
+    blurb: 'The two richest things we make, plus the bar that will not strip what they put back.',
+    lines: [
+      { productId: 'hand-butter', variantId: 'vanilla' },
+      { productId: 'hair-butter' },
+      { productId: 'pine-tar-soap' }
+    ],
+    saving: 6
+  },
+  {
+    id: 'sensitive',
+    name: 'The Calm Set',
+    concern: 'sensitive',
+    tagline: 'Nothing in here will argue with you',
+    blurb: 'Unscented soap, oat-extract butter and a deodorant with no aluminium in it.',
+    lines: [
+      { productId: 'pine-tar-soap' },
+      { productId: 'hand-butter', variantId: 'bud-of-rose' },
+      { productId: 'deodorant-creme', variantId: 'lavender-meadows' }
+    ],
+    saving: 5
+  },
+  {
+    id: 'unwind',
+    name: 'The Unwind Set',
+    concern: 'sleep',
+    tagline: 'An evening, arranged',
+    blurb: 'A steamer for the shower, a candle for after, and a diffuser that carries the room.',
+    lines: [
+      { productId: 'shower-steamers' },
+      { productId: 'beeswax-candle', variantId: 'summer-meadow' },
+      { productId: 'room-diffuser', variantId: 'calming-mind' }
+    ],
+    saving: 8
+  },
+  {
+    id: 'everyday',
+    name: 'The Everyday Set',
+    concern: 'daily',
+    tagline: 'The three you will actually finish',
+    blurb: 'Hands, underarms, face. The routine most people are really after.',
+    lines: [
+      { productId: 'hand-butter', variantId: 'citrus-mint' },
+      { productId: 'deodorant-creme', variantId: 'smoky-citrus' },
+      { productId: 'face-oil-berry-bakuchiol' }
+    ],
+    saving: 7
+  }
+];
+
 export const PRODUCT_MAP = new Map(PRODUCTS.map((p) => [p.id, p]));
 
 export const getProduct = (id) => PRODUCT_MAP.get(id) || null;
@@ -454,6 +342,41 @@ export const priceOf = (product, variantId) => {
   if (!product) return 0;
   const v = variantId && product.variants?.find((x) => x.id === variantId);
   return v && typeof v.price === 'number' ? v.price : product.price;
+};
+
+/**
+ * The photo for a product, or for one of its variants when that variant was
+ * shot separately. Returns null when nothing was photographed, which is the
+ * signal to fall back to the generated illustration.
+ */
+/**
+ * The rendered widths of a product's photograph.
+ *
+ * Two tiers for everything, but not always the same two: a source is only ever
+ * scaled down, never up, so a photograph cropped out of a smaller frame tops
+ * out lower. Declaring it here keeps the `w` descriptors in the srcset honest
+ * — a browser told 900 about a 740px file will happily choose it for a display
+ * size it cannot fill.
+ */
+export const PHOTO_WIDTHS = [480, 900];
+export const photoWidthsOf = (product, variantId) => {
+  const v = variantId && product?.variants?.find((x) => x.id === variantId);
+  return (v?.photo ? v.photoWidths : null) || product?.photoWidths || PHOTO_WIDTHS;
+};
+
+export const photoOf = (product, variantId) => {
+  if (!product) return null;
+  const v = variantId && product.variants?.find((x) => x.id === variantId);
+  return v?.photo || product.photo || null;
+};
+
+export const getSet = (id) => SETS.find((s) => s.id === id) || null;
+
+/** What a set costs, and what it saves — both derived, never stored twice. */
+export const setPricing = (set) => {
+  const full = (set?.lines || []).reduce(
+    (n, l) => n + priceOf(getProduct(l.productId), l.variantId), 0);
+  return { full, price: Math.max(0, full - (set?.saving || 0)), saving: set?.saving || 0 };
 };
 
 export const formatPrice = (n) =>

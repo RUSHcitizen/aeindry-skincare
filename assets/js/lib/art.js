@@ -1,3 +1,5 @@
+import { photoOf, photoWidthsOf } from '../data/products.js';
+import { asset } from './asset.js';
 /**
  * Parametric product illustration engine.
  *
@@ -547,6 +549,26 @@ const FORMS = {
  * @returns {string} SVG markup
  */
 export function productArt(product, opts = {}) {
+  /* A real photograph beats a generated vessel every time, so it wins whenever
+     one exists. The SVG stays as the fallback rather than being deleted: the
+     range is photographed in batches, and a product added next month should
+     look like a product on the day it is added, not like a gap. */
+  const photo = photoOf(product, opts.variantId);
+  if (photo) {
+    const cls = ['product-photo', opts.className].filter(Boolean).join(' ');
+    /* Not every source is big enough for the same tiers. A `w` descriptor the
+       file does not match makes the browser pick the wrong one, so the widths
+       are read off the catalogue rather than assumed. */
+    const widths = photoWidthsOf(product, opts.variantId);
+    const largest = widths[widths.length - 1];
+    const at = (w) => asset(`assets/img/products/${photo}-${w}.webp`);
+    return `<img class="${cls}" src="${at(largest)}"
+      srcset="${widths.map((w) => `${at(w)} ${w}w`).join(', ')}"
+      sizes="(max-width: 760px) 46vw, 320px"
+      width="${largest}" height="${largest}" loading="lazy" decoding="async"
+      alt="${escapeAttr(product.name)}">`;
+  }
+
   const art = { ...product.art };
   // A chosen variant re-tints the accent so the artwork tracks the scent.
   if (opts.variantId) {

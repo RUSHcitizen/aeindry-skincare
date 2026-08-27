@@ -92,7 +92,7 @@
   --text:        var(--stem-900);
   --text-soft:   var(--stem-700);
   --text-muted:  #6C6656;
-  --text-faint:  #837C69;
+  --text-faint:  #6A6350;
   --text-inverse: var(--paper-1);
 
   --line:        color-mix(in oklab, var(--stem-900) 13%, transparent);
@@ -108,6 +108,10 @@
   --leaf:         var(--sage-ink);
   --leaf-soft:    color-mix(in oklab, var(--sage-wash) 30%, var(--paper-1));
   --gilt:         var(--marigold-ink);
+  /* The same gold, dark enough to be read at label sizes. --gilt is a
+     decorative accent: at 3.4:1 on paper it is fine for a rule or a dot and
+     short of AA for the small caps that carry actual words. */
+  --gilt-text:    #8A6111;
 
   /* Botanical artwork inks. */
   --bot-ink:   var(--magenta-wash);
@@ -261,6 +265,7 @@
     --leaf:         var(--sage-lit);
     --leaf-soft:    color-mix(in oklab, var(--sage-ink) 34%, var(--stem-900));
     --gilt:         var(--marigold-wash);
+    --gilt-text:    var(--marigold-wash);
 
     --bot-ink:   var(--sage-wash);
     --bot-rose:  var(--rose-wash);
@@ -309,6 +314,7 @@
   --leaf:         var(--sage-lit);
   --leaf-soft:    color-mix(in oklab, var(--sage-ink) 34%, var(--stem-900));
   --gilt:         var(--marigold-wash);
+  --gilt-text:    var(--marigold-wash);
 
   --bot-ink:   var(--sage-wash);
   --bot-rose:  var(--rose-wash);

@@ -4,7 +4,9 @@
  *
  *   node tools/prep-photo.mjs <input> <out-dir> <basename> [--widths 1600,900,480]
  *                                                          [--quality 0.82]
- *                                                          [--fit contain|cover|trim --ratio 4:5]
+ *                                                          [--crop x,y,w,h]
+ *                                                          [--fit contain|cover|pad|trim --ratio 4:5]
+ *                                                          [--pad-color '#FFFFFF']
  *                                                          [--lossless] [--alpha-floor 6]
  *
  * Companion to remaster-art.mjs, which exists for a different job: that one
@@ -45,7 +47,8 @@ const positional = args.filter((a, i) =>
 const [input, outDir, basename] = positional;
 if (!input || !outDir || !basename) {
   console.error('usage: prep-photo.mjs <input> <out-dir> <basename> ' +
-    '[--widths 1600,900,480] [--quality 0.82] [--fit cover|trim --ratio 4:5] [--lossless] [--alpha-floor 6]');
+    '[--widths 1600,900,480] [--quality 0.82] [--crop x,y,w,h] ' +
+    '[--fit cover|pad|trim --ratio 4:5] [--pad-color \'#FFFFFF\'] [--lossless] [--alpha-floor 6]');
   process.exit(2);
 }
 
@@ -53,6 +56,8 @@ const widths = String(flag('widths', '1600,900,480')).split(',').map(Number).sor
 const quality = Number(flag('quality', 0.82));
 const fit = flag('fit', 'contain');
 const ratio = flag('ratio', '');
+const cropArg = flag('crop', '');
+const padColor = flag('pad-color', '#FFFFFF');
 const alphaFloor = Number(flag('alpha-floor', 6));
 const lossless = args.includes('--lossless');
 
@@ -73,7 +78,8 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage();
 
-const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, ratio, alphaFloor, lossless }) => {
+const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, ratio,
+                                             cropArg, padColor, alphaFloor, lossless }) => {
   const img = new Image();
   img.src = dataUrl;
   await img.decode();
@@ -101,8 +107,32 @@ const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, rati
   };
 
   /* The crop window, in source pixels. `contain` keeps the whole frame;
-     `cover` takes the largest centred rectangle of the requested ratio. */
+     `cover` takes the largest centred rectangle of the requested ratio; `pad`
+     keeps the whole frame and adds ground around it to reach the ratio. */
   let cx = 0, cy = 0, cw = SW, ch = SH;
+
+  /* An explicit rectangle runs before everything else, so a listing screenshot
+     with three panels in it can be reduced to the one panel that is a
+     photograph. Values are pixels, or percentages of the source when suffixed
+     with %. */
+  if (cropArg) {
+    const parts = cropArg.split(',').map((v) => v.trim());
+    if (parts.length !== 4) {
+      console.error(`--crop wants four values (x,y,w,h); got "${cropArg}"`);
+      process.exit(2);
+    }
+    const [rx, ry, rw, rh] = parts.map((v, i) => {
+      const span = i % 2 === 0 ? SW : SH;
+      return Math.round(v.endsWith('%') ? (parseFloat(v) / 100) * span : parseFloat(v));
+    });
+    cx = Math.max(0, Math.min(SW - 1, rx));
+    cy = Math.max(0, Math.min(SH - 1, ry));
+    cw = Math.max(1, Math.min(SW - cx, rw));
+    ch = Math.max(1, Math.min(SH - cy, rh));
+    if (cw !== rw || ch !== rh) {
+      console.error(`  note: --crop clipped to the source (${cw}x${ch} from ${rw}x${rh})`);
+    }
+  }
   if (fit === 'trim') {
     /* Everything outside the ink is empty pixels that still cost bytes and,
        worse, shrink the subject inside its own box. */
@@ -124,8 +154,26 @@ const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, rati
     const [rw, rh] = ratio.split(':').map(Number);
     if (rw > 0 && rh > 0) {
       const want = rw / rh;
-      if (SW / SH > want) { cw = Math.round(SH * want); cx = Math.round((SW - cw) / 2); }
-      else { ch = Math.round(SW / want); cy = Math.round((SH - ch) / 2); }
+      const w0 = cw, h0 = ch, x0 = cx, y0 = cy;
+      if (w0 / h0 > want) { cw = Math.round(h0 * want); cx = x0 + Math.round((w0 - cw) / 2); }
+      else { ch = Math.round(w0 / want); cy = y0 + Math.round((h0 - ch) / 2); }
+    }
+  }
+
+  /* `pad` is `contain` that keeps its promise. Padding a shot taken on a white
+     sweep out to a square adds white beside white — the seam is invisible and
+     the subject keeps its proportions, where `cover` would have cut the ends
+     off a wide arrangement. Padding a shot on any other ground would band
+     visibly, which is why the colour is a required decision, not a default
+     applied blindly. */
+  let padTo = null;
+  if (fit === 'pad' && ratio) {
+    const [rw, rh] = ratio.split(':').map(Number);
+    if (rw > 0 && rh > 0) {
+      const want = rw / rh;
+      padTo = cw / ch > want
+        ? { w: cw, h: Math.round(cw / want) }
+        : { w: Math.round(ch * want), h: ch };
     }
   }
 
@@ -198,12 +246,30 @@ const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, rati
     const c = document.createElement('canvas');
     c.width = W; c.height = H;
     c.getContext('2d').putImageData(new ImageData(dst, W, H), 0, 0);
+
+    /* Pad last, at output scale, on a canvas filled with the ground colour.
+       Doing it here rather than on the source means the padding is exact — no
+       resampling runs over the seam to soften it into a visible edge. */
+    let outW = W, outH = H, canvas = c;
+    if (padTo) {
+      outW = W;
+      outH = Math.max(1, Math.round((padTo.h / padTo.w) * W));
+      const pc = document.createElement('canvas');
+      pc.width = outW; pc.height = outH;
+      const ctx = pc.getContext('2d');
+      ctx.fillStyle = padColor;
+      ctx.fillRect(0, 0, outW, outH);
+      ctx.drawImage(c, Math.round((outW - W) / 2), Math.round((outH - H) / 2));
+      canvas = pc;
+    }
+
     // Lossless keeps alpha exact; worth it for a mark, wasteful for a photo.
-    const url = lossless ? c.toDataURL('image/png') : c.toDataURL('image/webp', quality);
-    out.push({ w: W, h: H, url, ext: lossless ? '.png' : '.webp', snapped });
+    const url = lossless ? canvas.toDataURL('image/png')
+                         : canvas.toDataURL('image/webp', quality);
+    out.push({ w: outW, h: outH, url, ext: lossless ? '.png' : '.webp', snapped });
   }
   return { source: `${SW}x${SH}`, crop: `${cw}x${ch}`, out };
-}, { dataUrl, widths, quality, fit, ratio, alphaFloor, lossless });
+}, { dataUrl, widths, quality, fit, ratio, cropArg, padColor, alphaFloor, lossless });
 
 console.log(`${input}  source ${results.source}` +
   (results.crop !== results.source ? `  cropped to ${results.crop}` : ''));

@@ -614,7 +614,8 @@
   padding: var(--space-l);
   min-height: 320px;
 }
-.modal__media svg.product-art { width: min(78%, 300px); filter: drop-shadow(0 26px 34px rgb(30 45 32 / .24)); animation: float-y 8s var(--ease-soft) infinite; }
+.modal__media svg.product-art,
+.modal__media img.product-photo { width: min(78%, 300px); filter: drop-shadow(0 26px 34px rgb(30 45 32 / .24)); animation: float-y 8s var(--ease-soft) infinite; }
 .modal__body { padding: var(--space-l); overflow-y: auto; display: flex; flex-direction: column; gap: var(--space-xs); }
 
 /* ---------- Forms ---------- */
@@ -768,6 +769,7 @@
 @media (max-width: 760px) {
   .modal { grid-template-columns: 1fr; max-height: 92svh; }
   .modal__media { min-height: 220px; padding: var(--space-m); }
-  .modal__media svg.product-art { width: 46%; }
+  .modal__media svg.product-art,
+  .modal__media img.product-photo { width: 46%; }
   .drawer { width: 100vw; }
 }

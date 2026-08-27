@@ -7,7 +7,7 @@
  */
 
 import { esc } from '../lib/dom.js';
-import { formatPrice, priceOf } from '../data/products.js';
+import { formatPrice, priceOf, photoOf } from '../data/products.js';
 import { productArt } from '../lib/art.js';
 import { botanical } from '../lib/botanical.js';
 import { isWished } from '../core/store.js';
@@ -26,6 +26,10 @@ const SPOTS = [
 ];
 
 export function productCard(product, { reveal = 'up', index = 0 } = {}) {
+  /* A photograph and a generated vessel want opposite stages. The vessel is a
+     tall object that needs floor under it and air around it; the photograph is
+     already a composed square and wants the frame to get out of its way. */
+  const photo = !!photoOf(product);
   const price = priceOf(product);
   const cheapest = Math.min(price, ...(product.variants || []).map((v) => v.price ?? price));
   const more = (product.variants || []).some((v) => (v.price ?? price) !== cheapest);
@@ -35,7 +39,7 @@ export function productCard(product, { reveal = 'up', index = 0 } = {}) {
   return `
   <article class="spec" data-reveal="${esc(reveal)}"
            style="--tint:${esc(product.art.tint[1])};--tint2:${esc(product.art.tint[0])};--accent-art:${esc(product.art.accent)}">
-    <div class="spec__stage">
+    <div class="spec__stage${photo ? ' spec__stage--photo' : ''}">
       <span class="spec__halo" aria-hidden="true"></span>
       <span class="spec__leaf" aria-hidden="true" style="${SPOTS[index % SPOTS.length]}">
         ${botanical(LEAVES[index % LEAVES.length], { seed: product.id, mode: 'line', stroke: 2.2 })}

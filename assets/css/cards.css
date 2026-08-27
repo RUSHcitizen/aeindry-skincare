@@ -121,7 +121,8 @@
 /* ---- the label plate ---- */
 .spec__plate {
   position: relative;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 3px;
   text-align: center;
   /* The shelf line, widened by half the grid gap so neighbouring cards join. */
@@ -151,6 +152,9 @@
 }
 .spec__name a::after { content: ""; position: absolute; inset: 0; z-index: 2; }
 .spec__note { font-size: var(--step--2); color: var(--text-muted); font-style: italic; }
+/* A name that wraps to two lines must not push its own price out of line with
+   the prices beside it. The note takes the slack instead. */
+.spec__note { margin-bottom: auto; }
 .spec__foot {
   display: flex;
   align-items: center;
@@ -197,4 +201,37 @@
   .spec-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-l) var(--space-s); }
   .spec__actions .btn { flex: 1; padding-inline: 0.6em; font-size: var(--step--2); }
   .spec__note { display: none; }
+}
+
+/* ---- the stage, when what stands on it is a photograph ----------------
+   The default stage is built for a generated vessel: a landscape box with
+   the bottle stood on its floor at 86% width, a halo behind it and a cast
+   shadow under it. A square photograph in that box is taller than the box
+   and, with nothing clipping it, spills over the card above and below.
+
+   A photograph needs none of that furniture — it was shot on a sweep with
+   its own light and its own ground — so the stage squares up to match the
+   crop and the staging is switched off. ------------------------------- */
+.spec__stage--photo {
+  aspect-ratio: 1;
+  place-items: center;
+  padding-bottom: 0;
+}
+.spec__stage--photo .spec__art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  /* The drop-shadow the SVG wants only darkens a square photo's four edges. */
+  filter: none;
+}
+.spec__stage--photo .spec__halo,
+.spec__stage--photo .spec__shadow { display: none; }
+/* The leaf stays. Multiplied through the white sweep it reads as a botanical
+   ghost across the product rather than a sticker beside it, which is the
+   whole trick — so it is dropped back to keep it a suggestion. */
+.spec__stage--photo .spec__leaf { opacity: .3; }
+.spec:hover .spec__stage--photo .spec__art,
+.spec:focus-within .spec__stage--photo .spec__art {
+  transform: translateY(-6px) scale(1.03);
+  filter: none;
 }

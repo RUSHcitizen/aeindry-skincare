@@ -13,7 +13,6 @@ import { toggleWish, isWished } from '../core/store.js';
 import { toast } from '../ui/toast.js';
 import notFound from './not-found.js';
 
-const STAR = '<path d="m12 3 2.6 6 6.4.6-4.8 4.3 1.4 6.3L12 17l-5.6 3.2 1.4-6.3L3 9.6 9.4 9 12 3Z"/>';
 
 export default function product({ params, query }) {
   const p = getProduct(params.id);
@@ -73,12 +72,17 @@ export default function product({ params, query }) {
             <h1 class="pdp__title" data-split="lines">${esc(p.name)}</h1>
             <p class="pdp__tagline body-lg" data-reveal="up">${esc(p.tagline)}</p>
 
-            <div class="pdp__rating cluster" data-reveal="fade">
-              <span class="stars" role="img" aria-label="${p.rating} out of 5">
-                ${Array.from({ length: 5 }, (_, i) =>
-                  `<svg viewBox="0 0 24 24" class="${i < Math.round(p.rating) ? 'is-on' : ''}">${STAR}</svg>`).join('')}
-              </span>
-              <span class="body-sm">${p.rating} · ${p.reviews} reviews</span>
+            <!-- Where a star rating would go on most shops. There are no
+                 reviews yet, and a row of five filled stars nobody left is the
+                 easiest lie an interface can tell — so this says what is
+                 actually known about the product instead. -->
+            <div class="pdp__meta cluster" data-reveal="fade">
+              <span class="pdp__brand">${esc(p.brand)}</span>
+              <span class="pdp__meta-dot" aria-hidden="true"></span>
+              <span class="body-sm">${esc(p.weight)}</span>
+              ${p.variants?.length ? `
+                <span class="pdp__meta-dot" aria-hidden="true"></span>
+                <span class="body-sm">${p.variants.length} scents</span>` : ''}
             </div>
 
             <p class="pdp__price" data-price data-reveal="up">
@@ -220,11 +224,12 @@ export default function product({ params, query }) {
           b.setAttribute('aria-pressed', String(on));
         });
 
+        /* No variant in the range is restricted today. The branch stays because
+           a restricted one is a data change, not a code change. */
         if (v?.restricted) {
           notice.hidden = false;
           notice.innerHTML = `<strong>Ships to ${esc(v.restricted)} only.</strong>
-            Hemp-derived CBD in topical products is regulated state by state, so this variant
-            stays inside Washington. Every other option ships anywhere we ship.`;
+            ${esc(v.restrictedWhy || 'This variant is not available outside that area.')}`;
         } else {
           notice.hidden = true;
         }

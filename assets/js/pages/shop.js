@@ -9,13 +9,19 @@ import { initReveal } from '../core/reveal.js';
 import { syncHash } from '../core/router.js';
 import { SCENT_PROFILES } from '../data/content.js';
 
+/* No "best rated" here. There are no reviews yet, and a sort that ranks by a
+   number nobody left is a lie the interface tells on the shop's behalf. */
 const SORTS = [
   { id: 'featured', label: 'Featured' },
   { id: 'price-asc', label: 'Price: low to high' },
   { id: 'price-desc', label: 'Price: high to low' },
-  { id: 'rating', label: 'Best rated' },
   { id: 'name', label: 'A–Z' }
 ];
+
+/* Every buyable thing: a product with variants is counted once per variant,
+   because that is how many distinct items are actually on the shelf. */
+const variantCount = () =>
+  PRODUCTS.reduce((n, p) => n + Math.max(1, p.variants?.length || 0), 0);
 
 const SCENTS = Object.entries(SCENT_PROFILES).map(([id, p]) => ({ id, label: p.label.split(' & ')[0], color: p.color }));
 
@@ -41,8 +47,13 @@ export default function shop({ query }) {
         </nav>
         <h1 class="display-lg" data-split="lines">The whole range</h1>
         <p class="lede" data-reveal="up" style="--reveal-delay:200ms">
-          Twelve formulas, each made in small batches by hand. Filter by what you need,
-          or by how you would like it to smell.
+          ${PRODUCTS.length} products, ${variantCount()} ways to have them, all made in
+          small batches by hand. Filter by what you need, or by how you would
+          like it to smell.
+        </p>
+        <p class="page-head__aside" data-reveal="up" style="--reveal-delay:280ms">
+          Rather be handed an answer? <a href="#/sets">See the sets</a> &mdash;
+          three or four things chosen together for one problem.
         </p>
       </div>
     </header>
@@ -230,9 +241,10 @@ function apply(list, state) {
   switch (state.sort) {
     case 'price-asc':  out.sort((a, b) => price(a) - price(b)); break;
     case 'price-desc': out.sort((a, b) => price(b) - price(a)); break;
-    case 'rating':     out.sort((a, b) => b.rating - a.rating || b.reviews - a.reviews); break;
     case 'name':       out.sort((a, b) => a.name.localeCompare(b.name)); break;
-    default:           out.sort((a, b) => (b.badges?.length || 0) - (a.badges?.length || 0) || b.reviews - a.reviews);
+    /* "Featured" is the order the catalogue is written in, which is a person's
+       decision about what should lead. Filtering must not reshuffle it. */
+    default:           out.sort((a, b) => list.indexOf(a) - list.indexOf(b));
   }
   return out;
 }
