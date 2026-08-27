@@ -17,12 +17,22 @@
 .sec-foot { margin-top: var(--space-xl); display: flex; justify-content: center; }
 
 /* ════════════════════ I. THE COVER ════════════════════ */
+/* The mark and the headline, locked together.
+   `--mark` is the one number that sizes the pair: the wreath takes it, and the
+   headline's overlap is a fraction of it, so the lockup holds its proportions
+   at every viewport instead of drifting apart as the two clamps disagree. */
+.cover__lockup {
+  --mark: min(430px, 58vw, 41svh);
+  display: grid;
+  justify-items: center;
+  width: 100%;
+}
 .cover__logo {
   position: relative;
-  margin: 0 0 var(--space-2xs);
+  margin: 0;
   /* Capped by height as well as width: the cover has to resolve inside one
      viewport, and the wreath is the piece that would push it over. */
-  width: min(400px, 56vw, 40svh);
+  width: var(--mark);
   display: grid;
   place-items: center;
   isolation: isolate;
@@ -127,7 +137,13 @@
 
 .cover__title {
   max-width: 16ch;
-  margin-block: 0.02em 0.04em;
+  /* Rises into the wreath's lower arc. A tenth of the mark is enough for the
+     two to interlock and not so much that the type lands on the dense flowers
+     at the bottom of the ring. Sits above the mark rather than under it —
+     type crossing artwork reads as intent, artwork crossing type as a mistake. */
+  position: relative;
+  z-index: 1;
+  margin-block: calc(var(--mark) * -0.1) 0.04em;
   /* One notch under display-lg: with the wreath above it, the headline no
      longer has to carry the whole cover on its own. */
   font-size: clamp(2.5rem, 6.6vw, 5rem);

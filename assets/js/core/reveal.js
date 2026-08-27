@@ -11,12 +11,45 @@ import { $$, prefersReducedMotion, splitText } from '../lib/dom.js';
 let observer = null;
 const seen = new WeakSet();
 
+/**
+ * Hand the element back to the normal paint path once its motion is over.
+ *
+ * The reveal ends on `filter: blur(0)` and keeps `will-change: opacity,
+ * transform`, and both of those persist for the life of the page. Either one is
+ * enough to hold the element on its own composited layer, and text on a
+ * composited layer is rendered with greyscale antialiasing instead of subpixel
+ * — which on a large, thin display face reads as permanently, unfixably soft.
+ * The blur really is zero; the type is still blurry. Clearing both once the
+ * transition finishes puts the glyphs back on the subpixel path.
+ */
+function settle(el) {
+  if (el.dataset.revealSettled) return;
+  el.dataset.revealSettled = '1';
+  el.classList.add('is-settled');
+}
+
+function watchSettle(el) {
+  const done = (e) => {
+    // Children of a split heading transition too; only the element's own
+    // filter finishing means the reveal is over.
+    if (e.target !== el || e.propertyName !== 'filter') return;
+    el.removeEventListener('transitionend', done);
+    settle(el);
+  };
+  el.addEventListener('transitionend', done);
+  // A transition that never runs (display:none at the time, a zero duration,
+  // a browser that skipped it) would otherwise leave the element promoted for
+  // good, so settle on a timer as well.
+  setTimeout(() => settle(el), 2600);
+}
+
 function ensureObserver() {
   if (observer) return observer;
   observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;
       entry.target.classList.add('is-in');
+      watchSettle(entry.target);
       observer.unobserve(entry.target);
     }
   }, {
@@ -50,7 +83,7 @@ export function initReveal(root = document) {
 
   const targets = $$('[data-reveal]', root).filter((n) => !seen.has(n));
   if (reduced) {
-    targets.forEach((n) => { n.classList.add('is-in'); seen.add(n); });
+    targets.forEach((n) => { n.classList.add('is-in'); settle(n); seen.add(n); });
     return;
   }
 
@@ -62,6 +95,7 @@ export function initReveal(root = document) {
     const rect = n.getBoundingClientRect();
     if (rect.top < window.innerHeight * 0.94 && rect.bottom > 0) {
       n.classList.add('is-in');
+      watchSettle(n);
     } else {
       io.observe(n);
     }
@@ -70,5 +104,5 @@ export function initReveal(root = document) {
 
 /** Reveal everything in a subtree right now (used when a route swaps in). */
 export function revealAll(root = document) {
-  $$('[data-reveal]', root).forEach((n) => n.classList.add('is-in'));
+  $$('[data-reveal]', root).forEach((n) => { n.classList.add('is-in'); settle(n); });
 }

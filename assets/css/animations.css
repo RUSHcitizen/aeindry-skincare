@@ -29,6 +29,25 @@
   filter: blur(0);
 }
 
+/* Once the motion is over, get out of the way.
+   A zero blur is still a filter, and `will-change` still promotes: both hold
+   the element on its own composited layer for the life of the page, and text
+   on a composited layer loses subpixel antialiasing. On Bodoni at display
+   sizes that reads as permanent softness — the blur is genuinely 0 and the
+   type is genuinely blurry. Dropping both is what makes the headline crisp.
+   Added by reveal.js on transitionend, so it never interrupts the animation. */
+[data-reveal].is-settled {
+  filter: none;
+  will-change: auto;
+}
+/* The identity transform promotes too — translate3d always does — so it goes
+   as well, except where something else drives the element after the reveal.
+   Those opt out by name rather than by cascade order, since this selector
+   out-specifies a plain class and would silently win. */
+[data-reveal].is-settled:not([data-keep-transform]) {
+  transform: none;
+}
+
 [data-reveal="up"]     { --reveal-y: 40px; }
 [data-reveal="down"]   { --reveal-y: -32px; }
 [data-reveal="left"]   { --reveal-x: 48px; --reveal-y: 0; }

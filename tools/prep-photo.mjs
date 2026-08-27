@@ -4,7 +4,8 @@
  *
  *   node tools/prep-photo.mjs <input> <out-dir> <basename> [--widths 1600,900,480]
  *                                                          [--quality 0.82]
- *                                                          [--fit contain|cover --ratio 4:5]
+ *                                                          [--fit contain|cover|trim --ratio 4:5]
+ *                                                          [--lossless] [--alpha-floor 6]
  *
  * Companion to remaster-art.mjs, which exists for a different job: that one
  * knocks a subject off a white ground and scales it *up*. This one only ever
@@ -44,7 +45,7 @@ const positional = args.filter((a, i) =>
 const [input, outDir, basename] = positional;
 if (!input || !outDir || !basename) {
   console.error('usage: prep-photo.mjs <input> <out-dir> <basename> ' +
-    '[--widths 1600,900,480] [--quality 0.82] [--fit cover --ratio 4:5]');
+    '[--widths 1600,900,480] [--quality 0.82] [--fit cover|trim --ratio 4:5] [--lossless] [--alpha-floor 6]');
   process.exit(2);
 }
 
@@ -52,6 +53,8 @@ const widths = String(flag('widths', '1600,900,480')).split(',').map(Number).sor
 const quality = Number(flag('quality', 0.82));
 const fit = flag('fit', 'contain');
 const ratio = flag('ratio', '');
+const alphaFloor = Number(flag('alpha-floor', 6));
+const lossless = args.includes('--lossless');
 
 const MIME = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
                '.webp': 'image/webp', '.gif': 'image/gif', '.avif': 'image/avif' };
@@ -70,7 +73,7 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage();
 
-const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, ratio }) => {
+const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, ratio, alphaFloor, lossless }) => {
   const img = new Image();
   img.src = dataUrl;
   await img.decode();
@@ -100,6 +103,23 @@ const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, rati
   /* The crop window, in source pixels. `contain` keeps the whole frame;
      `cover` takes the largest centred rectangle of the requested ratio. */
   let cx = 0, cy = 0, cw = SW, ch = SH;
+  if (fit === 'trim') {
+    /* Everything outside the ink is empty pixels that still cost bytes and,
+       worse, shrink the subject inside its own box. */
+    let x0 = SW, x1 = 0, y0 = SH, y1 = 0;
+    for (let y = 0; y < SH; y++) for (let x = 0; x < SW; x++) {
+      if (S[(y * SW + x) * 4 + 3] > 8) {
+        if (x < x0) x0 = x; if (x > x1) x1 = x;
+        if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+    }
+    if (x1 >= x0) {
+      const pad = Math.round(Math.max(x1 - x0, y1 - y0) * 0.015);
+      cx = Math.max(0, x0 - pad); cy = Math.max(0, y0 - pad);
+      cw = Math.min(SW - cx, x1 - x0 + 1 + pad * 2);
+      ch = Math.min(SH - cy, y1 - y0 + 1 + pad * 2);
+    }
+  }
   if (fit === 'cover' && ratio) {
     const [rw, rh] = ratio.split(':').map(Number);
     if (rw > 0 && rh > 0) {
@@ -122,16 +142,25 @@ const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, rati
       const y0 = cy + Math.floor(y * sy), y1 = Math.min(cy + ch, cy + Math.ceil((y + 1) * sy));
       for (let x = 0; x < W; x++) {
         const x0 = cx + Math.floor(x * sx), x1 = Math.min(cx + cw, cx + Math.ceil((x + 1) * sx));
+        /* Premultiplied. Averaging colour without weighting by alpha lets a
+           fully transparent pixel's colour vote as loudly as an opaque one,
+           which is what puts a pale halo around a knocked-out subject. */
         let r = 0, g = 0, b = 0, a = 0, n = 0;
         for (let yy = y0; yy < y1; yy++) {
           let i = (yy * SW + x0) * 4;
           for (let xx = x0; xx < x1; xx++, i += 4) {
-            r += toLinear[S[i]]; g += toLinear[S[i + 1]]; b += toLinear[S[i + 2]];
+            const w = S[i + 3] / 255;
+            r += toLinear[S[i]] * w; g += toLinear[S[i + 1]] * w; b += toLinear[S[i + 2]] * w;
             a += S[i + 3]; n++;
           }
         }
         const o = (y * W + x) * 4;
-        px[o] = r / n; px[o + 1] = g / n; px[o + 2] = b / n; px[o + 3] = a / n;
+        const am = (a / n) / 255;
+        // Back to straight alpha, so the encoder and the compositor agree.
+        px[o] = am > 0 ? (r / n) / am : 0;
+        px[o + 1] = am > 0 ? (g / n) / am : 0;
+        px[o + 2] = am > 0 ? (b / n) / am : 0;
+        px[o + 3] = a / n;
       }
     }
 
@@ -152,13 +181,29 @@ const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, rati
       }
     }
 
+    /* Snap the transparent ground to exactly clear.
+       A lossy encoder treats alpha as just another channel to approximate, so
+       a knocked-out subject comes back with a percent of the frame sitting at
+       alpha 1-8 — invisible on a matching ground, a faint rectangle the size of
+       the image on any other. Flattening it first both removes the haze and
+       gives the encoder a large uniform region to compress. */
+    let snapped = 0;
+    for (let i = 0; i < W * H; i++) {
+      if (dst[i * 4 + 3] > 0 && dst[i * 4 + 3] <= alphaFloor) {
+        dst[i * 4] = dst[i * 4 + 1] = dst[i * 4 + 2] = dst[i * 4 + 3] = 0;
+        snapped++;
+      }
+    }
+
     const c = document.createElement('canvas');
     c.width = W; c.height = H;
     c.getContext('2d').putImageData(new ImageData(dst, W, H), 0, 0);
-    out.push({ w: W, h: H, webp: c.toDataURL('image/webp', quality) });
+    // Lossless keeps alpha exact; worth it for a mark, wasteful for a photo.
+    const url = lossless ? c.toDataURL('image/png') : c.toDataURL('image/webp', quality);
+    out.push({ w: W, h: H, url, ext: lossless ? '.png' : '.webp', snapped });
   }
   return { source: `${SW}x${SH}`, crop: `${cw}x${ch}`, out };
-}, { dataUrl, widths, quality, fit, ratio });
+}, { dataUrl, widths, quality, fit, ratio, alphaFloor, lossless });
 
 console.log(`${input}  source ${results.source}` +
   (results.crop !== results.source ? `  cropped to ${results.crop}` : ''));
@@ -168,8 +213,9 @@ if (!results.out.length) {
   process.exit(1);
 }
 for (const r of results.out) {
-  const file = join(outDir, `${basename}-${r.w}.webp`);
-  writeFileSync(file, Buffer.from(r.webp.split(',')[1], 'base64'));
-  console.log(`  ${r.w}x${r.h}  ${(statSync(file).size / 1024).toFixed(0)} KB  ${resolve(file)}`);
+  const file = join(outDir, `${basename}-${r.w}${r.ext}`);
+  writeFileSync(file, Buffer.from(r.url.split(',')[1], 'base64'));
+  console.log(`  ${r.w}x${r.h}  ${(statSync(file).size / 1024).toFixed(0)} KB` +
+    (r.snapped ? `  (${r.snapped} near-clear px snapped)` : '') + `  ${resolve(file)}`);
 }
 await browser.close();

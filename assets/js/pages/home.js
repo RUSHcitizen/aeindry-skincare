@@ -56,16 +56,21 @@ export default function home() {
       ${petalDrift(7, 'cover')}
 
       <div class="wrap cover__inner">
-        <!-- The wreath is the cover image. Everything else is set around it. -->
-        <figure class="cover__logo" data-reveal="scale">
-          <span class="cover__halo" aria-hidden="true"></span>
-          <img src="assets/img/logo-wreath.webp" width="816" height="768" decoding="async" fetchpriority="high"
-               alt="Aeindry Skincare — Purity is Essence">
-        </figure>
+        <!-- The mark and the line it carries are one lockup, not two stacked
+             blocks: the headline rises into the wreath's lower arc so the pair
+             reads as a single object. The wreath already says "purity is
+             essence" in small caps; the headline is that line said out loud. -->
+        <div class="cover__lockup">
+          <figure class="cover__logo" data-reveal="scale" data-keep-transform>
+            <span class="cover__halo" aria-hidden="true"></span>
+            <img src="assets/img/logo-wreath.webp" width="900" height="935" decoding="async" fetchpriority="high"
+                 alt="Aeindry Skincare — Purity is Essence">
+          </figure>
 
-        <h1 class="cover__title display-lg" data-reveal="ink" data-split="words" data-split-step="120">
-          Purity is <em>Essence</em>
-        </h1>
+          <h1 class="cover__title display-lg" data-reveal="ink" data-split="words" data-split-step="120">
+            Purity is <em>Essence</em>
+          </h1>
+        </div>
 
         <div class="cover__rule" data-reveal="fade" style="--reveal-delay:480ms">
           <span></span>${botanical('sprig', { seed: 'rule', mode: 'line', stroke: 2.4 })}<span></span>
