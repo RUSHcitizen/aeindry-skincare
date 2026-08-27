@@ -81,8 +81,10 @@ export default function product({ params, query }) {
               <span class="pdp__meta-dot" aria-hidden="true"></span>
               <span class="body-sm">${esc(p.weight)}</span>
               ${p.variants?.length ? `
+                <!-- "options", not "scents": several products vary by size or
+                     by packaging, and the shaving soap varies by both. -->
                 <span class="pdp__meta-dot" aria-hidden="true"></span>
-                <span class="body-sm">${p.variants.length} scents</span>` : ''}
+                <span class="body-sm">${p.variants.length} options</span>` : ''}
             </div>
 
             <p class="pdp__price" data-price data-reveal="up">

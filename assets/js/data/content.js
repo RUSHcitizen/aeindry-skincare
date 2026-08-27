@@ -314,71 +314,76 @@ export const ROUTINES = {
     intro: 'This is the routine the company was built to solve. Strip nothing, seal everything, and keep the ingredient list short enough to rule things out.',
     steps: [
       { step: 'Wash',  productId: 'pine-tar-soap', why: 'Unscented, and pine tar has been used on angry skin for a very long time. Nothing volatile in the bar at all.' },
-      { step: 'Calm',  productId: 'hand-butter', variantId: 'bud-of-rose', why: 'Calendula extract rather than oat in this one — the tin to reach for when skin is already reacting.' },
-      { step: 'Seal',  productId: 'hair-butter', why: 'Cupuaçu and murumuru are the heaviest butters we work with. Used sparingly, they hold everything else in.' }
+      { step: 'Calm',  productId: 'botanical-hand-butter', variantId: 'bud-of-rose', why: 'Calendula extract rather than oat in this one — the tin to reach for when skin is already reacting.' },
+      { step: 'Seal',  productId: 'body-balm', variantId: 'barrier-repair', why: 'A balm has no water in it, so it seals rather than soaks. It goes on last, over anything wetter.' }
     ]
   },
   dry: {
     title: 'The Deep Winter ritual',
-    intro: 'Dryness is a leak, not a shortage. Wash gently, then put back more than the day takes out.',
+    intro: 'Four steps, and the order of them is the whole trick: everything goes onto skin that is still damp, and the heaviest thing goes on last.',
     steps: [
-      { step: 'Wash',  productId: 'pine-tar-soap', why: 'Glycerin-rich and unscented, so it cleans without stripping the lipids you are trying to keep.' },
-      { step: 'Feed',  productId: 'hand-butter', variantId: 'vanilla', why: 'The richest tin in the range, and the one people come back for in January.' },
-      { step: 'Treat', productId: 'hair-butter', why: 'Scalp and ends both go dry in winter. This is the weekly reset.' },
-      { step: 'Face',  productId: 'face-oil-berry-bakuchiol', why: 'Berry-seed oils are light enough for a face that is dry rather than dehydrated.' }
+      { step: 'Wash',  productId: 'handmade-soap', why: 'Cold process with the glycerin left in — the part most commercial soap takes out and sells separately.' },
+      { step: 'Oil',   productId: 'body-oil', variantId: 'large', why: 'Straight out of the shower, onto wet skin. The water is what it is sealing in.' },
+      { step: 'Cream', productId: 'body-cream', variantId: 'aloe-oats-honey', why: 'Over the oil while skin is still slightly damp. Rich enough for winter shins.' },
+      { step: 'Hands', productId: 'botanical-hand-butter', variantId: 'vanilla', why: 'Hands take the most weather and get the least attention. Last thing at night.' }
     ]
   },
   sensitive: {
-    title: 'The Nothing-Added ritual',
-    intro: 'The shortest ingredient list we can manage. If your skin argues with products, start here and add nothing for a fortnight.',
+    title: 'The Short List ritual',
+    intro: 'Nothing here is scented with anything volatile, and every step is one you can stop and still have a routine.',
     steps: [
-      { step: 'Wash',  productId: 'pine-tar-soap', why: 'No essential oil at all. The only smell is the pine tar itself.' },
-      { step: 'Calm',  productId: 'hand-butter', variantId: 'bud-of-rose', why: 'Calendula, and very little else.' },
-      { step: 'Daily', productId: 'deodorant-creme', variantId: 'lavender-meadows', why: 'No aluminium and no alcohol — and a cream, so no drag on skin you have just shaved.' }
+      { step: 'Wash',  productId: 'pine-tar-soap', why: 'No essential oil in the bar whatsoever. If something is going to react, it will not be this.' },
+      { step: 'Tone',  productId: 'face-toner', variantId: 'rose-rosemary', why: 'Leaves skin damp for the next step, which is most of what a toner is for.' },
+      { step: 'Seal',  productId: 'face-cream', why: 'A cream over damp skin, and then nothing else. Short lists are easier to rule things out of.' },
+      { step: 'Daily', productId: 'deodorant-creme', variantId: 'lavender-meadows', why: 'No aluminium, and a cream rather than a stick — no drag on freshly shaved skin.' }
     ]
   },
   oily: {
     title: 'The Clear Morning ritual',
     intro: 'Oil is not the enemy; stripping it and triggering more is. Keep it simple and let the skin settle.',
     steps: [
-      { step: 'Wash',  productId: 'pine-tar-soap', why: 'A properly cured bar rinses clean without the squeak that makes skin overproduce.' },
-      { step: 'Treat', productId: 'face-oil-berry-bakuchiol', why: 'Bakuchiol for texture and congestion, without the peeling a retinol brings.' },
-      { step: 'Daily', productId: 'deodorant-creme', variantId: 'smoky-citrus', why: 'Citrus and woodsmoke, and nothing that blocks a pore.' }
+      { step: 'Wash',  productId: 'face-cleanser', variantId: 'clay', why: 'Clay absorbs excess oil without the squeak that makes skin overproduce to compensate.' },
+      { step: 'Mask',  productId: 'jelly-face-mask', variantId: 'green-alchemy', why: 'Once a week, fifteen minutes. It peels off in one piece, which is the best part.' },
+      { step: 'Treat', productId: 'face-oil', variantId: 'berry-bakuchiol', why: 'Bakuchiol for texture, without the peeling a retinol brings. Oil on oily skin is not the contradiction it sounds like.' }
     ]
   },
   aging: {
     title: 'The Long Game ritual',
     intro: 'Nothing here works in a week. All of it works over a year.',
     steps: [
-      { step: 'Treat', productId: 'face-oil-berry-bakuchiol', why: 'Bakuchiol is the plant side of the retinol conversation, and berry-seed oils bring the antioxidants.' },
-      { step: 'Hands', productId: 'hand-butter', variantId: 'orange-blossom', why: 'Hands age faster than faces and get a fraction of the attention.' },
-      { step: 'Hair',  productId: 'hair-butter', why: 'Rosemary, fenugreek and moringa — the scalp half of the formula, used weekly.' }
+      { step: 'Treat', productId: 'face-oil', variantId: 'berry-bakuchiol', why: 'Bakuchiol is the plant side of the retinol conversation, and berry-seed oils bring the antioxidants.' },
+      { step: 'Eyes',  productId: 'under-eye-serum', why: 'The thinnest skin on the body gets its own step. One drop per eye, patted, never rubbed.' },
+      { step: 'Seal',  productId: 'nocturn-balm', why: 'The night balm goes over everything. The smallest amount of anything we make.' },
+      { step: 'Hands', productId: 'hand-butter', variantId: 'amber-orange', why: 'Hands age faster than faces and get a fraction of the attention.' }
     ]
   },
   muscle: {
     title: 'The After-Effort ritual',
     intro: 'Heat, steam and something to work into the parts that ache.',
     steps: [
-      { step: 'Steam', productId: 'shower-steamers', why: 'Menthol and lemongrass, at the far end of the shower floor where the steam does the work.' },
-      { step: 'Work',  productId: 'hand-butter', variantId: 'citrus-mint', why: 'Mint, and enough slip to actually work into a shoulder.' },
-      { step: 'Settle', productId: 'beeswax-candle', variantId: 'hearth-and-hive', why: 'Warm and close. The signal that the day is over.' }
+      { step: 'Soak',  productId: 'coconut-milk-bath-salt', why: 'Whether the magnesium crosses the skin is still argued over; that a hot soak unknots a back is not.' },
+      { step: 'Steam', productId: 'shower-steamers', variantId: 'euc-mint-large', why: 'Eucalyptus and peppermint, at the far end of the shower floor where the steam does the work.' },
+      { step: 'Feet',  productId: 'foot-soak', why: 'A basin, water as hot as you can stand, twenty minutes.' },
+      { step: 'Work',  productId: 'foot-cream', why: 'Onto damp skin straight after the soak, then socks. The order matters more than either step alone.' }
     ]
   },
   sleep: {
-    title: 'The Wind-Down ritual',
-    intro: 'Three things, in order, ending somewhere quiet.',
+    title: 'The Wind Down ritual',
+    intro: 'Four things in the order you would actually do them, ending with the room rather than the skin.',
     steps: [
-      { step: 'Steam',   productId: 'shower-steamers', why: 'Citrus first — it clears the head before anything is asked to calm it.' },
-      { step: 'Soften',  productId: 'hand-butter', variantId: 'lavender-lemon', why: 'Lavender, done last thing, on hands you will smell as you fall asleep.' },
-      { step: 'Diffuse', productId: 'room-diffuser', variantId: 'calming-mind', why: 'Palo santo, lemon and rosewood, left to fill the room while you stop paying attention to it.' }
+      { step: 'Steam', productId: 'shower-steamers', variantId: 'lavender-large', why: 'Lavender, on the shower floor, half an hour before you want to be asleep.' },
+      { step: 'Oil',   productId: 'body-oil', why: 'Onto wet skin as you get out. It is the last thing that needs any effort.' },
+      { step: 'Light', productId: 'beeswax-candle', variantId: 'large', why: 'Beeswax burns slower and cleaner than paraffin, and smells of honey before it is scented at all.' },
+      { step: 'Room',  productId: 'room-spray', why: 'Over the bedding an hour before you get in, so it has faded to something you notice rather than smell.' }
     ]
   },
   daily: {
     title: 'The Honest Basics ritual',
-    intro: 'The three you will actually finish, and nothing you will not.',
+    intro: 'Nothing wrong, nothing to fix. Four good things you will actually finish.',
     steps: [
-      { step: 'Wash',  productId: 'pine-tar-soap', why: 'One bar, no decisions.' },
-      { step: 'Hands', productId: 'hand-butter', variantId: 'citrus-mint', why: 'Kept by the sink, used without thinking about it.' },
+      { step: 'Wash',  productId: 'face-cleanser', variantId: 'solid-oats-honey', why: 'A solid bar is the cheapest cleanser to keep going and the longest-lasting.' },
+      { step: 'Hands', productId: 'hand-butter', variantId: 'citrus-hearth', why: 'Kept by the sink and used without thinking about it.' },
+      { step: 'Lips',  productId: 'lip-balm', why: 'Cheap enough to keep one in every coat, which is the only system that works.' },
       { step: 'Daily', productId: 'deodorant-creme', variantId: 'smoky-citrus', why: 'A fingertip is a whole application.' }
     ]
   }
@@ -441,13 +446,13 @@ export const SCENT_PROFILES = {
 
 /** Which variants to recommend per scent family. */
 export const SCENT_MATCHES = {
-  citrus:    [['hand-butter','citrus-mint'], ['shower-steamers', null], ['deodorant-creme','smoky-citrus'], ['room-diffuser','peachy-summer']],
-  floral:    [['hand-butter','bud-of-rose'], ['deodorant-creme','lavender-meadows'], ['room-diffuser','almond-blossom'], ['beeswax-candle','summer-meadow']],
-  herbal:    [['hand-butter','lavender-lemon'], ['hair-butter', null], ['shower-steamers', null], ['deodorant-creme','lavender-meadows']],
-  woody:     [['pine-tar-soap', null], ['room-diffuser','calming-mind'], ['room-diffuser','bright-and-deep'], ['hair-butter', null]],
-  sweet:     [['hand-butter','vanilla'], ['beeswax-candle','hearth-and-hive'], ['room-diffuser','island-comfort'], ['room-diffuser','almond-blossom']],
-  fruity:    [['deodorant-creme','plush-pear'], ['room-diffuser','peachy-summer'], ['face-oil-berry-bakuchiol', null], ['hand-butter','orange-blossom']],
-  unscented: [['pine-tar-soap', null], ['hair-butter', null], ['face-oil-berry-bakuchiol', null], ['hand-butter','vanilla']]
+  citrus:    [['hand-butter','citrus-hearth'], ['shower-steamers','lemongrass-large'], ['deodorant-creme','smoky-citrus'], ['room-diffuser','peachy-summer']],
+  floral:    [['botanical-hand-butter','bud-of-rose'], ['deodorant-creme','lavender-meadows'], ['room-diffuser','almond-blossom'], ['face-toner','rose-rosemary']],
+  herbal:    [['botanical-hand-butter','lavender-lemon'], ['hair-butter', null], ['shower-steamers','euc-mint-large'], ['conditioner-bar','hemp-pan-rosemary']],
+  woody:     [['pine-tar-soap', null], ['room-diffuser','calming-mind'], ['room-diffuser','bright-and-deep'], ['beard-balm', null]],
+  sweet:     [['botanical-hand-butter','vanilla'], ['beeswax-candle','large'], ['room-diffuser','island-comfort'], ['face-cleanser','solid-oats-honey']],
+  fruity:    [['deodorant-creme','plush-pear'], ['room-diffuser','peachy-summer'], ['face-oil','berry-bakuchiol'], ['jelly-face-mask','berry-bloom-radiance']],
+  unscented: [['pine-tar-soap', null], ['leave-in-keratin', null], ['clay-face-mask', null], ['bamboo-soap-dish','large']]
 };
 
 /**

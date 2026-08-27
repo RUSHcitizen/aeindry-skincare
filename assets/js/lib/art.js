@@ -499,6 +499,75 @@ const FORMS = {
   },
 
   /* Amber spray bottle with a fine-mist head. */
+  /* Amber glass with a rubber bulb — a serum, a face oil, an under-eye. */
+  dropper(ids, art, rand) {
+    const { body, cap, accent } = art;
+    return `
+    ${groundShadow(ids, 100, 204, 40, 8)}
+    <g>
+      <!-- bulb -->
+      <path d="M90 34 Q90 26 100 26 Q110 26 110 34 L110 56 Q110 62 100 62 Q90 62 90 56 Z"
+            fill="url(#${ids.cap})"/>
+      <ellipse cx="100" cy="30" rx="10" ry="4" fill="${shade(cap, 0.2)}"/>
+      <!-- collar -->
+      <rect x="86" y="62" width="28" height="16" rx="2" fill="${shade(cap, -0.16)}"/>
+      <rect x="86" y="62" width="28" height="4" fill="${shade(cap, 0.1)}"/>
+      <!-- neck + shoulder -->
+      <rect x="90" y="78" width="20" height="10" fill="${shade(body, -0.22)}"/>
+      <path d="M80 100 Q80 90 90 88 L110 88 Q120 90 120 100 Z" fill="${shade(body, -0.08)}"/>
+      <!-- bottle -->
+      <path d="M76 100 L76 188 Q76 198 100 198 Q124 198 124 188 L124 100 Z" fill="url(#${ids.body})"/>
+      <path d="M79 120 L79 187 Q79 195 100 195 Q121 195 121 187 L121 120 Z"
+            fill="${shade(accent, -0.05)}" opacity="0.4"/>
+      <ellipse cx="100" cy="120" rx="21" ry="4.6" fill="${shade(accent, 0.42)}" opacity="0.55"/>
+      <!-- the pipette, seen through the glass -->
+      <rect x="98.4" y="92" width="3.2" height="86" rx="1.6" fill="${shade(cap, -0.1)}" opacity="0.5"/>
+      <path d="M76 100 L76 188 Q76 198 100 198 Q124 198 124 188 L124 100 Z" fill="url(#${ids.glass})"/>
+      <!-- label -->
+      <rect x="76" y="134" width="48" height="40" fill="${shade(body, 0.58)}" opacity="0.95"/>
+      <rect x="76" y="134" width="48" height="2" fill="${accent}" opacity="0.9"/>
+      ${monogram(100, 147, 14, shade(body, -0.5), 0.7)}
+      <text x="100" y="162" text-anchor="middle" font-family="Georgia, serif" font-size="8"
+            fill="${shade(body, -0.56)}" letter-spacing="1.8">AEINDRY</text>
+      <text x="100" y="170" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="4.4"
+            fill="${shade(body, -0.42)}" opacity="0.66" letter-spacing="1.1">${escapeAttr(art.sub || '')}</text>
+      <path d="M82 110 L82 190" stroke="#fff" stroke-width="3.2" opacity="0.34" stroke-linecap="round"/>
+      <path d="M119 110 L119 190" stroke="#fff" stroke-width="1.5" opacity="0.18" stroke-linecap="round"/>
+    </g>`;
+  },
+
+  /* A plain corked or screw-top bottle — oils, diffusers, toners. */
+  bottle(ids, art, rand) {
+    const { body, cap, accent } = art;
+    return `
+    ${groundShadow(ids, 100, 206, 44, 9)}
+    <g>
+      <!-- cap -->
+      <path d="M86 40 L86 62 L114 62 L114 40 Q114 34 100 34 Q86 34 86 40 Z" fill="url(#${ids.cap})"/>
+      <rect x="86" y="58" width="28" height="5" fill="${shade(cap, -0.24)}"/>
+      <!-- neck -->
+      <rect x="91" y="63" width="18" height="18" fill="${shade(body, -0.2)}"/>
+      <!-- shoulder + body -->
+      <path d="M74 112 Q74 92 91 81 L109 81 Q126 92 126 112 L126 186
+               Q126 200 100 200 Q74 200 74 186 Z" fill="url(#${ids.body})"/>
+      <path d="M78 126 L78 185 Q78 197 100 197 Q122 197 122 185 L122 126 Z"
+            fill="${shade(accent, -0.04)}" opacity="0.38"/>
+      <ellipse cx="100" cy="126" rx="22" ry="4.8" fill="${shade(accent, 0.44)}" opacity="0.55"/>
+      <path d="M74 112 Q74 92 91 81 L109 81 Q126 92 126 112 L126 186
+               Q126 200 100 200 Q74 200 74 186 Z" fill="url(#${ids.glass})"/>
+      <!-- label -->
+      <rect x="74" y="138" width="52" height="40" fill="${shade(body, 0.58)}" opacity="0.95"/>
+      <rect x="74" y="138" width="52" height="2" fill="${accent}" opacity="0.9"/>
+      ${monogram(100, 151, 14, shade(body, -0.5), 0.7)}
+      <text x="100" y="166" text-anchor="middle" font-family="Georgia, serif" font-size="8.4"
+            fill="${shade(body, -0.56)}" letter-spacing="1.9">AEINDRY</text>
+      <text x="100" y="174" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="4.4"
+            fill="${shade(body, -0.42)}" opacity="0.66" letter-spacing="1.1">${escapeAttr(art.sub || '')}</text>
+      <path d="M80 104 L80 190" stroke="#fff" stroke-width="3.4" opacity="0.32" stroke-linecap="round"/>
+      <path d="M121 104 L121 190" stroke="#fff" stroke-width="1.6" opacity="0.18" stroke-linecap="round"/>
+    </g>`;
+  },
+
   spray(ids, art, rand) {
     const { body, cap, accent } = art;
     return `
@@ -535,7 +604,7 @@ const FORMS = {
       <text x="100" y="165" text-anchor="middle" font-family="Georgia, serif" font-size="9"
             fill="${shade(body, -0.56)}" letter-spacing="2">AEINDRY</text>
       <text x="100" y="174" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="4.6"
-            fill="${shade(body, -0.42)}" opacity="0.66" letter-spacing="1.1">ROOM &amp; LINEN</text>
+            fill="${shade(body, -0.42)}" opacity="0.66" letter-spacing="1.1">${escapeAttr(art.sub || '')}</text>
       <path d="M78 112 L78 190" stroke="#fff" stroke-width="3.4" opacity="0.32" stroke-linecap="round"/>
       <path d="M123 112 L123 190" stroke="#fff" stroke-width="1.6" opacity="0.18" stroke-linecap="round"/>
     </g>`;

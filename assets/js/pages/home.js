@@ -20,9 +20,11 @@ import { initTilt } from '../ui/tilt.js';
 import { trackProgress } from '../core/scroll.js';
 
 /* The shelf, the spotlight and the encyclopedia all pull from real data. */
-const SHELF = ['hand-butter', 'pine-tar-soap', 'face-oil-berry-bakuchiol', 'deodorant-creme'];
+/* The photographed eight lead, because a real jar on a white sweep beats a
+   generated one every time. The second shelf carries the newer arrivals. */
+const SHELF = ['botanical-hand-butter', 'pine-tar-soap', 'face-oil', 'deodorant-creme'];
 const SHELF_TWO = ['hair-butter', 'shower-steamers', 'beeswax-candle', 'room-diffuser'];
-const SPOTLIGHT = 'hand-butter';
+const SPOTLIGHT = 'botanical-hand-butter';
 const ENCYCLOPEDIA = ['shea-butter', 'calendula', 'cocoa-butter', 'kaolin-clay', 'rosehip-oil', 'beeswax'];
 /* Forms that stay legible at glyph size — the sparser ones turn to specks. */
 const START_LEAVES = ['sprig', 'fern', 'bloom', 'seedstem', 'sprig', 'branch', 'bloom', 'fern'];

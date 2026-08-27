@@ -25,6 +25,56 @@ const variantCount = () =>
 
 const SCENTS = Object.entries(SCENT_PROFILES).map(([id, p]) => ({ id, label: p.label.split(' & ')[0], color: p.color }));
 
+/* A line under each aisle sign, so a fifty-item shop reads as six shelves
+   rather than one endless scroll. */
+const AISLE = {
+  face: 'Cleansers, serums, oils and masks — the whole routine, in order.',
+  body: 'Butters, creams, balms and the deodorant. Everything below the neck.',
+  hair: 'Bars instead of bottles, masks, oils, and the beard shelf.',
+  soap: 'Cold process bars, soaks, steamers and the dish that makes them last.',
+  home: 'Candles poured by hand, reeds, and something for the car.',
+  kits: 'Bought together and priced together.'
+};
+
+/* How many of an aisle to show before offering the rest. Six is two rows on a
+   desktop grid and three on a tablet — enough to see what a shelf is, short of
+   the point where the next aisle sign is too far down to bother reaching. */
+const PREVIEW = 6;
+
+/**
+ * Unfiltered, the grid is grouped into its categories with a sign above each
+ * and the long aisles trimmed to a preview. Filtered, it is one flat grid —
+ * a heading over a group of one is noise, and nothing is held back from
+ * someone who has already said what they are looking for.
+ */
+function render(list, state) {
+  if (state.category !== 'all' || state.scent || state.search || state.sort !== 'featured') {
+    return productGrid(list);
+  }
+  return CATEGORIES.filter((c) => c.id !== 'all').map((c) => {
+    const inAisle = list.filter((p) => p.category === c.id);
+    if (!inAisle.length) return '';
+    const shown = inAisle.slice(0, PREVIEW);
+    const rest = inAisle.length - shown.length;
+    return `
+    <section class="aisle" aria-labelledby="aisle-${esc(c.id)}">
+      <header class="aisle__head" data-reveal="up">
+        <h2 class="aisle__name" id="aisle-${esc(c.id)}">${esc(c.label)}</h2>
+        <p class="aisle__note">${esc(AISLE[c.id] || '')}</p>
+        <span class="aisle__count">${inAisle.length}</span>
+      </header>
+      ${productGrid(shown)}
+      ${rest > 0 ? `
+        <div class="aisle__more" data-reveal="up">
+          <button class="btn btn--ghost btn--sm" type="button" data-cat-jump="${esc(c.id)}">
+            <span class="btn__label">See all ${inAisle.length} in ${esc(c.label)}</span>
+          </button>
+          <span class="aisle__rest">${rest} more</span>
+        </div>` : ''}
+    </section>`;
+  }).join('');
+}
+
 export default function shop({ query }) {
   const state = {
     category: query.category && CATEGORIES.some((c) => c.id === query.category) ? query.category : 'all',
@@ -48,8 +98,8 @@ export default function shop({ query }) {
         <h1 class="display-lg" data-split="lines">The whole range</h1>
         <p class="lede" data-reveal="up" style="--reveal-delay:200ms">
           ${PRODUCTS.length} products, ${variantCount()} ways to have them, all made in
-          small batches by hand. Filter by what you need, or by how you would
-          like it to smell.
+          small batches by hand. Jump to a shelf, filter by what you need, or
+          go by how you would like it to smell.
         </p>
         <p class="page-head__aside" data-reveal="up" style="--reveal-delay:280ms">
           Rather be handed an answer? <a href="#/sets">See the sets</a> &mdash;
@@ -105,7 +155,7 @@ export default function shop({ query }) {
 
         <p class="results-count body-sm" aria-live="polite" data-count-label></p>
 
-        <div data-grid-host>${productGrid(apply(PRODUCTS, state))}</div>
+        <div data-grid-host>${render(apply(PRODUCTS, state), state)}</div>
       </div>
     </section>
 
@@ -144,7 +194,7 @@ export default function shop({ query }) {
         host.style.opacity = '0';
         host.style.transform = 'translateY(10px)';
         setTimeout(() => {
-          host.innerHTML = productGrid(list);
+          host.innerHTML = render(list, state);
           host.style.transition = 'opacity 420ms var(--ease-out-expo), transform 420ms var(--ease-out-expo)';
           host.style.opacity = '1';
           host.style.transform = 'none';
@@ -155,6 +205,7 @@ export default function shop({ query }) {
         countLabel.textContent = list.length === PRODUCTS.length
           ? `Showing all ${list.length} products`
           : `${list.length} of ${PRODUCTS.length} products`;
+        countLabel.hidden = list.length === PRODUCTS.length && state.category === 'all';
 
         const dirty = state.category !== 'all' || state.scent || state.search || state.sort !== 'featured';
         resetBtn.hidden = !dirty;
@@ -169,6 +220,15 @@ export default function shop({ query }) {
         state.category = btn.dataset.cat;
         paint();
       }));
+
+      /* Delegated: these live inside the host, which paint() replaces. */
+      host.addEventListener('click', (e) => {
+        const jump = e.target.closest('[data-cat-jump]');
+        if (!jump) return;
+        state.category = jump.dataset.catJump;
+        paint();
+        root.querySelector('.filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
 
       $$('[data-scent]', root).forEach((btn) => btn.addEventListener('click', () => {
         // Second click on an active scent clears it.

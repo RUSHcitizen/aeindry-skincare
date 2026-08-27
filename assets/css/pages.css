@@ -2063,3 +2063,58 @@ body:has(.invoice-page) .backdrop { display: none; }
   .set__foot { flex-direction: column; align-items: stretch; }
   .set__foot .btn { width: 100%; justify-content: center; }
 }
+
+/* ============================================================
+   AISLES  ·  #/shop unfiltered
+   Fifty-odd products in one grid is a scroll, not a shop. The
+   unfiltered view breaks into its categories with a sign over
+   each; filtering collapses back to a single flat grid.
+   ============================================================ */
+.aisle + .aisle { margin-top: clamp(3rem, 6vw, 5.5rem); }
+
+.aisle__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 0.4rem 1rem;
+  margin-bottom: clamp(1.2rem, 2.4vw, 2rem);
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line);
+}
+.aisle__name {
+  grid-column: 1;
+  font: 400 clamp(1.6rem, 3.4vw, 2.4rem)/1.05 var(--font-display);
+  color: var(--text);
+}
+.aisle__note {
+  grid-column: 1;
+  font: 400 0.95rem/1.5 var(--font-sans);
+  color: var(--text-muted);
+  max-width: 54ch;
+}
+.aisle__count {
+  grid-column: 2; grid-row: 1;
+  font: 600 0.7rem/1 var(--font-sans);
+  letter-spacing: 0.12em;
+  color: var(--gilt-text);
+  border: 1px solid color-mix(in srgb, currentColor 38%, transparent);
+  border-radius: 999px;
+  padding: 0.42em 0.8em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The count label is only interesting once a filter is on. */
+.results-count[hidden] { display: none; }
+
+.aisle__more {
+  margin-top: clamp(1.2rem, 2.4vw, 1.8rem);
+  padding-top: clamp(1rem, 2vw, 1.4rem);
+  border-top: 1px dashed var(--line);
+  display: flex; align-items: center; justify-content: center; gap: 0.9rem;
+  flex-wrap: wrap;
+}
+.aisle__rest {
+  font: 400 0.85rem/1 var(--font-sans);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
