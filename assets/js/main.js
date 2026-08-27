@@ -3,7 +3,7 @@
  */
 
 import { $, $$, on } from './lib/dom.js';
-import { initTheme, toggleWish, bus } from './core/store.js';
+import { initTheme, initCommerce, toggleWish, bus } from './core/store.js';
 import { initScroll } from './core/scroll.js';
 import { initMagnetic } from './core/cursor.js';
 import { runPreloader } from './core/preloader.js';
@@ -97,6 +97,10 @@ function initGlobalHandlers() {
 
 /* ---------- Boot ---------- */
 async function boot() {
+  // The cart has to exist before anything can be added to it, and when a
+  // live store is configured that means a round trip. Everything else boots
+  // alongside rather than behind it.
+  const commerceReady = initCommerce();
   installBackdrop();      // once, outside the router's subtree
   initTheme();
   initScroll();

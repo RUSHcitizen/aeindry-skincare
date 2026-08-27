@@ -1,96 +1,104 @@
-/** Cart + wishlist state. Persisted to localStorage, broadcast via emitter. */
+/**
+ * Cart + wishlist state, as the interface sees it.
+ *
+ * The cart itself moved to `commerce/`, which owns whether it lives in
+ * localStorage or in a WooCommerce install. This module stays because the whole
+ * interface is written against its shape, and because that shape is in dollars
+ * while the commerce layer — like every payment system — counts in cents. This
+ * is the one place the two meet, and it is deliberately the only place: a
+ * conversion scattered through twenty components is a rounding bug waiting for
+ * a busy Saturday.
+ */
 
 import { store, emitter } from '../lib/dom.js';
-import { getProduct, priceOf } from '../data/products.js';
+import { getProduct } from '../data/products.js';
+import * as commerce from '../commerce/index.js';
 
-const CART_KEY = 'aeindry.cart.v1';
 const WISH_KEY = 'aeindry.wishlist.v1';
 const THEME_KEY = 'aeindry.theme';
 
 export const bus = emitter();
 
-/** @type {{productId:string, variantId:string, qty:number}[]} */
-let cart = normaliseCart(store.get(CART_KEY, []));
 let wishlist = new Set(store.get(WISH_KEY, []));
 
-function normaliseCart(raw) {
-  if (!Array.isArray(raw)) return [];
-  return raw
-    .filter((l) => l && typeof l.productId === 'string' && getProduct(l.productId))
-    .map((l) => ({
-      productId: l.productId,
-      variantId: typeof l.variantId === 'string' ? l.variantId : null,
-      qty: Math.max(1, Math.min(99, parseInt(l.qty, 10) || 1))
-    }));
-}
+/** Cents to dollars, at the boundary and nowhere else. */
+const dollars = (minor, unit = 2) => Number(minor || 0) / 10 ** unit;
 
-const keyOf = (productId, variantId) => `${productId}::${variantId || ''}`;
+// Re-broadcast on this module's bus so nothing else has to know about the move.
+commerce.bus.on('cart:change', () => bus.emit('cart:change', getCart()));
+commerce.bus.on('cart:add', (detail) => bus.emit('cart:add', detail));
+commerce.bus.on('commerce:degraded', (detail) => bus.emit('commerce:degraded', detail));
 
-function persist() {
-  store.set(CART_KEY, cart);
-  bus.emit('cart:change', getCart());
-}
+export const initCommerce = () => commerce.initCommerce();
 
 export function getCart() {
-  return cart.map((line) => {
-    const product = getProduct(line.productId);
-    const variant = product.variants?.find((v) => v.id === line.variantId) || null;
-    const unit = priceOf(product, line.variantId);
-    return { ...line, product, variant, unit, total: unit * line.qty };
-  });
+  const unit = commerce.cartTotals().currency?.minorUnit ?? 2;
+  return commerce.cartLines().map((l) => ({
+    key: l.key,
+    productId: l.productId,
+    variantId: l.variantId,
+    qty: l.qty,
+    product: l.product || getProduct(l.productId),
+    variant: l.variant,
+    unit: dollars(l.unit, unit),
+    total: dollars(l.total, unit)
+  }));
 }
 
-export const cartCount = () => cart.reduce((n, l) => n + l.qty, 0);
+export const cartCount = () => commerce.cartCount();
 
 export function cartTotals() {
-  const lines = getCart();
-  const subtotal = lines.reduce((n, l) => n + l.total, 0);
-  const FREE_SHIPPING_AT = 60;
-  const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_AT ? 0 : 6.5;
+  const t = commerce.cartTotals();
+  const u = t.currency?.minorUnit ?? 2;
   return {
-    subtotal,
-    shipping,
-    total: subtotal + shipping,
-    freeShippingAt: FREE_SHIPPING_AT,
-    towardFree: Math.max(0, FREE_SHIPPING_AT - subtotal),
-    qualifies: subtotal >= FREE_SHIPPING_AT
+    subtotal: dollars(t.subtotal, u),
+    shipping: dollars(t.shipping, u),
+    tax: dollars(t.tax, u),
+    total: dollars(t.total, u),
+    freeShippingAt: dollars(t.freeShippingAt, u),
+    towardFree: dollars(t.towardFree, u),
+    qualifies: t.qualifies,
+    /* True only when a real store is answering. The checkout reads this before
+       it is willing to say the word "order". */
+    live: commerce.canTakePayment()
   };
 }
+
+/** Shipping options for the current address, once one has been given. */
+export const shippingRates = () => {
+  const u = commerce.cartTotals().currency?.minorUnit ?? 2;
+  return commerce.shippingRates().map((r) => ({ ...r, price: dollars(r.price, u) }));
+};
+export const selectedRate = () => commerce.selectedRate();
+export const setCustomer = (address) => commerce.setCustomer(address);
+export const selectShippingRate = (id) => commerce.selectShippingRate(id);
+export const placeOrder = (payload) => commerce.placeOrder(payload);
+export const canTakePayment = () => commerce.canTakePayment();
 
 export function addToCart(productId, variantId = null, qty = 1) {
   const product = getProduct(productId);
   if (!product) return null;
-  // Default to the first variant so a line always resolves to a real price.
   if (!variantId && product.variants?.length) variantId = product.variants[0].id;
-
-  const key = keyOf(productId, variantId);
-  const existing = cart.find((l) => keyOf(l.productId, l.variantId) === key);
-  if (existing) existing.qty = Math.min(99, existing.qty + qty);
-  else cart.push({ productId, variantId, qty });
-
-  persist();
-  bus.emit('cart:add', { productId, variantId, qty });
+  // Fire and forget: the local driver settles synchronously and a live store
+  // announces itself on the bus. Failures surface as a toast, not a throw.
+  commerce.addToCart(productId, variantId, qty)
+    .catch((err) => bus.emit('cart:error', { message: err?.message || 'Could not add that.' }));
   return { product, variantId };
 }
 
 export function setQty(productId, variantId, qty) {
-  const key = keyOf(productId, variantId);
-  const line = cart.find((l) => keyOf(l.productId, l.variantId) === key);
-  if (!line) return;
-  if (qty <= 0) return removeFromCart(productId, variantId);
-  line.qty = Math.min(99, qty);
-  persist();
+  commerce.setQty(commerce.lineKey(productId, variantId), qty)
+    .catch((err) => bus.emit('cart:error', { message: err?.message || 'Could not update that.' }));
 }
 
 export function removeFromCart(productId, variantId) {
-  const key = keyOf(productId, variantId);
-  cart = cart.filter((l) => keyOf(l.productId, l.variantId) !== key);
-  persist();
+  commerce.removeLine(commerce.lineKey(productId, variantId))
+    .catch((err) => bus.emit('cart:error', { message: err?.message || 'Could not remove that.' }));
 }
 
 export function clearCart() {
-  cart = [];
-  persist();
+  commerce.clearCart()
+    .catch((err) => bus.emit('cart:error', { message: err?.message || 'Could not empty the basket.' }));
 }
 
 /* ---------- Wishlist ---------- */
