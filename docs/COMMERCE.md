@@ -130,3 +130,70 @@ quotes something honest, and because the packing logic is worth keeping.
 - [ ] Tax verified against one in-state and one out-of-state address
 - [ ] Return and shipping policy pages written — Stripe asks for these
 - [ ] `?store=` confirmed inert on the production hostname
+
+---
+
+## Collection and local delivery
+
+Someone eight miles away should not pay to have a $12 soap posted to them. When
+the buyer's ZIP is near a pickup point, the checkout offers collection (free)
+and, inside a tighter radius, delivery by hand — listed above the USPS quotes
+and badged, because "free, and it's four miles away" is a different offer from
+a postage price.
+
+Distance comes from the same ZIP-anchor grid the shipping zones use, so it
+needs no geocoding service and no API key.
+
+**The addresses are configuration, not content.** The site knows the business is
+in Sammamish because that is published; it does not know the street, and a
+street invented for a real shop sends customers to a stranger's door. So the
+default point carries the town and ZIP only and says the exact address follows
+by email. Fill it in properly with:
+
+```bash
+export AEINDRY_PICKUP='[{"id":"studio","name":"The studio","line1":"123 Example Way",
+  "city":"Sammamish","state":"WA","zip":"98074",
+  "hours":"Thu–Sat, 10–4","note":"Ring the side door."}]'
+```
+
+| Variable | Default | What it does |
+|---|---|---|
+| `AEINDRY_PICKUP` | one point, town only | JSON array of collection points. `[]` switches collection off |
+| `AEINDRY_PICKUP_RADIUS` | `25` | Miles within which collection is offered |
+| `AEINDRY_DELIVERY_RADIUS` | `12` | Miles within which hand delivery is offered |
+| `AEINDRY_DELIVERY_FEE` | `6` | Flat local delivery fee |
+| `AEINDRY_DELIVERY_FREE_OVER` | `60` | Basket value above which delivery is free |
+
+Local delivery is additionally restricted to the same state as the pickup
+point: driving a parcel across a state line is a different business.
+
+## Invoices
+
+Every order gets one, at `GET /order/:id/invoice?key=<order_key>`, rendered by
+the site at `#/invoice/:id?key=…`.
+
+Two things shape it. It is built from the **order**, never the cart — the cart
+is emptied the moment the order is placed, so an invoice regenerated from it
+later would be blank. And nothing is **recomputed**: the order stored what was
+charged and the invoice repeats it, because last month's invoice must still say
+what the customer paid even after a price or a tax rate changes.
+
+The order key is required. Order ids are sequential, so without it anyone could
+walk the range and collect other people's names and addresses; the server
+returns 403 on a mismatch.
+
+"Save as PDF" is the browser's own print dialogue rather than a bundled PDF
+library — it costs nothing, honours the reader's paper size, and produces a file
+their operating system already understands. The print stylesheet drops the nav,
+the footer and the floral backdrop, and keeps line items from splitting across a
+page break.
+
+Identify the seller properly before you invoice anyone:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `AEINDRY_LEGAL_NAME` | `Aeindry Skincare` | Name on the invoice |
+| `AEINDRY_ADDR_1` | *(blank)* | Street line |
+| `AEINDRY_CITY` / `AEINDRY_STATE` / `AEINDRY_ZIP` | Sammamish / WA / 98074 | Registered address |
+| `AEINDRY_EMAIL` | `contactus@aeindryskincare.com` | Billing contact |
+| `AEINDRY_TAX_ID` | *(blank)* | Printed only if set — a made-up registration number on a real invoice is a document that lies about a real company |

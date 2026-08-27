@@ -74,6 +74,7 @@ export const setCustomer = (address) => commerce.setCustomer(address);
 export const selectShippingRate = (id) => commerce.selectShippingRate(id);
 export const placeOrder = (payload) => commerce.placeOrder(payload);
 export const canTakePayment = () => commerce.canTakePayment();
+export const fetchInvoice = (orderId, orderKey) => commerce.fetchInvoice(orderId, orderKey);
 
 export function addToCart(productId, variantId = null, qty = 1) {
   const product = getProduct(productId);

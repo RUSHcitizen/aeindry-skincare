@@ -204,7 +204,11 @@ export function initCheckout() {
   $('.drawer__checkout')?.addEventListener('click', () => {
     const t = cartTotals();
     if (t.subtotal === 0) return;
-    toast('This is a demonstration storefront — no payment is taken.', { icon: 'info', duration: 4200 });
+    // The checkout page states its own limits — whether it can take money is
+    // its business, not the drawer's, and saying it in two places means one of
+    // them is eventually wrong.
+    location.hash = '#/checkout';
+    closeCart();
   });
   $('.drawer__clear')?.addEventListener('click', () => {
     clearCart();

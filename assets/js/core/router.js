@@ -71,9 +71,17 @@ export async function render({ animate = true } = {}) {
   if (navigating) return;
   const { path, query } = parseHash();
   if (path === currentPath && !query.force) {
-    // Same route, different query (e.g. shop filters) — let the page handle it.
-    window.dispatchEvent(new CustomEvent('route:query', { detail: { path, query } }));
-    return;
+    /* Same route, different query. Usually the page wants to handle that
+       itself — shop filters change `?cat=` and a full re-render would throw
+       away the scroll position and replay every reveal.
+       But some routes ARE their query: an invoice is addressed by its order
+       key, and leaving the previous one on screen under a URL that now names a
+       different order is worse than any animation cost. Those opt in. */
+    const handler = match(path)?.handler;
+    if (!handler?.rerenderOnQuery) {
+      window.dispatchEvent(new CustomEvent('route:query', { detail: { path, query } }));
+      return;
+    }
   }
 
   navigating = true;

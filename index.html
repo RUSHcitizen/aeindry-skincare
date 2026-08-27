@@ -144,7 +144,7 @@
     <div class="footer__top">
       <div class="footer__brand">
         <a class="brand brand--footer" href="#/" aria-label="Aeindry Skincare, home">
-          <img class="brand__mark" src="assets/img/logo-wreath.webp" alt="" width="900" height="935" loading="lazy" decoding="async">
+          <img class="brand__mark" src="assets/img/logo-wreath-900.webp" alt="" width="900" height="935" loading="lazy" decoding="async">
           <span class="brand__text">
             <span class="brand__name">Aeindry Skincare</span>
             <span class="brand__tag">All Natural Handmade Skincare</span>
@@ -207,7 +207,10 @@
 
     <div class="footer__bottom">
       <p class="body-xs">© <span data-year>2026</span> Aeindry Skincare. Handmade in Washington.</p>
-      <p class="body-xs footer__note">
+      <!-- Replaced at boot once the commerce layer knows whether a store is
+           answering. Written here as the cautious case, so a page whose script
+           never runs still tells the truth rather than implying it can sell. -->
+      <p class="body-xs footer__note" data-store-note>
         Demonstration storefront — no payment is taken and no mail is sent.
       </p>
     </div>

@@ -3,7 +3,7 @@
  */
 
 import { $, $$, on } from './lib/dom.js';
-import { initTheme, initCommerce, toggleWish, bus } from './core/store.js';
+import { initTheme, initCommerce, canTakePayment, toggleWish, bus } from './core/store.js';
 import { initScroll } from './core/scroll.js';
 import { initMagnetic } from './core/cursor.js';
 import { runPreloader } from './core/preloader.js';
@@ -23,6 +23,8 @@ import ingredients from './pages/ingredients.js';
 import ritual from './pages/ritual.js';
 import journal from './pages/journal.js';
 import contact from './pages/contact.js';
+import checkout from './pages/checkout.js';
+import invoice from './pages/invoice.js';
 import notFound from './pages/not-found.js';
 
 /* ---------- Paper grain, generated once and reused site-wide ---------- */
@@ -36,6 +38,8 @@ function registerRoutes() {
   defineRoute('/ritual', ritual);
   defineRoute('/journal', journal);
   defineRoute('/contact', contact);
+  defineRoute('/checkout', checkout);
+  defineRoute('/invoice/:id', invoice);
   defineNotFound(notFound);
 }
 
@@ -100,7 +104,13 @@ async function boot() {
   // The cart has to exist before anything can be added to it, and when a
   // live store is configured that means a round trip. Everything else boots
   // alongside rather than behind it.
-  const commerceReady = initCommerce();
+  const commerceReady = initCommerce().then(() => {
+    // Say which one this is, in the one place that claims it site-wide.
+    const note = document.querySelector('[data-store-note]');
+    if (note && canTakePayment()) {
+      note.textContent = 'Secure checkout. Handmade to order in Washington.';
+    }
+  });
   installBackdrop();      // once, outside the router's subtree
   initTheme();
   initScroll();

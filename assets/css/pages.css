@@ -1641,3 +1641,273 @@
   .cta .subscribe .btn, .footer .subscribe .btn { width: 100%; }
   .quiz-result__actions .btn { width: 100%; }
 }
+
+/* ============================================================
+   CHECKOUT
+   Two columns that become one on a phone, with the summary
+   pinned so the total never scrolls out of sight — the number
+   people re-check most is the one they can least afford to lose.
+   ============================================================ */
+.checkout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.9fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .checkout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.co-step { padding-block: var(--space-l); border-top: 1px solid var(--line-soft); }
+.co-step:first-of-type { border-top: 0; padding-top: 0; }
+.co-step__title {
+  display: flex; align-items: center; gap: var(--space-s);
+  font-family: var(--font-display); font-size: var(--step-2);
+  margin: 0 0 var(--space-m);
+}
+.co-step__n {
+  display: grid; place-items: center;
+  width: 1.9em; height: 1.9em; flex: none;
+  border-radius: var(--r-full);
+  background: var(--bg-inverse); color: var(--text-inverse);
+  font-family: var(--font-sans); font-size: 0.5em; letter-spacing: 0;
+}
+
+.co-notice {
+  padding: var(--space-s) var(--space-m);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--bg-raised);
+  font-size: var(--step--1);
+  line-height: var(--lh-normal);
+  margin-bottom: var(--space-l);
+}
+.co-notice--warn { border-color: color-mix(in oklab, var(--gilt) 46%, transparent); }
+.co-notice code { font-family: var(--font-mono); font-size: 0.92em; }
+.co-empty { color: var(--text-muted); }
+
+/* ---- basket lines ---- */
+.co-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-s); }
+.co-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: var(--space-m);
+  padding-bottom: var(--space-s);
+  border-bottom: 1px solid var(--line-soft);
+}
+.co-line__name { margin: 0; font-weight: 500; }
+.co-line__variant, .co-line__unit { margin: 0; font-size: var(--step--1); color: var(--text-muted); }
+.co-line__qty { display: flex; align-items: center; gap: var(--space-2xs); }
+.co-line__total { margin: 0; font-variant-numeric: tabular-nums; min-width: 5ch; text-align: right; }
+.co-line__rm {
+  border: 0; background: none; cursor: pointer; padding: var(--space-2xs);
+  color: var(--text-faint); font-size: var(--step--1); text-decoration: underline;
+}
+.co-line__rm:hover { color: var(--accent); }
+@media (max-width: 620px) {
+  .co-line { grid-template-columns: minmax(0, 1fr) auto; row-gap: var(--space-2xs); }
+  .co-line__total { grid-column: 2; }
+  .co-line__rm { grid-column: 1 / -1; justify-self: start; }
+}
+
+/* ---- form ---- */
+.co-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-m);
+  margin-bottom: var(--space-l);
+}
+.co-grid .field--wide { grid-column: 1 / -1; }
+@media (max-width: 560px) { .co-grid { grid-template-columns: minmax(0, 1fr); } }
+.field__opt { color: var(--text-faint); font-weight: 400; }
+.field__error { margin: var(--space-3xs) 0 0; font-size: var(--step--1); color: var(--accent); }
+
+/* ---- delivery options ---- */
+.co-rates { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-s); }
+.co-rate {
+  display: grid;
+  /* Four children — radio, name, lead time, price — so four columns. Three
+     sent the price onto a second line at every width. */
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-s);
+  padding: var(--space-s) var(--space-m);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft);
+}
+.co-rate:hover { border-color: var(--line-strong); }
+.co-rate.is-on { border-color: var(--accent); background: var(--accent-soft); }
+.co-rate__days { color: var(--text-muted); font-size: var(--step--1); }
+.co-rate__price { font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .co-rate { grid-template-columns: auto minmax(0, 1fr) auto; row-gap: var(--space-3xs); }
+  .co-rate__days { grid-column: 2 / -1; }
+}
+
+/* ---- payment ---- */
+.co-pay__lede { color: var(--text-muted); font-size: var(--step--1); }
+.co-pay__mount:empty { display: none; }
+.co-pay__fine { margin-top: var(--space-s); font-size: var(--step--2); color: var(--text-faint); }
+
+/* ---- summary ---- */
+.checkout__summary {
+  position: sticky;
+  top: calc(var(--nav-h) + var(--space-s));
+  padding: var(--space-l);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-sm);
+}
+@media (max-width: 900px) { .checkout__summary { position: static; } }
+.co-sum__title { margin: 0 0 var(--space-m); font-family: var(--font-display); font-size: var(--step-1); }
+.co-sum__row {
+  display: flex; justify-content: space-between; gap: var(--space-s);
+  padding-block: var(--space-2xs);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+}
+.co-sum__row em { color: var(--text-faint); font-style: normal; }
+.co-sum__row--total {
+  margin-top: var(--space-s); padding-top: var(--space-s);
+  border-top: 1px solid var(--line);
+  font-size: var(--step-1); font-weight: 500;
+}
+.co-sum__note { margin: var(--space-s) 0 0; font-size: var(--step--2); color: var(--text-faint); }
+
+/* ---- confirmation ---- */
+.co-done { grid-column: 1 / -1; text-align: center; padding-block: var(--space-2xl); }
+.co-done__lede { max-width: 46ch; margin-inline: auto; color: var(--text-soft); }
+.co-done .co-notice { max-width: 46ch; margin-inline: auto; text-align: left; }
+
+/* ---- nearby collection ---- */
+.co-near {
+  padding: var(--space-s) var(--space-m);
+  border-radius: var(--r-md);
+  background: var(--leaf-soft);
+  border: 1px solid color-mix(in oklab, var(--leaf) 30%, transparent);
+  font-size: var(--step--1);
+  margin-bottom: var(--space-m);
+}
+.co-rate--local { border-color: color-mix(in oklab, var(--leaf) 42%, transparent); }
+.co-rate__tag {
+  display: inline-block;
+  margin-left: var(--space-2xs);
+  padding: 0.1em 0.6em;
+  border-radius: var(--r-full);
+  background: var(--leaf);
+  color: var(--paper-0);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  vertical-align: 0.12em;
+}
+.co-pickup {
+  margin: var(--space-2xs) 0 0 var(--space-l);
+  padding: var(--space-s) var(--space-m);
+  border-left: 2px solid var(--leaf);
+  font-size: var(--step--1);
+  color: var(--text-soft);
+}
+.co-pickup p { margin: 0; }
+.co-pickup__name { font-weight: 500; color: var(--text); }
+.co-pickup__note { color: var(--text-faint); margin-top: var(--space-3xs) !important; }
+.co-done__inv { color: var(--text-muted); font-size: var(--step--1); }
+
+/* ============================================================
+   INVOICE
+   The plainest page here on purpose: it gets filed, printed and
+   handed to an accountant, and the botanicals are noise on all
+   three. Black on white when it reaches paper.
+   ============================================================ */
+/* Clear of the fixed nav: this page has no hero to sit under it. */
+.invoice-page { padding-block: calc(var(--nav-h) + var(--space-m)) var(--space-2xl); }
+.inv-actions { display: flex; gap: var(--space-s); justify-content: flex-end; margin-bottom: var(--space-l); flex-wrap: wrap; }
+
+/* The floral ground is stacked above the section grounds by design, which is
+   right everywhere except on a document. An invoice is read, filed and printed;
+   flowers behind the line items are the noise this page exists to avoid. */
+body:has(.invoice-page) .backdrop { display: none; }
+.invoice {
+  background: var(--paper-0);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  box-shadow: var(--shadow-sm);
+}
+.inv-loading, .inv-empty { color: var(--text-muted); }
+.inv-head {
+  display: flex; justify-content: space-between; gap: var(--space-l);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-m);
+  border-bottom: 2px solid var(--text);
+}
+.inv-brand { margin: 0; font-family: var(--font-display); font-size: var(--step-2); }
+.inv-brand__tag {
+  margin: 0; font-size: var(--step--2);
+  letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--text-muted);
+}
+.inv-meta { text-align: right; }
+.inv-meta p { margin: 0; font-size: var(--step--1); }
+.inv-title { margin: 0 0 var(--space-2xs); font-family: var(--font-display); font-size: var(--step-3); }
+.inv-status {
+  display: inline-block; margin-top: var(--space-2xs) !important;
+  padding: 0.15em 0.7em; border-radius: var(--r-full);
+  font-size: var(--step--2); letter-spacing: var(--tracking-wide); text-transform: uppercase;
+}
+.inv-status.is-paid { background: var(--leaf-soft); color: var(--leaf); }
+.inv-status.is-due { background: var(--accent-soft); color: var(--accent); }
+
+.inv-parties {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-l); padding-block: var(--space-l);
+}
+.inv-party__title {
+  margin: 0 0 var(--space-2xs); font-family: var(--font-sans);
+  font-size: var(--step--2); letter-spacing: var(--tracking-widest);
+  text-transform: uppercase; color: var(--text-muted);
+}
+.inv-party p { margin: 0; font-size: var(--step--1); line-height: var(--lh-normal); }
+
+.inv-table { width: 100%; border-collapse: collapse; margin-top: var(--space-s); }
+.inv-table th, .inv-table td {
+  padding: var(--space-s) var(--space-2xs);
+  text-align: left; font-size: var(--step--1);
+  border-bottom: 1px solid var(--line-soft);
+}
+.inv-table thead th {
+  font-family: var(--font-sans); font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted);
+  border-bottom: 1px solid var(--line);
+}
+.inv-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.inv-variant { display: block; color: var(--text-muted); font-size: var(--step--2); }
+.inv-table tfoot th { text-align: right; font-weight: 400; color: var(--text-soft); }
+.inv-table tfoot tr:last-child th, .inv-table tfoot tr:last-child td { border-bottom: 0; }
+.inv-total th, .inv-total td {
+  font-size: var(--step-0) !important; font-weight: 600; color: var(--text);
+  border-top: 2px solid var(--text);
+}
+.inv-note { margin-top: var(--space-m); font-size: var(--step--2); color: var(--text-faint); }
+.inv-thanks {
+  margin-top: var(--space-l); padding-top: var(--space-m);
+  border-top: 1px solid var(--line-soft);
+  font-family: var(--font-display); font-style: italic; color: var(--text-soft);
+}
+
+/* Paper. Everything that is chrome goes; the document stays. */
+@media print {
+  .nav, .footer, .drawer, .drawer-scrim, .backdrop, .bot-layer,
+  .no-print, .cover__cue, .toast-stack { display: none !important; }
+  .invoice-page { padding: 0; }
+  .invoice { border: 0; box-shadow: none; padding: 0; background: #fff; }
+  .wrap--narrow { max-width: none; padding: 0; }
+  body { background: #fff; color: #000; }
+  .inv-status { border: 1px solid currentColor; }
+  /* A line item split across a page break is a line item somebody disputes. */
+  .inv-table tr { break-inside: avoid; }
+  a[href^="#"]::after { content: ""; }
+}

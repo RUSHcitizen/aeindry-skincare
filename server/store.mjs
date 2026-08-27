@@ -31,6 +31,8 @@ import { createServer } from 'node:http';
 import { randomUUID, createHmac } from 'node:crypto';
 import { PRODUCTS, getProduct, priceOf } from '../assets/js/data/products.js';
 import { rateBasket, RATES_REVISED } from './usps.mjs';
+import { localRates, nearbyPickups, isLocal } from './fulfilment.mjs';
+import { buildInvoice, invoiceNumber } from './invoice.mjs';
 
 const args = process.argv.slice(2);
 const flag = (n, d) => { const i = args.indexOf(`--${n}`); return i === -1 ? d : args[i + 1]; };
@@ -81,6 +83,16 @@ const lineKey = (productId, variantId) => `${productId}::${variantId || ''}`;
  * from ids and quantities. The request body carries no prices, so there is no
  * price for a client to tamper with — the whole point of a server-side cart.
  */
+/** Basket value in whole currency units, before shipping and tax. */
+function subtotalUnits(cart) {
+  let minor = 0;
+  for (const it of cart.items) {
+    const p = getProduct(it.productId);
+    if (p) minor += cents(priceOf(p, it.variantId)) * it.qty;
+  }
+  return minor / 100;
+}
+
 function totals(cart) {
   let totalItems = 0;
   for (const it of cart.items) {
@@ -163,7 +175,12 @@ function cartJson(cart) {
         meta_data: [
           { key: 'parcels', value: String(r.parcels ?? 1) },
           { key: 'estimated', value: r.estimated ? 'yes' : 'no' },
-          { key: 'rate_source', value: r.source || `table:${RATES_REVISED}` }
+          { key: 'rate_source', value: r.source || `table:${RATES_REVISED}` },
+          { key: 'kind', value: r.kind || 'post' },
+          ...(r.miles != null ? [{ key: 'miles', value: String(r.miles) }] : []),
+          // The whole pickup record travels with the rate so the checkout can
+          // show where to go without a second round trip.
+          ...(r.pickup ? [{ key: 'pickup', value: JSON.stringify(r.pickup) }] : [])
         ]
       }))
     }] : [],
@@ -193,7 +210,7 @@ function productJson(p) {
   };
 }
 
-async function handle(method, path, body, cart) {
+async function handle(method, path, body, cart, query = new URLSearchParams()) {
   if (method === 'GET' && path === '/products') {
     return { status: 200, json: PRODUCTS.map(productJson) };
   }
@@ -267,6 +284,18 @@ async function handle(method, path, body, cart) {
     return checkout(cart, body);
   }
 
+  /* Order ids are sequential, so the key is what stops someone reading the
+     range and collecting other people's names and addresses. */
+  const invoiceMatch = path.match(/^\/order\/(\d+)\/invoice$/);
+  if (method === 'GET' && invoiceMatch) {
+    const order = orders.get(Number(invoiceMatch[1]));
+    if (!order) return bad('woocommerce_rest_invalid_order', 'No such order.', 404);
+    if (query.get('key') !== order.key) {
+      return bad('woocommerce_rest_invalid_order_key', 'That order key does not match.', 403);
+    }
+    return { status: 200, json: buildInvoice(order) };
+  }
+
   return { status: 404, json: { code: 'rest_no_route', message: 'No route for that path.' } };
 }
 
@@ -282,7 +311,14 @@ async function requote(cart) {
     cart.items.map((i) => ({ product: getProduct(i.productId), qty: i.qty })),
     { fromZip: ORIGIN_ZIP, toZip: cart.customer.postcode, country: cart.customer.country }
   );
-  cart.rates = rates.filter((r) => r.price != null).map((r) => ({ ...r, source }));
+  const postal = rates.filter((r) => r.price != null).map((r) => ({ ...r, source }));
+  /* Collection and local delivery are quoted from the buyer's distance rather
+     than from a carrier, and they lead when they exist: someone eight miles
+     away should be offered "collect, free" before a postage price. */
+  const local = localRates(cart.customer, subtotalUnits(cart));
+  cart.rates = [...local, ...postal];
+  cart.pickups = nearbyPickups(cart.customer.postcode);
+
   // Preselect the cheapest, the way Woo does, so a total is never blank.
   if (cart.rates.length) {
     const cheapest = cart.rates.reduce((a, b) => (a.price <= b.price ? a : b));
@@ -317,6 +353,7 @@ async function checkout(cart, body) {
   for (const it of cart.items) stock.set(it.productId, (stock.get(it.productId) ?? 0) - it.qty);
 
   const id = ++orderSeq;
+  const chosen = cart.rates.find((r) => r.service === cart.selectedRate);
   const order = {
     id, key: `wc_order_${randomUUID().slice(0, 12)}`,
     status: payment.status === 'success' ? 'processing' : 'pending',
@@ -325,6 +362,13 @@ async function checkout(cart, body) {
     shipping_address: a,
     billing_address: body.billing_address || a,
     shipping_method: cart.selectedRate,
+    /* Copied onto the order, not looked up later. The rate list belongs to a
+       cart that is about to be emptied, and an invoice reprinted next year must
+       still name the service the customer actually chose. */
+    shipping_label: chosen?.name || cart.selectedRate,
+    pickup: chosen?.pickup || null,
+    payment_method: body.payment_method || '',
+    payment_reference: payment.reference || '',
     customer_note: body.customer_note || '',
     placed_at: new Date().toISOString()
   };
@@ -339,6 +383,7 @@ async function checkout(cart, body) {
       order_id: id,
       status: order.status,
       order_key: order.key,
+      invoice_number: invoiceNumber(order),
       customer_note: order.customer_note,
       billing_address: order.billing_address,
       shipping_address: order.shipping_address,
@@ -436,7 +481,7 @@ const server = createServer(async (req, res) => {
   }
 
   try {
-    const out = await handle(req.method, url.pathname.slice(API.length) || '/', body, cart);
+    const out = await handle(req.method, url.pathname.slice(API.length) || '/', body, cart, url.searchParams);
     send(out.status, out.json, {
       'Cart-Token': sign(cart.token),
       Nonce: createHmac('sha256', SECRET).update(`${cart.token}:${Date.now() / 6e4 | 0}`).digest('base64url').slice(0, 16)

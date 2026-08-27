@@ -221,13 +221,27 @@ const wooDriver = {
     // Woo groups rates per shipment package; a basket from one warehouse has
     // exactly one, and flattening keeps the UI from having to care.
     const pkg = cart?.shipping_rates?.[0];
-    const rates = (pkg?.shipping_rates || []).map((r) => ({
-      id: r.rate_id,
-      name: r.name,
-      price: int(r.price) + int(r.taxes),
-      delivery: r.delivery_time || r.description || '',
-      selected: Boolean(r.selected)
-    }));
+    const metaOf = (r, key) => r.meta_data?.find((m) => m.key === key)?.value;
+    const rates = (pkg?.shipping_rates || []).map((r) => {
+      // A pickup point travels as JSON in the rate's metadata, so the checkout
+      // can show where to collect from without a second request. Bad JSON here
+      // must not take the whole rate list down with it.
+      let pickup = null;
+      const raw = metaOf(r, 'pickup');
+      if (raw) { try { pickup = JSON.parse(raw); } catch { pickup = null; } }
+      const miles = metaOf(r, 'miles');
+      return {
+        id: r.rate_id,
+        name: r.name,
+        price: int(r.price) + int(r.taxes),
+        delivery: r.delivery_time || r.description || '',
+        selected: Boolean(r.selected),
+        kind: metaOf(r, 'kind') || 'post',
+        estimated: metaOf(r, 'estimated') === 'yes',
+        miles: miles == null ? null : Number(miles),
+        pickup
+      };
+    });
 
     const subtotal = int(cart?.totals?.total_items);
     const freeAt = toMinor(COMMERCE.freeShippingAt, cur.minorUnit);
@@ -402,6 +416,19 @@ export async function placeOrder(payload) {
 }
 
 /** The catalogue, from the store when there is one and from disk when not. */
+/**
+ * Fetch an invoice for a placed order.
+ *
+ * Needs the order key as well as the id: ids are sequential, so the key is what
+ * stops a bored visitor walking the range and reading other people's addresses.
+ * Returns null when no store is connected — there are no orders to invoice.
+ */
+export async function fetchInvoice(orderId, orderKey) {
+  if (!use().canTakePayment) return null;
+  const { get } = await import('./store-api.js');
+  return get(`/order/${encodeURIComponent(orderId)}/invoice?key=${encodeURIComponent(orderKey)}`);
+}
+
 export function catalogue() {
   return PRODUCTS;
 }
