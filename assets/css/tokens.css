@@ -70,14 +70,14 @@
      as pale flowers in the dark. Only the layer's opacity changes. */
   --fl-petal-lit:   #FDFCFA;
   --fl-petal:       #F5F3EE;
-  --fl-petal-shade: #DEDACF;
-  --fl-petal-deep:  #C9C4B6;
-  --fl-petal-line:  #B5AF9F;
-  --fl-leaf:        #C6C8BC;
-  --fl-leaf-shade:  #A3A697;
-  --fl-leaf-line:   #8B8E7C;
-  --fl-stem:        #9A9384;
-  --fl-seed:        #D2CCBF;
+  --fl-petal-shade: #D8D3C6;
+  --fl-petal-deep:  #C0BAA9;
+  --fl-petal-line:  #A79F8B;
+  --fl-leaf:        #B9BCAD;
+  --fl-leaf-shade:  #949784;
+  --fl-leaf-line:   #7B7E6B;
+  --fl-stem:        #8B8474;
+  --fl-seed:        #CAC3B2;
   --fl-heart:       #D8C08A;
   --fl-heart-lit:   #F0E4C4;
 
