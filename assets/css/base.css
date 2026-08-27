@@ -165,7 +165,7 @@ a { color: inherit; text-decoration: none; }
   top: 0; left: 50%;
   transform: translate(-50%, -140%);
   z-index: calc(var(--z-preloader) + 1);
-  background: var(--plum-900);
+  background: var(--stem-900);
   color: var(--paper-1);
   padding: 0.85rem 1.5rem;
   border-radius: 0 0 var(--r-md) var(--r-md);
@@ -240,18 +240,3 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(90deg, transparent, var(--line), transparent);
 }
 
-/* Grain overlay — gives flat colour the feel of pressed paper */
-.grain {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-  opacity: .5;
-  mix-blend-mode: multiply;
-  background-image: var(--grain-url);
-  background-size: 180px 180px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .grain { mix-blend-mode: overlay; opacity: .32; }
-}
-:root[data-theme="dark"] .grain { mix-blend-mode: overlay; opacity: .32; }

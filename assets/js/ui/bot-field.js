@@ -300,27 +300,3 @@ export function initBotField(root = document) {
     offScroll();
   };
 }
-
-/** Paper fibre texture, generated once and reused as a CSS variable. */
-export function installPaper() {
-  /* The layer multiplies, so raw turbulence — which sits around mid grey —
-     would take the whole page down a value. The transfer squeezes the noise
-     into the top of the range (0.95–1.0) and pins alpha opaque, leaving about
-     thirteen levels of grain — fibre you can see up close, and no measurable
-     loss of brightness at a glance. */
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240">
-    <filter id="p">
-      <feTurbulence type="fractalNoise" baseFrequency="0.62 0.9" numOctaves="4" stitchTiles="stitch"/>
-      <feColorMatrix type="saturate" values="0"/>
-      <feComponentTransfer>
-        <feFuncR type="linear" slope="0.05" intercept="0.95"/>
-        <feFuncG type="linear" slope="0.05" intercept="0.95"/>
-        <feFuncB type="linear" slope="0.05" intercept="0.95"/>
-        <feFuncA type="linear" slope="0" intercept="1"/>
-      </feComponentTransfer>
-    </filter>
-    <rect width="240" height="240" filter="url(#p)"/>
-  </svg>`;
-  document.documentElement.style.setProperty(
-    '--paper-url', `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
-}

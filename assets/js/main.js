@@ -12,7 +12,7 @@ import { initNav } from './ui/nav.js';
 import { initCart, initCheckout } from './ui/cart.js';
 import { initQuickview } from './ui/quickview.js';
 import { initAccordion } from './ui/accordion.js';
-import { installPaper, installFloralCanvas } from './ui/bot-field.js';
+import { installBackdrop } from './ui/backdrop.js';
 import { toast } from './ui/toast.js';
 
 import home from './pages/home.js';
@@ -26,15 +26,6 @@ import contact from './pages/contact.js';
 import notFound from './pages/not-found.js';
 
 /* ---------- Paper grain, generated once and reused site-wide ---------- */
-function installGrain() {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180">
-    <filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="4" stitchTiles="stitch"/>
-      <feColorMatrix type="saturate" values="0"/></filter>
-    <rect width="180" height="180" filter="url(#n)" opacity="0.42"/></svg>`;
-  document.documentElement.style.setProperty(
-    '--grain-url', `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
-}
-
 /* ---------- Routes ---------- */
 function registerRoutes() {
   defineRoute('/', home);
@@ -106,9 +97,7 @@ function initGlobalHandlers() {
 
 /* ---------- Boot ---------- */
 async function boot() {
-  installGrain();
-  installPaper();
-  installFloralCanvas();  // once, outside the router's subtree
+  installBackdrop();      // once, outside the router's subtree
   initTheme();
   initScroll();
   initMagnetic(document);

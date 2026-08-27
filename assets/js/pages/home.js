@@ -114,7 +114,7 @@ export default function home() {
     </section>
 
     <!-- ═══════════ III. CRAFTED WITH INTENTION ═══════════ -->
-    <section class="section intention pressed">
+    <section class="section intention">
       ${botField([
         { kind: 'fern', seed: 'int-a', mode: 'wash', stroke: 1.1, right: '-12%', y: '-8%', w: '44vw',
           rot: 16, op: 0.34, tone: 'var(--teal-wash)', alt: 'var(--leaf-wash)',

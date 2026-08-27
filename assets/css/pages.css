@@ -1495,18 +1495,18 @@
    FOOTER
    ============================================================ */
 .footer {
-  background: var(--plum-900);
+  background: var(--stem-900);
   color: var(--paper-1);
   padding-block: var(--space-2xl) var(--space-l);
-  --line: color-mix(in oklab, #F6F1E7 15%, transparent);
-  --line-soft: color-mix(in oklab, #F6F1E7 9%, transparent);
-  --line-strong: color-mix(in oklab, #F6F1E7 26%, transparent);
-  --text: #F6F1E7;
-  --text-soft: #C3CFC4;
-  --text-muted: #9AA89C;
-  --text-faint: #7B8A7D;
-  --bg-raised: #1B3123;
-  --accent: #E0A87F;
+  --line: color-mix(in oklab, var(--paper-1) 15%, transparent);
+  --line-soft: color-mix(in oklab, var(--paper-1) 9%, transparent);
+  --line-strong: color-mix(in oklab, var(--paper-1) 26%, transparent);
+  --text: var(--paper-1);
+  --text-soft: #D8D3C6;
+  --text-muted: #B6B0A0;
+  --text-faint: #97917F;
+  --bg-raised: var(--stem-800);
+  --accent: var(--rose-lit);
 }
 .footer__top {
   display: grid;
@@ -1522,7 +1522,7 @@
 .footer .subscribe { background: transparent; border-color: var(--line-strong); }
 .footer .subscribe input { color: var(--text); }
 .footer .subscribe input::placeholder { color: var(--text-faint); }
-.footer .btn--primary { --btn-bg: var(--paper-1); --btn-fg: var(--plum-900); --btn-fill: var(--rose-wash); }
+.footer .btn--primary { --btn-bg: var(--paper-1); --btn-fg: var(--stem-900); --btn-fill: var(--rose-wash); }
 
 .footer__nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-m); }
 .footer__col ul { list-style: none; padding: 0; display: grid; gap: 0.55rem; }

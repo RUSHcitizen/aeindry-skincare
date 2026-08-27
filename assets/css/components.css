@@ -4,7 +4,7 @@
 
 /* ---------- Buttons ---------- */
 .btn {
-  --btn-bg: var(--plum-800);
+  --btn-bg: var(--stem-800);
   --btn-fg: var(--paper-1);
   --btn-border: transparent;
   position: relative;
@@ -54,17 +54,17 @@
 .btn:hover .btn__icon { transform: translateX(3px); }
 .btn--back:hover .btn__icon { transform: translateX(-3px); }
 
-.btn--primary { --btn-bg: var(--plum-800); --btn-fg: var(--paper-1); --btn-fill: var(--magenta-ink); }
-.btn--accent  { --btn-bg: var(--rose-ink); --btn-fg: #fff; --btn-fill: var(--plum-800); }
+.btn--primary { --btn-bg: var(--stem-800); --btn-fg: var(--paper-1); --btn-fill: var(--magenta-ink); }
+.btn--accent  { --btn-bg: var(--rose-ink); --btn-fg: #fff; --btn-fill: var(--stem-800); }
 .btn--ghost {
   --btn-bg: transparent;
   --btn-fg: var(--text);
   --btn-border: var(--line-strong);
-  --btn-fill: var(--plum-800);
+  --btn-fill: var(--stem-800);
   --btn-fill-fg: var(--paper-1);
 }
 .btn--ghost:hover { border-color: transparent; }
-.btn--light { --btn-bg: var(--paper-1); --btn-fg: var(--plum-900); --btn-fill: var(--rose-wash); }
+.btn--light { --btn-bg: var(--paper-1); --btn-fg: var(--stem-900); --btn-fill: var(--rose-wash); }
 .btn--sm { padding: 0.72em 1.25em; font-size: calc(var(--step--2) * 0.94); letter-spacing: 0.08em; }
 .btn--lg { padding: 1.2em 2.4em; font-size: var(--step--1); }
 .btn--block { display: flex; width: 100%; }
@@ -163,7 +163,7 @@
 .chip::before {
   content: "";
   position: absolute; inset: 0; z-index: -1;
-  background: var(--plum-800);
+  background: var(--stem-800);
   transform: scale(0.2);
   opacity: 0;
   border-radius: inherit;
@@ -306,7 +306,7 @@
   position: fixed;
   inset: 0;
   z-index: calc(var(--z-nav) - 1);
-  background: var(--plum-900);
+  background: var(--stem-900);
   color: var(--paper-1);
   display: flex;
   flex-direction: column;
@@ -393,7 +393,7 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-preloader);
-  background: var(--plum-900);
+  background: var(--stem-900);
   display: grid;
   place-items: center;
   transition: opacity 700ms var(--ease-soft), visibility 700ms;
@@ -565,7 +565,7 @@
   display: flex; align-items: center; gap: 0.7rem;
   padding: 0.85rem 1.25rem;
   border-radius: var(--r-full);
-  background: var(--plum-900);
+  background: var(--stem-900);
   color: var(--paper-1);
   font-size: var(--step--1);
   box-shadow: var(--shadow-xl);
@@ -744,7 +744,7 @@
   left: 50%;
   transform: translate(-50%, 6px);
   padding: 0.5em 0.85em;
-  background: var(--plum-900);
+  background: var(--stem-900);
   color: var(--paper-1);
   border-radius: var(--r-sm);
   font-size: var(--step--2);

@@ -51,7 +51,6 @@
 /* A slower, larger bloom that breathes rather than sways. */
 .bot-sway--breathe {
   animation-name: bot-breathe;
-  transform-origin: 50% 50%;
 }
 @keyframes bot-breathe {
   from { transform: scale(0.985) rotate(-0.8deg); }
@@ -81,43 +80,6 @@
   100% { opacity: 0; transform: translate3d(var(--drift, 60px), 118vh, 0) rotate(var(--spin, 220deg)); }
 }
 
-/* ------------------------------------------------------------
-   Paper. A fibre weave over the whole page and an optional
-   heavier press on individual bands. Both stay under the
-   threshold where you would consciously notice them.
-   ------------------------------------------------------------ */
-.paper {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-  /* The texture is generated near-white on purpose (see installPaper), so it
-     can sit at full strength and still leave the paper's value alone. */
-  opacity: 1;
-  mix-blend-mode: multiply;
-  background-image: var(--paper-url);
-  background-size: 240px 240px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .paper { mix-blend-mode: overlay; opacity: .2; }
-}
-:root[data-theme="dark"] .paper { mix-blend-mode: overlay; opacity: .2; }
-
-.pressed::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: var(--paper-url);
-  background-size: 180px 180px;
-  opacity: .3;
-  mix-blend-mode: multiply;
-  z-index: var(--z-bot);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .pressed::after { mix-blend-mode: soft-light; opacity: .16; }
-}
-:root[data-theme="dark"] .pressed::after { mix-blend-mode: soft-light; opacity: .16; }
 
 /* ------------------------------------------------------------
    Section joins. A hairline with a botanical mark centred on it,
@@ -221,47 +183,54 @@
   .petal-drift i:nth-child(n + 5) { display: none; }
 }
 
-/* ═══════════════════ THE FLORAL CANVAS ═══════════════════ */
+/* ═══════════════════ THE FLORAL BACKDROP ═══════════════════ */
 
 /* Sections paint their own opaque grounds, so this cannot sit behind them; it
    is stacked over them instead, underneath the content wraps. */
-.floral-canvas {
+.backdrop {
   position: fixed;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
   /* Above the section grounds and below every .wrap. Blend modes would be the
-     obvious way to sit a canvas over opaque sections, but two viewport-sized
+     obvious way to sit an image over opaque sections, but two viewport-sized
      blend layers cost about 40% of the scroll frame budget. Plain alpha does
-     the same job here for free: the pigments are mid-tone, so the identical
-     colours darken the paper and lighten the plum bands. */
+     the same job here for nothing: the petals are near-white and the leaves a
+     grey-green, so one set of colours reads as tone-on-tone on the ivory and
+     as pale flowers on the dark bands. */
   z-index: 0;
-  opacity: .17;
+  opacity: .34;
 }
-.floral-canvas__pan {
+.backdrop__art {
   position: absolute;
-  inset: 0 0 auto;
-  /* A quarter viewport of slack for the pan to travel through. Every extra
-     vh here is overdraw on a layer that repaints as the page scrolls, so the
-     drift is kept just long enough to read as movement. */
-  height: 125vh;
+  /* Overdrawn on every side so the scroll drift never exposes an edge.
+     Kept as tight as the travel allows — every extra percent here is a
+     larger bitmap for a layer that alpha-blends over the whole page. */
+  inset: -4%;
   contain: strict;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   will-change: transform;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .floral-canvas { opacity: .14; }
-}
-:root[data-theme="dark"] .floral-canvas { opacity: .14; }
 
-/* Phones get a lighter canvas: the forms are proportionally much larger against
-   a narrow viewport, and the same strength reads as pattern rather than ground. */
+/* Dark grounds need much less of it — the same near-white artwork that reads
+   as a whisper on ivory reads as a lit shape against bark. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .backdrop { opacity: .12; }
+}
+:root[data-theme="dark"] .backdrop { opacity: .12; }
+
+/* Phones crop hard into the frame, so the corner clusters land proportionally
+   much larger against the viewport. Same artwork, less of it. */
 @media (max-width: 760px) {
-  .floral-canvas { opacity: .11; }
+  .backdrop { opacity: .24; }
+}
+@media (max-width: 760px) {
+  :root[data-theme="dark"] .backdrop { opacity: .10; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .floral-canvas__pan { transform: none !important; }
+  .backdrop__art { transform: none !important; }
+}
 }

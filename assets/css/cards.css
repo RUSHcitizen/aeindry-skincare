@@ -134,7 +134,7 @@
   position: absolute;
   inset: 0 0 auto;
   height: 20px;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--plum-900) 7%, transparent), transparent);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--stem-900) 7%, transparent), transparent);
   pointer-events: none;
 }
 .spec__cat {
