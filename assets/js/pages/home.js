@@ -11,7 +11,7 @@
 import { $, $$, esc, countUp, clamp, prefersReducedMotion } from '../lib/dom.js';
 import { PRODUCTS, getProduct, formatPrice, priceOf } from '../data/products.js';
 import {
-  BRAND, PROMISES, PILLARS, TESTIMONIALS, JOURNAL, STATS, INGREDIENTS, TIMELINE, CONCERNS
+  BRAND, PILLARS, TESTIMONIALS, JOURNAL, STATS, INGREDIENTS, TIMELINE, CONCERNS
 } from '../data/content.js';
 import { productArt } from '../lib/art.js';
 import { botanical } from '../lib/botanical.js';
@@ -104,32 +104,13 @@ export default function home() {
         </div>
       </div>
 
-      <a class="cover__cue" href="#promise" aria-label="Scroll to content">
+      <a class="cover__cue" href="#start" aria-label="Scroll to content">
         <span class="cover__cue-line" aria-hidden="true"></span>
       </a>
     </section>
 
-    <!-- ═══════════ II. THE PROMISE ═══════════ -->
-    <section class="promise-band band--olive" id="promise">
-      ${edge('top', 'var(--band-paper)')}
-      ${botField([
-        { kind: 'arc', seed: 'pr-a', mode: 'line', stroke: 1.2, x: '-4%', bottom: '-40%', w: '58vw',
-          op: 0.14, tone: 'var(--bot-sage)', par: 0.14, cur: 12 },
-        { kind: 'seedstem', seed: 'pr-b', mode: 'wash', stroke: 1.3, right: '6%', y: '-16%', w: '16vw',
-          rot: 12, op: 0.4, tone: 'var(--chartreuse-wash)', alt: 'var(--leaf-wash)',
-          par: -0.12, cur: 16, mobile: 'hide' }
-      ])}
-      <div class="marquee" aria-hidden="true">
-        <div class="marquee__track" style="--speed:74s">
-          ${[...PROMISES, ...PROMISES].map((p) =>
-            `<span class="marquee__item">${esc(p)}<span class="sep">${botanical('sprig', { seed: p, mode: 'line', stroke: 3 })}</span></span>`).join('')}
-        </div>
-      </div>
-      <p class="visually-hidden">${PROMISES.join('. ')}.</p>
-    </section>
-
     <!-- ═══════════ III. CRAFTED WITH INTENTION ═══════════ -->
-    <section class="section intention">
+    <section class="section intention" id="start">
       ${botField([
         { kind: 'fern', seed: 'int-a', mode: 'wash', stroke: 1.1, right: '-12%', y: '-8%', w: '44vw',
           rot: 16, op: 0.34, tone: 'var(--teal-wash)', alt: 'var(--leaf-wash)',

@@ -264,7 +264,6 @@
    PROMISE BAND
    ============================================================ */
 .promise { padding-block: clamp(1.6rem, 3vw, 2.4rem); overflow: hidden; }
-.promise .marquee__item { color: var(--paper-1); }
 .promise .sep { margin-inline: 0.5em; color: var(--rose-wash); }
 
 /* ============================================================

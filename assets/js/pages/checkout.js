@@ -23,6 +23,9 @@ import {
   shippingRates, selectedRate, setCustomer, selectShippingRate,
   placeOrder, canTakePayment, bus
 } from '../core/store.js';
+import { toMinor } from '../commerce/config.js';
+import { loadPaymentConfig, canCollectCard, paymentMode, mountCard, unmountCard,
+         updateAmount, validateCard, confirmPayment } from '../commerce/stripe.js';
 import { pageField, initBotField } from '../ui/bot-field.js';
 import { toast } from '../ui/toast.js';
 
@@ -299,7 +302,17 @@ export default function checkout() {
       });
 
       /* ── payment ───────────────────────────────────────────────────────── */
-      function drawPayment() {
+      let cardMounted = false;
+      async function drawPayment() {
+        /* Once the card form is up, a shipping change must not tear it down:
+           re-mounting throws away everything typed into Stripe's iframe. Only
+           the amount and the button label move. */
+        if (cardMounted) {
+          updateAmount(toMinor(cartTotals().total));
+          const lbl = $('[data-co-pay] .btn__label', payEl);
+          if (lbl) lbl.textContent = `Pay ${formatPrice(cartTotals().total)}`;
+          return;
+        }
         if (!canTakePayment()) {
           payEl.innerHTML = `
             <p class="co-empty">
@@ -310,16 +323,67 @@ export default function checkout() {
             </p>`;
           return;
         }
+
+        await loadPaymentConfig();
+
+        /* Half-configured — a secret key with no publishable one. The server
+           could create an intent the browser has no way to confirm, so a Pay
+           button here would record a paid order against money that never
+           moved. Refuse rather than offer it. */
+        if (paymentMode() === 'misconfigured') {
+          payEl.innerHTML = `
+            <p class="co-notice co-notice--warn">
+              <strong>Card payments are not switched on yet.</strong>
+              The basket and the shipping quote are real, but this shop cannot
+              take money until its payment keys are set. Nothing was charged.
+            </p>`;
+          return;
+        }
+
+        /* Test mode — the store is real, the money is not. Orders still place,
+           which is how this is exercised end to end; the confirmation says
+           plainly that nothing was charged. */
+        if (!canCollectCard()) {
+          payEl.innerHTML = `
+            <p class="co-notice">
+              <strong>Test mode.</strong> This store is running without payment
+              keys, so the order will be recorded and no money will move.
+            </p>
+            <button class="btn btn--primary btn--lg" type="button" data-co-pay>
+              <span class="btn__label">Pay ${formatPrice(cartTotals().total)}</span>
+            </button>`;
+          $('[data-co-pay]', payEl).addEventListener('click', pay);
+          return;
+        }
+
         payEl.innerHTML = `
           <p class="co-pay__lede">Card details are handled by our payment
             processor and never touch this site.</p>
           <div class="co-pay__mount" data-stripe-mount></div>
-          <button class="btn btn--primary btn--lg" type="button" data-co-pay>
+          <button class="btn btn--primary btn--lg" type="button" data-co-pay disabled>
             <span class="btn__label">Pay ${formatPrice(cartTotals().total)}</span>
           </button>
           <p class="co-pay__fine">By paying you agree to our returns policy.</p>`;
 
-        $('[data-co-pay]', payEl).addEventListener('click', pay);
+        const btn = $('[data-co-pay]', payEl);
+        const mount = await mountCard($('[data-stripe-mount]', payEl), {
+          amountMinor: toMinor(cartTotals().total),
+          currency: (cartTotals().currency || 'usd').toLowerCase()
+        });
+        if (!mount.ok) {
+          payEl.innerHTML = `
+            <p class="co-notice co-notice--warn">
+              <strong>The card form could not load.</strong>
+              ${mount.reason === 'sdk-blocked'
+                ? 'Something on this connection is blocking our payment provider — an extension, or a network policy. Try another browser.'
+                : 'Card payments are not configured on this shop.'}
+              Nothing was charged.
+            </p>`;
+          return;
+        }
+        cardMounted = true;
+        btn.disabled = false;
+        btn.addEventListener('click', pay);
       }
 
       let paying = false;
@@ -332,6 +396,15 @@ export default function checkout() {
         btn.disabled = true;
         label.textContent = 'Taking payment…';
         try {
+          /* Validate the card before the order exists. Placing first would
+             strand an order behind every mistyped card number, and those are
+             indistinguishable from real unpaid ones. Skipped in test mode,
+             where there is no card form to validate. */
+          if (cardMounted) {
+            const valid = await validateCard();
+            if (!valid.ok) throw new Error(valid.message);
+          }
+
           const addr = readAddress();
           const order = await placeOrder({
             billing_address: addr,
@@ -340,6 +413,23 @@ export default function checkout() {
             payment_method: 'stripe',
             payment_data: []
           });
+
+          /* The server created the intent for its own total and handed back the
+             secret to confirm it. Until this succeeds no money has moved,
+             whatever the order record says. */
+          const secret = (order?.payment_result?.payment_details || [])
+            .find((d) => d.key === 'client_secret')?.value;
+          if (secret) {
+            label.textContent = 'Confirming…';
+            const paid = await confirmPayment(secret, location.href);
+            if (!paid.ok) {
+              /* The order stands, unpaid, with its invoice link — which is what
+                 a customer needs to finish or query it. */
+              showConfirmation({ ...order, payment_failed: paid.message });
+              return;
+            }
+          }
+          unmountCard();
           showConfirmation(order);
         } catch (err) {
           toast(err?.message || 'The payment did not go through. Nothing was charged.');
@@ -352,14 +442,31 @@ export default function checkout() {
 
       function showConfirmation(order) {
         const status = order?.payment_result?.payment_status;
+        const failed = order?.payment_failed;
         const wrap = $('.checkout', root);
         wrap.innerHTML = `
           <div class="co-done">
-            <h2 class="display-md">Thank you.</h2>
+            <h2 class="display-md">${failed ? 'Almost.' : 'Thank you.'}</h2>
+            ${failed ? `<p class="co-notice co-notice--warn">
+              <strong>The payment did not go through.</strong> ${esc(failed)}
+              Your order is saved and nothing was charged — open the invoice
+              below to try again, or write to us and we will sort it out.
+            </p>` : ''}
             <p class="co-done__lede">
               Order <strong>#${esc(String(order?.order_id ?? ''))}</strong> is with us.
-              A confirmation is on its way to your inbox.
+              ${order?.email_sent
+                ? `A confirmation is on its way to
+                   <strong>${esc(order?.billing_address?.email || 'your inbox')}</strong>.`
+                : 'Keep the invoice link below — it is your copy of this order.'}
             </p>
+            ${order?.email_sent === false && status !== 'test' ? `
+              <!-- Said out loud rather than swallowed. A customer who is told
+                   to watch their inbox and never gets anything writes in; one
+                   who is told up front to keep the link does not. -->
+              <p class="co-notice">
+                <strong>No confirmation email was sent.</strong>
+                Save the invoice link below, or write to us and we will resend it.
+              </p>` : ''}
             ${status === 'test' ? `<p class="co-notice co-notice--warn">
               <strong>Test mode.</strong> No money moved and no order was really placed.
             </p>` : ''}
@@ -381,7 +488,7 @@ export default function checkout() {
       const offErr = bus.on('cart:error', (d) => toast(d.message));
       redraw();
 
-      return () => { off(); offErr(); };
+      return () => { off(); offErr(); unmountCard(); };
     }
   };
 }

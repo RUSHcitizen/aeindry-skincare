@@ -33,6 +33,7 @@ import { PRODUCTS, getProduct, priceOf } from '../assets/js/data/products.js';
 import { rateBasket, RATES_REVISED } from './usps.mjs';
 import { localRates, nearbyPickups, isLocal } from './fulfilment.mjs';
 import { buildInvoice, invoiceNumber } from './invoice.mjs';
+import { sendOrderEmail, mailProvider } from './mail.mjs';
 
 const args = process.argv.slice(2);
 const flag = (n, d) => { const i = args.indexOf(`--${n}`); return i === -1 ? d : args[i + 1]; };
@@ -223,6 +224,14 @@ async function handle(method, path, body, cart, query = new URLSearchParams()) {
     return { status: 200, json: cartJson(cart) };
   }
 
+  /* Not a WooCommerce route. A real Woo install advertises its gateways through
+     the Store API's own checkout payload; this mock has one gateway and says so
+     here, so the front end can ask one question and get the same answer from
+     either backend. */
+  if (method === 'GET' && path === '/payment-config') {
+    return { status: 200, json: paymentConfig() };
+  }
+
   if (method === 'POST' && path === '/cart/add-item') {
     const p = getProduct(body.id);
     if (!p) return bad('woocommerce_rest_cart_invalid_product', 'That product is no longer available.');
@@ -377,6 +386,14 @@ async function checkout(cart, body) {
   cart.items = [];
   cart.rates = []; cart.selectedRate = null; cart.shipping = 0;
 
+  /* Awaited, not fired and forgotten, because the confirmation page renders
+     from the answer: it may only say "check your inbox" if something was
+     actually put in it. Sending never throws — a mail outage records itself
+     and the order still stands. */
+  const mail = await sendOrderEmail(order, buildInvoice(order));
+  order.email_sent = mail.sent;
+  order.email_reason = mail.reason;
+
   return {
     status: 200,
     json: {
@@ -384,6 +401,9 @@ async function checkout(cart, body) {
       status: order.status,
       order_key: order.key,
       invoice_number: invoiceNumber(order),
+      /* Whether a confirmation actually went, and why not when it did not. */
+      email_sent: mail.sent,
+      email_reason: mail.reason,
       customer_note: order.customer_note,
       billing_address: order.billing_address,
       shipping_address: order.shipping_address,
@@ -405,11 +425,43 @@ async function checkout(cart, body) {
  * details never touch this server or the site. Without a key it returns
  * 'test', and the front end is required to say so rather than print a receipt.
  */
+/**
+ * What the browser is allowed to know about how payment works here.
+ *
+ * The publishable key is public by design — it identifies the account and can
+ * only create payment methods, never move money. The secret key never leaves
+ * this process.
+ */
+export function paymentConfig() {
+  const secret = Boolean(process.env.STRIPE_SECRET_KEY);
+  const publishable = Boolean(process.env.STRIPE_PUBLISHABLE_KEY);
+  /* Three states, and collapsing them into a boolean was a bug: "no keys" and
+     "half-configured" both mean no card can be taken, but they call for
+     opposite behaviour. No keys is the demo — orders place, nothing is
+     charged, and the page says so, which is how the whole test suite exercises
+     checkout. Half-configured is a deployment mistake that would record paid
+     orders against money that never moved, and must refuse. */
+  const mode = !secret ? 'test' : (publishable ? 'card' : 'misconfigured');
+  return {
+    provider: secret ? 'stripe' : 'test',
+    mode,
+    publishable_key: process.env.STRIPE_PUBLISHABLE_KEY || '',
+    can_collect_card: mode === 'card'
+  };
+}
+
 async function takePayment(amountMinor, method = 'test') {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) {
     return { ok: true, status: 'test', message: '',
       details: [{ key: 'note', value: 'No payment was taken — test mode.' }] };
+  }
+  if (!process.env.STRIPE_PUBLISHABLE_KEY) {
+    /* Half-configured is worse than unconfigured: an intent would be created,
+       the browser could not confirm it, and the shop would record a paid order
+       against money that never moved. */
+    return { ok: false,
+      message: 'Card payments are not fully configured — STRIPE_PUBLISHABLE_KEY is missing. Nothing was charged.' };
   }
   try {
     const res = await fetch('https://api.stripe.com/v1/payment_intents', {
@@ -493,7 +545,8 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, '127.0.0.1', () => {
   const live = process.env.STRIPE_SECRET_KEY ? 'live Stripe' : 'test payments';
+  const mail = mailProvider() ? `email via ${mailProvider()}` : 'no email configured';
   const usps = process.env.USPS_CLIENT_ID ? 'live USPS' : `table rates (${RATES_REVISED})`;
   console.log(`Store API on http://127.0.0.1:${PORT}${API}`);
-  console.log(`  catalogue ${PRODUCTS.length} products · ships from ${ORIGIN_ZIP} · ${usps} · ${live}`);
+  console.log(`  catalogue ${PRODUCTS.length} products · ships from ${ORIGIN_ZIP} · ${usps} · ${live} · ${mail}`);
 });

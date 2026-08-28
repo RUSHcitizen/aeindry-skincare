@@ -702,40 +702,6 @@
 .acc__panel.is-open { grid-template-rows: 1fr; }
 .acc__inner { padding-bottom: var(--space-s); color: var(--text-soft); font-size: var(--step--1); line-height: 1.7; }
 
-/* ---------- Marquee ---------- */
-.marquee {
-  display: flex;
-  overflow: hidden;
-  user-select: none;
-  gap: 0;
-  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-}
-.marquee__track {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: var(--space-l);
-  padding-right: var(--space-l);
-  animation: marquee var(--speed, 42s) linear infinite;
-  will-change: transform;
-}
-.marquee:hover .marquee__track { animation-play-state: paused; }
-.marquee--reverse .marquee__track { animation-direction: reverse; }
-.marquee__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7em;
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 3.6vw, 2.5rem);
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  color: var(--text);
-  font-variation-settings: "opsz" 90;
-}
-.marquee__item .sep { color: var(--accent); font-size: 0.5em; }
-.marquee__item em { font-style: italic; color: var(--accent); font-variation-settings: "opsz" 96; }
 
 /* ---------- Tooltip ---------- */
 .tip { position: relative; }

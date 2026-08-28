@@ -209,24 +209,6 @@
   100% { transform: translateY(240%); opacity: 0; }
 }
 
-/* ════════════════════ II. THE PROMISE ════════════════════ */
-.promise-band {
-  padding-block: clamp(2.4rem, 4vw, 3.6rem);
-  overflow: hidden;
-}
-.promise-band .marquee__item {
-  font-family: var(--font-display);
-  font-size: clamp(1.15rem, 2.1vw, 1.85rem);
-  font-variation-settings: "opsz" 60;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  color: var(--text);
-  gap: 1.1em;
-}
-.promise-band .marquee__track { gap: clamp(2rem, 4vw, 3.4rem); }
-.promise-band .sep { display: inline-flex; width: 20px; color: var(--accent); opacity: .85; }
-.promise-band .sep svg { width: 100%; height: auto; }
-
 /* ════════════════════ III. CRAFTED WITH INTENTION ════════════════════ */
 .intention { padding-block: var(--space-4xl); }
 .intention__grid {

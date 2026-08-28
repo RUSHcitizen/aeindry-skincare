@@ -504,12 +504,12 @@ export const PRODUCTS = [
       'Balms rather than creams: no water in them, so they seal rather than soak. Three of '
       + 'them, and each is aimed at something narrower than "body" suggests — the third is for '
       + 'brows.',
-    price: 1, pricePending: PENDING,
-    weight: '1 oz tin',
+    price: 15,
+    weight: '3 oz tin',
     scentFamily: ['herbal', 'unscented'], concerns: ['eczema', 'dry', 'sensitive'],
     variants: [
       { id: 'green-alchemist', label: 'Green Alchemist', swatch: '#7E9A72' },
-      { id: 'barrier-repair',  label: 'Barrier Repair',  swatch: '#E9C97A' },
+      { id: 'barrier-repair',  label: 'Barrier Repair',  swatch: '#E9C97A', price: 20 },
       { id: 'brow-renew',      label: 'Brow Renew',      swatch: '#8B6444' }
     ],
     keyIngredients: ['beeswax'],

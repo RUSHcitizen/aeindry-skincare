@@ -122,6 +122,82 @@ In production none of this is in the path — Woo's shipping plugin quotes USPS
 and the Store API hands the answer to the front end. It is here so the demo
 quotes something honest, and because the packing logic is worth keeping.
 
+## Taking a card
+
+Two keys, and the site behaves differently for each combination — deliberately,
+because the dangerous state is the half-configured one.
+
+| `STRIPE_SECRET_KEY` | `STRIPE_PUBLISHABLE_KEY` | What the checkout does |
+|---|---|---|
+| unset | — | Test mode. Places an order, takes nothing, and says "no money moved and no order was really placed." |
+| set | unset | **Refuses.** No Pay button: "Card payments are not switched on yet." |
+| set | set | Mounts Stripe's Payment Element and confirms the intent. |
+
+The middle row is the one that matters. With a secret key and no publishable
+key the server can create a PaymentIntent that the browser has no way to
+confirm — the order is recorded, the money never moves, and the customer is
+thanked. The server refuses to create the intent at all in that state, and the
+checkout refuses to show a Pay button.
+
+The publishable key is public by design: it identifies the account and can only
+create payment methods. It is served to the browser from
+`GET /wp-json/wc/store/v1/payment-config`. The secret key never leaves the
+server process.
+
+**The order of operations is load-bearing.** The card is validated first
+(`elements.submit()`), *then* the order is placed, *then* the intent is
+confirmed. Placing the order first would strand one behind every mistyped card
+number, and a stranded order is indistinguishable from a real unpaid one. If
+confirmation fails after the order exists, the order stands as unpaid and the
+confirmation page says so and offers the invoice — it does not say thank you.
+
+Card fields are rendered inside Stripe's own iframe on Stripe's origin. They are
+not readable from this document, which is what keeps the site out of PCI scope.
+
+```sh
+STRIPE_SECRET_KEY=sk_live_…  STRIPE_PUBLISHABLE_KEY=pk_live_…  node server/store.mjs
+```
+
+Test with Stripe's test keys and card `4242 4242 4242 4242` first. `4000 0025
+0000 3155` forces a 3-D Secure challenge; `4000 0000 0000 9995` forces a
+decline — both are worth walking through, because both are paths a real
+customer will hit.
+
+---
+
+## The confirmation email
+
+Set one of these and the customer gets an order confirmation with their invoice
+link:
+
+| Variable | What it does |
+|---|---|
+| `RESEND_API_KEY` | Sends through [Resend](https://resend.com)'s HTTP API. No dependency, no SMTP, works from a container with only outbound 443. |
+| `AEINDRY_MAIL_WEBHOOK` | POSTs the message as JSON to a URL of your choosing — Zapier, Make, a Lambda, your own relay. |
+| `AEINDRY_MAIL_FROM` | The From header. Defaults to the seller identity in `invoice.mjs`. |
+| `AEINDRY_SITE_URL` | Public origin, so the invoice link in the email is absolute. Without it the email has no link. |
+
+SMTP is deliberately not supported: doing it properly means a dependency and a
+long-lived connection, and every host worth using offers an HTTP API.
+
+With none set, **no email is sent** — and the confirmation page says so, rather
+than telling the customer to watch an inbox that will stay empty:
+
+> **No confirmation email was sent.** Save the invoice link below, or write to
+> us and we will resend it.
+
+`sendOrderEmail` never throws. A mail provider being down must not fail an order
+that has already been paid for; the failure is recorded on the order
+(`email_sent`, `email_reason`) and the page renders from that. The email is
+built from the invoice, not the cart, so the figures a customer is sent are the
+figures the server charged.
+
+Whichever provider you pick, you have to prove you own the domain to it —
+SPF and DKIM records on `aeindryskincare.com`. Without that the mail will send
+and land in spam, which is worse than not sending it.
+
+---
+
 ## Before you switch it on
 
 - [ ] Real weights and dimensions on every product in WooCommerce
@@ -130,6 +206,11 @@ quotes something honest, and because the packing logic is worth keeping.
 - [ ] Tax verified against one in-state and one out-of-state address
 - [ ] Return and shipping policy pages written — Stripe asks for these
 - [ ] `?store=` confirmed inert on the production hostname
+- [ ] Both Stripe keys set — check the boot banner says `live Stripe`
+- [ ] A mail provider set — the banner says `email via …`, not `no email configured`
+- [ ] SPF and DKIM published for the sending domain, and a test mail landing in an inbox rather than spam
+- [ ] A declined card (`4000 0000 0000 9995`) walked through end to end
+- [ ] The seven products still on placeholder prices given real ones (`node tools/check-catalogue.mjs`)
 
 ---
 
