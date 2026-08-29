@@ -1,0 +1,237 @@
+/* ============================================================
+   The specimen card
+   A vessel on a hairline shelf with a botanical behind it, and
+   a label plate below the line. Used wherever products are
+   listed outside the home shelf.
+   ============================================================ */
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(230px, 23vw, 300px), 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 2.4vw, 2.4rem);
+}
+
+.spec {
+  --spec-gap: clamp(1rem, 2.4vw, 2.4rem);
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+/* ---- the stage the vessel stands on ---- */
+.spec__stage {
+  position: relative;
+  aspect-ratio: 1 / 0.86;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 4%;
+  background:
+    radial-gradient(76% 68% at 50% 46%, var(--tint2), transparent 74%);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+.spec__halo {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%) scale(0.84);
+  width: 72%; aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--accent-art), transparent 70%);
+  opacity: 0;
+  filter: blur(28px);
+  transition: opacity var(--dur-slow) var(--ease-soft), transform var(--dur-slower) var(--ease-out-expo);
+}
+.spec__leaf {
+  position: absolute;
+  color: var(--bot-sage);
+  opacity: .45;
+  line-height: 0;
+  transition: transform var(--dur-slower) var(--ease-out-expo), opacity var(--dur-slow) var(--ease-soft);
+}
+.spec__leaf svg { width: 100%; height: auto; }
+.spec__art {
+  position: relative;
+  width: 86%;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 16px 16px rgb(var(--shadow-color) / .16));
+  transition: transform var(--dur-slower) var(--ease-out-expo), filter var(--dur-slow) var(--ease-soft);
+}
+.spec__shadow {
+  position: absolute;
+  left: 50%; bottom: 3%;
+  transform: translateX(-50%);
+  width: 52%; height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(var(--shadow-color) / .26), transparent 72%);
+  transition: width var(--dur-slower) var(--ease-out-expo), opacity var(--dur-slow) var(--ease-soft);
+}
+
+.spec:hover .spec__art,
+.spec:focus-within .spec__art { transform: translateY(-13px) scale(1.06); filter: drop-shadow(0 24px 22px rgb(var(--shadow-color) / .2)); }
+.spec:hover .spec__halo,
+.spec:focus-within .spec__halo { opacity: .46; transform: translate(-50%, -50%) scale(1.05); }
+.spec:hover .spec__leaf,
+.spec:focus-within .spec__leaf { opacity: .75; transform: rotate(-6deg) translate(-3px, -5px); }
+.spec:hover .spec__shadow,
+.spec:focus-within .spec__shadow { width: 42%; opacity: .68; }
+
+/* ---- flags + wishlist, kept off the stretched link ---- */
+.spec__flags {
+  position: absolute;
+  top: var(--space-xs); left: var(--space-xs);
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+  z-index: 3;
+  pointer-events: none;
+}
+.spec__flag {
+  font-family: var(--font-sans);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--accent);
+  background: color-mix(in oklab, var(--bg-raised) 84%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
+  border-radius: var(--r-full);
+  padding: 0.3em 0.8em;
+  line-height: 1.4;
+}
+.spec__wish {
+  position: absolute;
+  top: var(--space-xs); right: var(--space-xs);
+  z-index: 4;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--bg-raised) 76%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease-spring),
+              color var(--dur-base) var(--ease-soft), border-color var(--dur-base) var(--ease-soft);
+}
+.spec:hover .spec__wish, .spec__wish:focus-visible, .spec__wish.is-on { opacity: 1; transform: none; }
+.spec__wish svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+.spec__wish.is-on { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 42%, transparent); }
+.spec__wish.is-on svg { fill: currentColor; }
+
+/* ---- the label plate ---- */
+.spec__plate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: center;
+  /* The shelf line, widened by half the grid gap so neighbouring cards join. */
+  border-top: 1px solid var(--line-strong);
+  margin-inline: calc(var(--spec-gap) / -2 - 1px);
+  padding: var(--space-s) calc(var(--spec-gap) / 2 + 1px) 0;
+}
+.spec__plate::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 20px;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--stem-900) 7%, transparent), transparent);
+  pointer-events: none;
+}
+.spec__cat {
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.spec__name {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-variation-settings: "opsz" 40;
+  line-height: 1.18;
+}
+.spec__name a::after { content: ""; position: absolute; inset: 0; z-index: 2; }
+.spec__note { font-size: var(--step--2); color: var(--text-muted); font-style: italic; }
+/* A name that wraps to two lines must not push its own price out of line with
+   the prices beside it. The note takes the slack instead. */
+.spec__note { margin-bottom: auto; }
+.spec__foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: 0.4rem;
+}
+.spec__price { font-size: var(--step--1); color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.spec__price small { font-size: 0.78em; color: var(--text-faint); margin-left: 1px; }
+.spec__swatches { display: inline-flex; gap: 4px; }
+.spec__swatch {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--line);
+  transition: transform var(--dur-base) var(--ease-spring);
+}
+.spec:hover .spec__swatch { transform: scale(1.2); }
+.spec:hover .spec__swatch:nth-child(2) { transition-delay: 40ms; }
+.spec:hover .spec__swatch:nth-child(3) { transition-delay: 80ms; }
+.spec:hover .spec__swatch:nth-child(4) { transition-delay: 120ms; }
+
+.spec__actions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: var(--space-xs);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--dur-base) var(--ease-soft), transform var(--dur-slow) var(--ease-out-expo);
+}
+.spec__actions .btn { position: relative; z-index: 3; }
+.spec:hover .spec__actions, .spec:focus-within .spec__actions { opacity: 1; transform: none; }
+
+/* Touch devices never hover, so the actions must simply be present. */
+@media (hover: none), (pointer: coarse) {
+  .spec__actions { opacity: 1; transform: none; }
+  .spec__wish { opacity: 1; transform: none; }
+}
+
+.empty-state__mark { width: 92px; color: var(--bot-sage); opacity: .55; }
+.empty-state__mark svg { width: 100%; height: auto; }
+
+@media (max-width: 620px) {
+  .spec-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-l) var(--space-s); }
+  .spec__actions .btn { flex: 1; padding-inline: 0.6em; font-size: var(--step--2); }
+  .spec__note { display: none; }
+}
+
+/* ---- the stage, when what stands on it is a photograph ----------------
+   The default stage is built for a generated vessel: a landscape box with
+   the bottle stood on its floor at 86% width, a halo behind it and a cast
+   shadow under it. A square photograph in that box is taller than the box
+   and, with nothing clipping it, spills over the card above and below.
+
+   A photograph needs none of that furniture — it was shot on a sweep with
+   its own light and its own ground — so the stage squares up to match the
+   crop and the staging is switched off. ------------------------------- */
+.spec__stage--photo {
+  aspect-ratio: 1;
+  place-items: center;
+  padding-bottom: 0;
+}
+.spec__stage--photo .spec__art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  /* The drop-shadow the SVG wants only darkens a square photo's four edges. */
+  filter: none;
+}
+.spec__stage--photo .spec__halo,
+.spec__stage--photo .spec__shadow { display: none; }
+/* The leaf stays. Multiplied through the white sweep it reads as a botanical
+   ghost across the product rather than a sticker beside it, which is the
+   whole trick — so it is dropped back to keep it a suggestion. */
+.spec__stage--photo .spec__leaf { opacity: .3; }
+.spec:hover .spec__stage--photo .spec__art,
+.spec:focus-within .spec__stage--photo .spec__art {
+  transform: translateY(-6px) scale(1.03);
+  filter: none;
+}

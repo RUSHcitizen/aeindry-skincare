@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aeindry Skincare — All Natural Handmade Skincare</title>
+<meta name="description" content="Aeindry Skincare — a small, woman-owned company making 100% natural handmade skincare in the Pacific Northwest. Plant oils, botanical extracts and rich butters. No preservatives, no silicon, no formaldehyde, no harsh chemicals.">
+<meta name="theme-color" content="#241F19" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F4EDE0" media="(prefers-color-scheme: light)">
+<meta name="color-scheme" content="light dark">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Aeindry Skincare — All Natural Handmade Skincare">
+<meta property="og:description" content="Purity is Essence. 100% natural handmade skincare from the Pacific Northwest.">
+<meta property="og:site_name" content="Aeindry Skincare">
+
+<link rel="preload" href="assets/fonts/bodoni-moda-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jost-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/animations.css">
+<link rel="stylesheet" href="assets/css/botanical.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/cards.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+<link rel="stylesheet" href="assets/css/home.css">
+
+<!-- The real wreath, trimmed to its own ink and squared up with transparent
+     padding. Three sizes because a tab, a bookmark bar and an iOS home screen
+     ask for very different pixel counts, and a 512px mark scaled to 16 by the
+     browser turns to mush. -->
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/img/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicon-180.png">
+
+<script>
+  // Applied before first paint so a chosen theme never flashes the other one.
+  try {
+    var t = localStorage.getItem('aeindry.theme');
+    if (t) document.documentElement.setAttribute('data-theme', JSON.parse(t));
+  } catch (e) {}
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#app">Skip to content</a>
+
+<!-- ============ PRELOADER ============ -->
+<div class="preloader" role="status" aria-label="Loading">
+  <div class="preloader__inner">
+    <img class="preloader__mark" src="assets/img/favicon-180.png" alt="" aria-hidden="true"
+         width="180" height="180" decoding="async" fetchpriority="high">
+    <p class="preloader__word" aria-hidden="true">
+      <span style="--i:0">A</span><span style="--i:1">E</span><span style="--i:2">I</span><span style="--i:3">N</span><span style="--i:4">D</span><span style="--i:5">R</span><span style="--i:6">Y</span>
+    </p>
+    <div class="preloader__bar"><div class="preloader__fill"></div></div>
+    <p class="preloader__pct">0%</p>
+  </div>
+</div>
+
+<!-- ============ PAGE TRANSITION CURTAIN ============ -->
+<div class="curtain" aria-hidden="true">
+  <span class="curtain__panel" style="--p:0"></span>
+  <span class="curtain__panel" style="--p:1"></span>
+  <span class="curtain__panel" style="--p:2"></span>
+  <span class="curtain__panel" style="--p:3"></span>
+  <span class="curtain__panel" style="--p:4"></span>
+  <span class="curtain__panel" style="--p:5"></span>
+</div>
+
+<div class="scroll-progress" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="#/" aria-label="Aeindry Skincare, home">
+      <!-- Wordmark only. The tagline belongs to the mark itself, and the mark
+           is on screen right below this on the home cover. -->
+      <span class="brand__text">
+        <span class="brand__name">Aeindry</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      <a class="nav__link" href="#/shop">Shop</a>
+      <a class="nav__link" href="#/sets">Sets</a>
+      <a class="nav__link" href="#/ritual">Build a ritual</a>
+      <a class="nav__link" href="#/ingredients">Ingredients</a>
+      <a class="nav__link" href="#/about">Our story</a>
+      <a class="nav__link" href="#/journal">Journal</a>
+      <a class="nav__link" href="#/contact">Contact</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="icon-btn theme-btn" type="button" aria-label="Change colour theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true"></svg>
+      </button>
+      <button class="icon-btn cart-btn" type="button" aria-label="Open basket">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 8h14l-1.1 11.3a2 2 0 0 1-2 1.7H8.1a2 2 0 0 1-2-1.7Z"/>
+          <path d="M9 8V6.2a3 3 0 0 1 6 0V8"/>
+        </svg>
+        <span class="cart-btn__count" aria-hidden="true">0</span>
+      </button>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+        <span class="burger__bars" aria-hidden="true">
+          <span class="burger__bar"></span>
+          <span class="burger__bar"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MOBILE MENU ============ -->
+<div class="menu" id="menu" aria-hidden="true">
+  <nav aria-label="Mobile">
+    <ul class="menu__list" role="list">
+      <li class="menu__item"><a class="menu__link" href="#/"          style="--d:120ms"><span class="num">01</span>Home</a></li>
+      <li class="menu__item"><a class="menu__link" href="#/shop"      style="--d:180ms"><span class="num">02</span>Shop</a></li>
+      <li class="menu__item"><a class="menu__link" href="#/sets"      style="--d:240ms"><span class="num">03</span>Sets</a></li>
+      <li class="menu__item"><a class="menu__link" href="#/ritual"    style="--d:300ms"><span class="num">04</span>Build a ritual</a></li>
+      <li class="menu__item"><a class="menu__link" href="#/ingredients" style="--d:360ms"><span class="num">05</span>Ingredients</a></li>
+      <li class="menu__item"><a class="menu__link" href="#/about"     style="--d:420ms"><span class="num">06</span>Our story</a></li>
+      <li class="menu__item"><a class="menu__link" href="#/journal"   style="--d:480ms"><span class="num">07</span>Journal</a></li>
+      <li class="menu__item"><a class="menu__link" href="#/contact"   style="--d:540ms"><span class="num">08</span>Contact</a></li>
+    </ul>
+  </nav>
+  <div class="menu__foot">
+    <div>
+      <p class="body-xs">Sammamish, Washington</p>
+      <a class="link-underline body-sm" href="mailto:contactus@aeindryskincare.com">contactus@aeindryskincare.com</a>
+    </div>
+    <div class="cluster" style="--gap:.6rem">
+      <a class="btn btn--ghost btn--sm" href="https://www.instagram.com/aeindryskincare/" target="_blank" rel="noopener"><span class="btn__label">Instagram</span></a>
+      <a class="btn btn--ghost btn--sm" href="https://www.facebook.com/aeindryskincare/" target="_blank" rel="noopener"><span class="btn__label">Facebook</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ROUTED CONTENT ============ -->
+<main id="app" tabindex="-1"></main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a class="brand brand--footer" href="#/" aria-label="Aeindry Skincare, home">
+          <img class="brand__mark" src="assets/img/logo-wreath-900.webp" alt="" width="900" height="935" loading="lazy" decoding="async">
+          <span class="brand__text">
+            <span class="brand__name">Aeindry Skincare</span>
+            <span class="brand__tag">All Natural Handmade Skincare</span>
+          </span>
+        </a>
+        <p class="footer__blurb">
+          A small, woman-owned 100% natural handmade skincare company, founded and operating
+          in the Pacific Northwest. Made by hand in Sammamish, Washington.
+        </p>
+        <form class="subscribe" data-newsletter>
+          <label class="visually-hidden" for="nl-foot">Email address</label>
+          <input id="nl-foot" type="email" name="email" placeholder="Join the list" required autocomplete="email">
+          <button class="btn btn--primary btn--sm" type="submit"><span class="btn__label">Subscribe</span></button>
+        </form>
+      </div>
+
+      <nav class="footer__nav" aria-label="Footer">
+        <div class="footer__col">
+          <h2 class="footer__heading">Shop</h2>
+          <ul role="list">
+            <li><a class="link-underline" href="#/shop">Everything</a></li>
+            <li><a class="link-underline" href="#/sets">Sets</a></li>
+            <li><a class="link-underline" href="#/shop?category=body">Body &amp; Hands</a></li>
+            <li><a class="link-underline" href="#/shop?category=face">Face</a></li>
+            <li><a class="link-underline" href="#/shop?category=soap">Soap &amp; Bath</a></li>
+            <li><a class="link-underline" href="#/shop?category=home">Home &amp; Aroma</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h2 class="footer__heading">Discover</h2>
+          <ul role="list">
+            <li><a class="link-underline" href="#/ritual">Build a ritual</a></li>
+            <li><a class="link-underline" href="#/ritual?tab=scent">Find your scent</a></li>
+            <li><a class="link-underline" href="#/ingredients">Ingredient library</a></li>
+            <li><a class="link-underline" href="#/journal">Journal</a></li>
+            <li><a class="link-underline" href="#/about">Our story</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h2 class="footer__heading">Reach us</h2>
+          <ul role="list">
+            <li><a class="link-underline" href="mailto:contactus@aeindryskincare.com">contactus@aeindryskincare.com</a></li>
+            <li><a class="link-underline" href="tel:+13129097034">+1 312-909-7034</a></li>
+            <li><a class="link-underline" href="https://www.instagram.com/aeindryskincare/" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a class="link-underline" href="https://www.facebook.com/aeindryskincare/" target="_blank" rel="noopener">Facebook</a></li>
+            <li><a class="link-underline" href="#/contact">Contact form</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="footer__marks">
+      <span class="pill pill--outline">100% Natural</span>
+      <span class="pill pill--outline">No Preservatives</span>
+      <span class="pill pill--outline">No Parabens</span>
+      <span class="pill pill--outline">No Silicon</span>
+      <span class="pill pill--outline">Never Tested on Animals</span>
+      <span class="pill pill--outline">Woman Owned</span>
+    </div>
+
+    <div class="footer__bottom">
+      <p class="body-xs">© <span data-year>2026</span> Aeindry Skincare. Handmade in Washington.</p>
+      <!-- Replaced at boot once the commerce layer knows whether a store is
+           answering. Written here as the cautious case, so a page whose script
+           never runs still tells the truth rather than implying it can sell. -->
+      <p class="body-xs footer__note" data-store-note>
+        Demonstration storefront — no payment is taken and no mail is sent.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ CART DRAWER ============ -->
+<div class="drawer-scrim"></div>
+<aside class="drawer" role="dialog" aria-modal="true" aria-label="Your basket" aria-hidden="true">
+  <header class="drawer__head">
+    <h2 class="drawer__title">Your basket</h2>
+    <button class="icon-btn drawer__close" type="button" aria-label="Close basket">
+      <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </header>
+  <div class="drawer__body" data-native-scroll></div>
+  <footer class="drawer__foot" hidden>
+    <div class="drawer__totals"></div>
+    <button class="btn btn--primary btn--block drawer__checkout" type="button">
+      <span class="btn__label">Checkout</span>
+    </button>
+    <button class="btn-text drawer__clear" type="button">Empty basket</button>
+  </footer>
+</aside>
+
+<!-- ============ MODAL + TOASTS ============ -->
+<div class="modal-scrim" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Product quick view"></div>
+</div>
+<div class="toasts" aria-live="polite"></div>
+
+
+<script type="module" src="assets/js/main.js"></script>
+<noscript>
+  <div style="padding:6rem 1.5rem;max-width:52ch;margin:auto;text-align:center;font-family:Georgia,serif">
+    <h1>Aeindry Skincare</h1>
+    <p>All Natural Handmade Skincare where Purity is Essence. A small, woman-owned company
+    in the Pacific Northwest making 100% natural skincare by hand.</p>
+    <p>This storefront needs JavaScript to run. To reach us directly, email
+    <a href="mailto:contactus@aeindryskincare.com">contactus@aeindryskincare.com</a>.</p>
+  </div>
+</noscript>
+</body>
+</html>
