@@ -58,10 +58,17 @@ export default function home() {
       ${petalDrift(7, 'cover')}
 
       <div class="wrap cover__inner">
-        <!-- The mark and the line it carries are one lockup, not two stacked
-             blocks: the headline rises into the wreath's lower arc so the pair
-             reads as a single object. The wreath already says "purity is
-             essence" in small caps; the headline is that line said out loud. -->
+        <!-- The mark and the headline are one lockup, not two stacked blocks:
+             the headline rises into the wreath's lower arc so the pair reads as
+             a single object.
+
+             The headline is not the tagline. The wreath already carries "PURITY
+             IS ESSENCE" in small caps inside it, so a headline saying the same
+             words set the phrase twice in one glance and made the mark look
+             like a caption for the type under it. This is the other half of the
+             full tagline — "All Natural Handmade Skincare where Purity is
+             Essence" — so the lockup reads as one sentence rather than an
+             echo. -->
         <div class="cover__lockup">
           <figure class="cover__logo" data-reveal="scale" data-keep-transform>
             <span class="cover__halo" aria-hidden="true"></span>
@@ -78,7 +85,7 @@ export default function home() {
           </figure>
 
           <h1 class="cover__title display-lg" data-reveal="ink" data-split="words" data-split-step="120">
-            Purity is <em>Essence</em>
+            All Natural <em>Handmade</em> Skincare
           </h1>
         </div>
 

@@ -155,7 +155,6 @@
   25% { transform: rotate(-7deg); }
   75% { transform: rotate(7deg); }
 }
-@keyframes draw-stroke { to { stroke-dashoffset: 0; } }
 @keyframes steam {
   0%   { opacity: 0; transform: translateY(0) scaleX(1); }
   25%  { opacity: .55; }

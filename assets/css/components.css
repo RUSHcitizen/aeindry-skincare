@@ -400,11 +400,26 @@
 }
 .preloader.is-done { opacity: 0; visibility: hidden; }
 .preloader__inner { display: grid; place-items: center; gap: var(--space-m); text-align: center; }
-.preloader__mark { width: 66px; height: 66px; color: var(--paper-1); }
-.preloader__mark path, .preloader__mark circle, .preloader__mark line {
-  stroke-dasharray: var(--len, 300);
-  stroke-dashoffset: var(--len, 300);
-  animation: draw-stroke 1500ms var(--ease-out-expo) forwards;
+/* The real wreath, not a drawn placeholder. The stroke-drawing entrance that
+   used to run here belonged to an SVG of line art; a watercolour mark gets a
+   settle instead. */
+.preloader__mark {
+  width: 104px; height: 104px;
+  object-fit: contain;
+  animation: mark-settle 1100ms var(--ease-out-expo) forwards;
+  /* The wreath's blue and violet sprigs sit at roughly the luminance of the
+     preloader's own ground and vanish into it; the warm half of the mark does
+     not. A soft light disc behind it lifts the cool half back without putting
+     a hard plate under a mark that has no edge of its own. */
+  background: radial-gradient(closest-side,
+    rgb(255 255 255 / .16), rgb(255 255 255 / .07) 62%, transparent 78%);
+}
+@keyframes mark-settle {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .preloader__mark { animation: none; }
 }
 .preloader__word {
   font-family: var(--font-display);

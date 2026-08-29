@@ -14,9 +14,12 @@
  * encyclopedia; an empty list means nobody has read that label yet, not that
  * the jar is empty.
  *
- * Where the range notes said "will update later" the entry carries
- * `pricePending: true` or an empty `variants` list rather than a guess, and
- * `tools/check-catalogue.mjs` prints every one of them.
+ * An empty `variants` list means the thing is sold one way, not that nobody
+ * has asked — the range notes named the scents wherever there were any. The
+ * two exceptions say so in a comment: Handmade Soap ("will update on variety")
+ * and Clay Face Mask ("will update later"). `pricePending: true` marks the
+ * three products that were never given a price, and
+ * `tools/check-catalogue.mjs` prints them.
  *
  * Two products may share a name and be different things — Botanical Hand
  * Butter and Hand Butter, the two leave-ins — so ids, not names, are the
@@ -58,7 +61,6 @@ export const PRODUCTS = [
     price: 15,
     weight: '1 oz dropper bottle',
     scentFamily: ['unscented'], concerns: ['daily', 'aging'],
-    /* The scents were not given with the range notes; the price was. */
     variants: [],
     keyIngredients: [],
     ingredients: ON_LABEL,
@@ -271,8 +273,9 @@ export const PRODUCTS = [
       'The oldest mask there is. Mixed with a little water into a paste, worn until it is just '
       + 'about dry — not cracked, which is past the point where it is doing anything useful — '
       + 'and rinsed off warm.',
-    /* "will update later" — 14 is a stand-in chosen to sit with the other
-       masks, not a price anyone has given. */
+    /* The only product with both still open: the range notes said "will
+       update later" against its variants, and never gave it a price at all.
+       14 is a stand-in chosen to sit with the other masks. */
     price: 14, pricePending: PENDING,
     weight: '2 oz jar',
     scentFamily: ['unscented'], concerns: ['oily', 'daily'],

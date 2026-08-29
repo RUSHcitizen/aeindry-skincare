@@ -136,14 +136,18 @@
 .cover__label { color: var(--text-muted); }
 
 .cover__title {
-  max-width: 16ch;
-  /* Rises into the wreath's lower arc. A tenth of the mark is enough for the
-     two to interlock and not so much that the type lands on the dense flowers
-     at the bottom of the ring. Sits above the mark rather than under it —
-     type crossing artwork reads as intent, artwork crossing type as a mistake. */
+  /* Wide enough that the longer headline breaks after "Natural" rather than
+     orphaning "Skincare" on its own line. */
+  max-width: 19ch;
+  /* Sits just under the wreath rather than inside it. The headline used to
+     rise a tenth of the mark into the ring's lower arc, which worked while it
+     was one short line landing in the open middle of the bottom curve. At two
+     lines the first one lands on the dense flowers instead, and artwork
+     crossing type reads as a mistake where type crossing artwork reads as
+     intent. Kept tight so the pair still reads as one object. */
   position: relative;
   z-index: 1;
-  margin-block: calc(var(--mark) * -0.1) 0.04em;
+  margin-block: calc(var(--mark) * -0.012) 0.04em;
   /* One notch under display-lg: with the wreath above it, the headline no
      longer has to carry the whole cover on its own. */
   font-size: clamp(2.5rem, 6.6vw, 5rem);

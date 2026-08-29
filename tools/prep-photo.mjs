@@ -167,6 +167,19 @@ const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, rati
      visibly, which is why the colour is a required decision, not a default
      applied blindly. */
   let padTo = null;
+  /* `trim` with a ratio squares the trimmed subject up rather than leaving it
+     at whatever aspect its own ink happened to have. A mark needs both: trim
+     to find the artwork, then pad so the icon is square and the artwork is
+     centred in it. */
+  if (fit === 'trim' && ratio) {
+    const [rw, rh] = ratio.split(':').map(Number);
+    if (rw > 0 && rh > 0) {
+      const want = rw / rh;
+      padTo = cw / ch > want
+        ? { w: cw, h: Math.round(cw / want) }
+        : { w: Math.round(ch * want), h: ch };
+    }
+  }
   if (fit === 'pad' && ratio) {
     const [rw, rh] = ratio.split(':').map(Number);
     if (rw > 0 && rh > 0) {
@@ -257,8 +270,13 @@ const results = await page.evaluate(async ({ dataUrl, widths, quality, fit, rati
       const pc = document.createElement('canvas');
       pc.width = outW; pc.height = outH;
       const ctx = pc.getContext('2d');
-      ctx.fillStyle = padColor;
-      ctx.fillRect(0, 0, outW, outH);
+      /* "transparent" pads with nothing, which is what a mark with its own
+         alpha wants — a favicon squared up on a colour would carry that
+         colour into every tab that is not the same shade. */
+      if (padColor !== 'transparent' && padColor !== 'none') {
+        ctx.fillStyle = padColor;
+        ctx.fillRect(0, 0, outW, outH);
+      }
       ctx.drawImage(c, Math.round((outW - W) / 2), Math.round((outH - H) / 2));
       canvas = pc;
     }
