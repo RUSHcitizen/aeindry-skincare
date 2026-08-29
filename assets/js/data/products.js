@@ -55,7 +55,7 @@ export const PRODUCTS = [
       'A serum is the thinnest thing in a routine and the one that goes on first, straight '
       + 'onto damp skin so it has something to hold. A few drops covers a face — it is meant to '
       + 'be used sparingly and to last.',
-    price: 15, pricePending: PENDING,
+    price: 15,
     weight: '1 oz dropper bottle',
     scentFamily: ['unscented'], concerns: ['daily', 'aging'],
     /* The scents were not given with the range notes; the price was. */
@@ -76,7 +76,7 @@ export const PRODUCTS = [
     description:
       'Priced above the rest of the serum shelf because of what goes into it. Used the same '
       + 'way — a few drops onto damp skin before anything heavier.',
-    price: 20, pricePending: PENDING,
+    price: 20,
     weight: '1 oz dropper bottle',
     scentFamily: ['unscented'], concerns: ['aging', 'daily'],
     variants: [],
@@ -97,7 +97,7 @@ export const PRODUCTS = [
       'The skin under an eye is the thinnest on the body, which is why it gets its own step and '
       + 'its own smaller bottle. Patted rather than rubbed — the ring finger presses hardest of '
       + 'the ones that can be trusted not to drag.',
-    price: 20, pricePending: PENDING,
+    price: 20,
     weight: '0.5 oz dropper bottle',
     scentFamily: ['unscented'], concerns: ['aging', 'daily'],
     variants: [],
@@ -140,7 +140,7 @@ export const PRODUCTS = [
     description:
       'A cream is the lid on a routine: it stops what you put on first from evaporating back '
       + 'off. Applied last, over a serum or an oil, on skin that is still slightly damp.',
-    price: 20, pricePending: PENDING,
+    price: 20,
     weight: '2 oz jar',
     scentFamily: ['unscented'], concerns: ['dry', 'daily', 'aging'],
     variants: [],
@@ -161,6 +161,8 @@ export const PRODUCTS = [
       'An oil goes on damp skin and gives it something to hold onto. Four blends rather than '
       + 'one, because a face in February and a face in July are not asking for the same thing. '
       + 'A few drops pressed in is a whole application.',
+    /* "Will update on price later" — 34 is carried over from the old
+       single-variant Berry Bakuchiol entry and is a stand-in, not a quote. */
     price: 34, pricePending: PENDING,
     weight: '1 oz dropper bottle',
     photo: 'face-oil-berry-bakuchiol',
@@ -269,6 +271,8 @@ export const PRODUCTS = [
       'The oldest mask there is. Mixed with a little water into a paste, worn until it is just '
       + 'about dry — not cracked, which is past the point where it is doing anything useful — '
       + 'and rinsed off warm.',
+    /* "will update later" — 14 is a stand-in chosen to sit with the other
+       masks, not a price anyone has given. */
     price: 14, pricePending: PENDING,
     weight: '2 oz jar',
     scentFamily: ['unscented'], concerns: ['oily', 'daily'],
@@ -640,6 +644,8 @@ export const PRODUCTS = [
       'A thick treatment rather than a conditioner. Coconut oil and the cupuaçu and murumuru '
       + 'butters do the conditioning; rosemary, neem, fenugreek and moringa are the scalp half '
       + 'of the formula. Left on long enough it behaves like a mask, which is what it is.',
+    /* The range notes ran into the next product before this one got a
+       number; 24 is carried over from the old catalogue. */
     price: 24, pricePending: PENDING,
     weight: '4 oz jar',
     photo: 'hair-butter',
