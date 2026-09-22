@@ -1,7 +1,8 @@
 /** Product detail — variants, ingredient links, accordions, related rail. */
 
 import { $, $$, esc } from '../lib/dom.js';
-import { getProduct, PRODUCTS, formatPrice, priceOf } from '../data/products.js';
+import { getProduct, PRODUCTS, formatPrice, priceOf, photoOf, galleryOf,
+         photoWidthsOf } from '../data/products.js';
 import { INGREDIENT_MAP, BRAND } from '../data/content.js';
 import { productArt, botanical as icon } from '../lib/art.js';
 import { botanical } from '../lib/botanical.js';
@@ -18,9 +19,18 @@ export default function product({ params, query }) {
   const p = getProduct(params.id);
   if (!p) return notFound();
 
+  /* Every image this product has, heroes first. A rail of one is worse than
+     none, so it only appears when there are at least two. */
+  const gallery = galleryOf(p);
+  const shots = (p.variants || []).filter((v) => v.photo);
+
+  /* Open on a scent that has artwork of its own where one exists. The list
+     order is the owner's, and on the Body Buff it starts with scents whose
+     labels have not been drawn yet — landing on a generated jar with five real
+     labels sitting in the rail below it undersells the product. */
   const initialVariant =
     (query.variant && p.variants?.find((v) => v.id === query.variant)?.id) ||
-    p.variants?.[0]?.id || null;
+    shots[0]?.id || p.variants?.[0]?.id || null;
 
   const related = PRODUCTS
     .filter((x) => x.id !== p.id)
@@ -58,6 +68,27 @@ export default function product({ params, query }) {
               <div class="pdp__art" data-art-host>${productArt(p, { variantId: initialVariant })}</div>
               <span class="pdp__plinth" aria-hidden="true"></span>
             </div>
+
+            ${gallery.length > 1 ? `
+            <!-- Heroes first — a group shot belongs to the product, not to one
+                 scent, so it stays in the rail whichever scent is chosen and
+                 selecting it leaves that choice alone. A variant's own
+                 thumbnail does select it: on this range a variant *is* a
+                 different label, so browsing images without selecting would let
+                 someone study one scent and add another to the basket. -->
+            <div class="pdp__thumbs" role="group" aria-label="${esc(p.name)} images" data-thumbs>
+              ${gallery.map((g, i) => `
+                <button class="pdp__thumb ${g.variantId === initialVariant ? 'is-on' : ''}${g.variantId ? '' : ' pdp__thumb--hero'}"
+                        type="button" data-thumb="${esc(g.variantId || '')}"
+                        data-photo="${esc(g.photo)}"
+                        aria-pressed="${g.variantId === initialVariant}"
+                        title="${esc(g.label)}">
+                  <img src="assets/img/products/${esc(g.photo)}-480.webp"
+                       alt="${esc(g.label)}" width="480" height="480"
+                       loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async">
+                  <span class="visually-hidden">${esc(g.label)}</span>
+                </button>`).join('')}
+            </div>` : ''}
             <ul class="pdp__marks" role="list" data-stagger style="--stagger-step:70ms">
               <li data-reveal="up">${icon('leaf')}<span>100% natural</span></li>
               <li data-reveal="up">${icon('flask')}<span>Small batch</span></li>
@@ -202,12 +233,25 @@ export default function product({ params, query }) {
       const notice = $('[data-notice]', root);
       const pdp = $('.pdp', root);
 
+      /* A hero image being shown instead of the selected scent's own. Cleared
+         the moment a scent is chosen, from the rail or the option list. */
+      let shownPhoto = null;
+
       function repaint() {
         const v = p.variants?.find((x) => x.id === variantId) || null;
         const unit = priceOf(p, variantId);
 
-        // Re-render the artwork so the accent tracks the chosen scent.
-        artHost.innerHTML = productArt(p, { variantId });
+        if (shownPhoto) {
+          const w = photoWidthsOf(p);
+          const big = w[w.length - 1];
+          artHost.innerHTML = `<img class="product-photo" src="assets/img/products/${esc(shownPhoto)}-${big}.webp"
+            srcset="${w.map((n) => `assets/img/products/${esc(shownPhoto)}-${n}.webp ${n}w`).join(', ')}"
+            sizes="(max-width: 760px) 80vw, 460px" width="${big}" height="${big}"
+            decoding="async" alt="${esc(p.name)}">`;
+        } else {
+          // Re-render the artwork so the accent tracks the chosen scent.
+          artHost.innerHTML = productArt(p, { variantId });
+        }
         artHost.animate(
           [{ opacity: 0, transform: 'scale(.94) rotate(-3deg)' }, { opacity: 1, transform: 'none' }],
           { duration: 520, easing: 'cubic-bezier(0.16,1,0.3,1)' }
@@ -225,6 +269,15 @@ export default function product({ params, query }) {
           b.classList.toggle('is-on', on);
           b.setAttribute('aria-pressed', String(on));
         });
+        /* The rail and the option list are two ways into the same choice, so
+           both reflect it however it was made. */
+        $$('[data-thumb]', root).forEach((b) => {
+          const on = shownPhoto
+            ? b.dataset.photo === shownPhoto
+            : Boolean(b.dataset.thumb) && b.dataset.thumb === variantId;
+          b.classList.toggle('is-on', on);
+          b.setAttribute('aria-pressed', String(on));
+        });
 
         /* No variant in the range is restricted today. The branch stays because
            a restricted one is a data change, not a code change. */
@@ -238,7 +291,40 @@ export default function product({ params, query }) {
       }
 
       $$('[data-variant-id]', root).forEach((btn) => {
-        btn.addEventListener('click', () => { variantId = btn.dataset.variantId; repaint(); });
+        btn.addEventListener('click', () => {
+          shownPhoto = null;
+          variantId = btn.dataset.variantId;
+          repaint();
+        });
+      });
+
+      $$('[data-thumb]', root).forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (btn.dataset.thumb) {
+            /* A variant's own image: choosing the picture chooses the scent. */
+            shownPhoto = null;
+            variantId = btn.dataset.thumb;
+          } else {
+            /* A hero: show it, leave the scent alone. */
+            shownPhoto = btn.dataset.photo;
+          }
+          repaint();
+        });
+      });
+
+      /* Left and right walk the rail, which is what a keyboard expects of a
+         row of pictures and what a mouse-only gallery quietly denies. */
+      $('[data-thumbs]', root)?.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        const list = $$('[data-thumb]', root);
+        const i = list.findIndex((b) => b.dataset.thumb === variantId);
+        const next = list[(i + (e.key === 'ArrowRight' ? 1 : -1) + list.length) % list.length];
+        if (!next) return;
+        e.preventDefault();
+        if (next.dataset.thumb) { shownPhoto = null; variantId = next.dataset.thumb; }
+        else { shownPhoto = next.dataset.photo; }
+        repaint();
+        next.focus();
       });
 
       $$('[data-q]', root).forEach((btn) => {

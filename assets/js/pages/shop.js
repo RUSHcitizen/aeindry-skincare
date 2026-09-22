@@ -1,7 +1,8 @@
 /** Shop — live filtering, sorting and search across the whole range. */
 
 import { $, $$, esc, debounce } from '../lib/dom.js';
-import { PRODUCTS, CATEGORIES, priceOf } from '../data/products.js';
+import { PRODUCTS, CATEGORIES, priceOf, inCategory, childCategories,
+         topCategories } from '../data/products.js';
 import { productGrid } from '../ui/pcard.js';
 import { pageField, initBotField } from '../ui/bot-field.js';
 import { initTilt } from '../ui/tilt.js';
@@ -29,9 +30,10 @@ const SCENTS = Object.entries(SCENT_PROFILES).map(([id, p]) => ({ id, label: p.l
    rather than one endless scroll. */
 const AISLE = {
   face: 'Cleansers, serums, oils and masks — the whole routine, in order.',
-  body: 'Butters, creams, balms and the deodorant. Everything below the neck.',
+  body: 'Butters, creams, balms, the body buff and the deodorant — everything below the neck.',
   hair: 'Bars instead of bottles, masks, oils, and the beard shelf.',
   soap: 'Cold process bars, soaks, steamers and the dish that makes them last.',
+  // kept alongside `soap` so the sub-shelf reads as part of Body, not a detour
   home: 'Candles poured by hand, reeds, and something for the car.',
   kits: 'Bought together and priced together.'
 };
@@ -51,28 +53,37 @@ function render(list, state) {
   if (state.category !== 'all' || state.scent || state.search || state.sort !== 'featured') {
     return productGrid(list);
   }
-  return CATEGORIES.filter((c) => c.id !== 'all').map((c) => {
-    const inAisle = list.filter((p) => p.category === c.id);
-    if (!inAisle.length) return '';
-    const shown = inAisle.slice(0, PREVIEW);
-    const rest = inAisle.length - shown.length;
+  /* An aisle and, indented under it, its sub-shelves. Products filed directly
+     on the parent come first; Soap gets its own sign inside Body rather than a
+     shelf of its own beside it. */
+  const shelf = (c, cls, id) => {
+    const own = list.filter((p) => p.category === c.id);
+    const kids = childCategories(c.id)
+      .map((k) => shelf(k, 'aisle aisle--sub', `aisle-${k.id}`))
+      .filter(Boolean);
+    if (!own.length && !kids.length) return '';
+    const shown = own.slice(0, PREVIEW);
+    const rest = own.length - shown.length;
+    const total = list.filter((p) => inCategory(p, c.id)).length;
     return `
-    <section class="aisle" aria-labelledby="aisle-${esc(c.id)}">
+    <section class="${cls}" aria-labelledby="${esc(id)}">
       <header class="aisle__head" data-reveal="up">
-        <h2 class="aisle__name" id="aisle-${esc(c.id)}">${esc(c.label)}</h2>
+        <h2 class="aisle__name" id="${esc(id)}">${esc(c.label)}</h2>
         <p class="aisle__note">${esc(AISLE[c.id] || '')}</p>
-        <span class="aisle__count">${inAisle.length}</span>
+        <span class="aisle__count">${total}</span>
       </header>
-      ${productGrid(shown)}
+      ${shown.length ? productGrid(shown) : ''}
       ${rest > 0 ? `
         <div class="aisle__more" data-reveal="up">
           <button class="btn btn--ghost btn--sm" type="button" data-cat-jump="${esc(c.id)}">
-            <span class="btn__label">See all ${inAisle.length} in ${esc(c.label)}</span>
+            <span class="btn__label">See all ${own.length} in ${esc(c.label)}</span>
           </button>
           <span class="aisle__rest">${rest} more</span>
         </div>` : ''}
+      ${kids.join('')}
     </section>`;
-  }).join('');
+  };
+  return topCategories().map((c) => shelf(c, 'aisle', `aisle-${c.id}`)).join('');
 }
 
 export default function shop({ query }) {
@@ -83,8 +94,9 @@ export default function shop({ query }) {
     search: query.q || ''
   };
 
-  const countFor = (catId) =>
-    catId === 'all' ? PRODUCTS.length : PRODUCTS.filter((p) => p.category === catId).length;
+  /* A parent shelf counts everything beneath it, so "Body & Hands 19" is the
+     number you actually get when you press it. */
+  const countFor = (catId) => PRODUCTS.filter((p) => inCategory(p, catId)).length;
 
   return {
     title: 'Shop',
@@ -114,9 +126,9 @@ export default function shop({ query }) {
           <div class="filters__row">
             <div class="filters__group" role="group" aria-label="Filter by category">
               ${CATEGORIES.map((c) => `
-                <button class="chip" type="button" data-cat="${esc(c.id)}"
-                        aria-pressed="${c.id === state.category}">
-                  ${esc(c.label)}<span class="chip__count">${countFor(c.id)}</span>
+                <button class="chip ${c.parent ? 'chip--sub' : ''}" type="button"
+                        data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}">
+                  ${c.parent ? '<span class="chip__in" aria-hidden="true">↳</span>' : ''}${esc(c.label)}<span class="chip__count">${countFor(c.id)}</span>
                 </button>`).join('')}
             </div>
 
@@ -285,7 +297,7 @@ export default function shop({ query }) {
 function apply(list, state) {
   let out = list.slice();
 
-  if (state.category !== 'all') out = out.filter((p) => p.category === state.category);
+  if (state.category !== 'all') out = out.filter((p) => inCategory(p, state.category));
   if (state.scent) out = out.filter((p) => p.scentFamily?.includes(state.scent));
 
   if (state.search) {

@@ -29,15 +29,38 @@
  * drive the catalogue preview and the offline demo.
  */
 
+/**
+ * Categories, one level deep.
+ *
+ * `parent` makes a shelf a sub-shelf: Soap sits inside Body rather than beside
+ * it, so filtering to Body returns the soap too. A product still names exactly
+ * one category — the most specific one — and `categoriesUnder` walks down from
+ * there. One level is deliberate: a second would need breadcrumbs inside the
+ * shop, and nothing in this range is that deep.
+ */
 export const CATEGORIES = [
   { id: 'all',  label: 'Everything' },
   { id: 'face', label: 'Face' },
   { id: 'body', label: 'Body & Hands' },
+  { id: 'soap', label: 'Soap & Bath', parent: 'body' },
   { id: 'hair', label: 'Hair & Beard' },
-  { id: 'soap', label: 'Soap & Bath' },
   { id: 'home', label: 'Home & Aroma' },
   { id: 'kits', label: 'Sets & Packs' }
 ];
+
+/** A category and everything filed beneath it. */
+export const categoriesUnder = (id) =>
+  [id, ...CATEGORIES.filter((c) => c.parent === id).map((c) => c.id)];
+
+/** The sub-shelves of a category, in catalogue order. */
+export const childCategories = (id) => CATEGORIES.filter((c) => c.parent === id);
+
+/** Top-level shelves only — what the shop lays out as aisles. */
+export const topCategories = () => CATEGORIES.filter((c) => c.id !== 'all' && !c.parent);
+
+/** True when a product belongs to this category or anything under it. */
+export const inCategory = (product, id) =>
+  id === 'all' || categoriesUnder(id).includes(product.category);
 
 /** Not yet priced, or priced provisionally — see the note above. */
 const PENDING = true;
@@ -481,24 +504,83 @@ export const PRODUCTS = [
   },
 
   {
-    id: 'body-butter-scrub',
-    name: 'Body Butter & Scrub',
+    id: 'body-buff',
+    name: 'Body Buff',
     brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
-    tagline: 'Two steps in one jar',
-    blurb: 'Scrubs in the shower, then melts into a butter as it rinses.',
+    tagline: 'A polish that turns to cream under the water',
+    blurb: 'Fine cane sugar in plant butters — it emulsifies as you rinse, so nothing is left greasy.',
     description:
-      'An emulsifying scrub: it goes on as a sugar scrub and turns into a butter under the '
-      + 'water, so you step out already moisturised. It leaves a slick on the shower floor — '
-      + 'worth knowing before you use it.',
+      'Turn your shower into a skin-softening ritual. Body Buff is a rich, emulsifying body '
+      + 'polish created to exfoliate, condition and leave skin feeling exceptionally smooth '
+      + 'without the heavy, greasy feel of a traditional oil scrub.\n\n'
+      + 'Fine cane sugar gently buffs away dry, rough surface skin while a nourishing blend of '
+      + 'plant butters and botanical oils helps replenish softness and comfort. When water is '
+      + 'added, the buttery scrub transforms into a light, creamy lotion-like emulsion that '
+      + 'rinses beautifully, leaving behind skin that feels soft, polished, supple and '
+      + 'touchably smooth.\n\n'
+      + 'Formulated with skin-loving ingredients such as Shea Butter, Apricot Kernel Oil, Sweet '
+      + 'Almond Oil, Coconut Oil, Vitamin E and Elderberry Fruit Extract, along with carefully '
+      + 'selected botanical clays, plant powders, seeds and aromatic essential oils in '
+      + 'individual formulations. Each ingredient is thoughtfully chosen to make exfoliation '
+      + 'feel indulgent while helping maintain the skin\'s naturally conditioned feel.\n\n'
+      + 'Unlike a simple sugar-and-oil scrub, Body Buff is designed to emulsify with water. '
+      + 'Massage it over wet skin and the rich botanical oils, butters and sugar begin '
+      + 'polishing. Add a little water and the formula transforms into a silky cream, allowing '
+      + 'it to spread easily before rinsing away. The result is freshly polished skin with a '
+      + 'soft, velvety finish and a healthy-looking glow.',
     price: 14,
-    weight: '6 oz jar',
-    scentFamily: ['sweet', 'floral'], concerns: ['dry', 'daily'],
-    variants: [],
-    keyIngredients: ['shea-butter'],
-    ingredients: ON_LABEL,
-    benefits: ['Scrub and butter in one step', 'Rinses to a soft finish, not a squeak', 'Made in Washington'],
-    howToUse: 'In the shower, on damp skin, then rinse. Mind your footing — it leaves the floor slippery.',
-    art: { form: 'jar', sub: 'BUTTER & SCRUB', tint: ['#FBF7F3', '#EFE3D8'], body: '#F4EADF', cap: '#C4713A', accent: '#E8A0B4' }
+    weight: '5 oz jar',
+    /* The label artwork is the product shot for now: it is the real thing, it
+       is per-scent, and a photograph of nine identical jars would carry less
+       information than the labels on them do. Four scents have no label on
+       file yet and fall back to the generated jar. */
+    photo: 'buff-sunlit-cider',
+    scentFamily: ['citrus', 'sweet', 'floral', 'herbal', 'woody', 'fruity'],
+    concerns: ['dry', 'daily'],
+    variants: [
+      { id: 'twilight-orchard', label: 'Twilight Orchard', swatch: '#6B4E8C' },
+      { id: 'coffee-cinnamon',  label: 'Coffee Cinnamon',  swatch: '#6B4A32' },
+      { id: 'lavender-citrus',  label: 'Lavender Citrus',  swatch: '#9B8FC7' },
+      { id: 'orange-bergamot',  label: 'Orange Bergamot',  swatch: '#E08A2E' },
+      { id: 'sweet-sunrise',    label: 'Sweet Sunrise',    swatch: '#E4574F',
+        note: 'Citrus-floral — grapefruit, lemongrass, geranium',
+        photo: 'buff-sweet-sunrise' },
+      { id: 'zen-zest',         label: 'Zen Zest',         swatch: '#6B2E8C',
+        note: 'Herbal-citrus — clary sage, frankincense, litsea cubeba',
+        photo: 'buff-zen-zest' },
+      { id: 'orchard-breeze',   label: 'Orchard Breeze',   swatch: '#2E5B33',
+        note: 'Citrus-mint — orange, lemon, peppermint',
+        photo: 'buff-orchard-breeze' },
+      { id: 'smoky-citrus',     label: 'Smoky Citrus',     swatch: '#4A2E1C',
+        note: 'Smoky-citrus — orange with turmeric and cocoa',
+        photo: 'buff-smoky-citrus' },
+      { id: 'sunlit-cider',     label: 'Sunlit Cider',     swatch: '#A81F2D',
+        note: 'Golden cider — apple and cinnamon with yellow clay',
+        photo: 'buff-sunlit-cider' }
+    ],
+    keyIngredients: ['shea-butter', 'coconut-oil', 'apricot-kernel-oil',
+                     'sweet-almond-oil', 'vitamin-e', 'elderberry', 'cane-sugar'],
+    ingredients:
+      'Shea Butter, Apricot Kernel Oil, Sweet Almond Oil, Cetearyl Olivate (and) Sorbitan '
+      + 'Olivate, Cetearyl Alcohol, Extra-virgin Coconut Oil, Cane Sugar, Vitamin E '
+      + '(Tocopherol), Sambucus Nigra (Elderberry) Fruit Extract. Each scent then adds its own '
+      + 'clays, plant powders, seeds and essential oils — the full list is printed on every jar.',
+    benefits: [
+      'Gently polishes away dry, rough-feeling skin',
+      'Rich in nourishing botanical oils and butters',
+      'Turns creamy and milky when water is added',
+      'Rinses clean without leaving skin excessively oily',
+      'Helps skin feel softer, smoother and more supple',
+      'An ideal pre-shave or weekly body-care treatment',
+      'Beautifully aromatic, for a spa-like shower',
+      'All natural, made in Washington'
+    ],
+    howToUse:
+      'Apply a handful to wet skin and massage gently in circular motions, concentrating on '
+      + 'rough areas such as elbows, knees, legs and arms. Add a small amount of water to '
+      + 'emulsify it into a creamy lotion. Rinse thoroughly and pat dry. Use one to three times '
+      + 'a week, or whenever skin needs a little extra polishing.',
+    art: { form: 'jar', sub: 'BODY BUFF', tint: ['#FBF7F3', '#EFE3D8'], body: '#F4EADF', cap: '#C4713A', accent: '#E8A0B4' }
   },
 
   {
@@ -1425,10 +1507,46 @@ export const photoWidthsOf = (product, variantId) => {
  * shot separately. Returns null when nothing was photographed, which is the
  * signal to fall back to the generated illustration.
  */
+/**
+ * Every image for a product, in the order a gallery should show them.
+ *
+ * `heroPhotos` are the product's own — a group shot of the whole range, a
+ * lifestyle frame — and they lead, whichever scent is selected, because they
+ * are about the product rather than about one variant of it. The variants'
+ * own images follow.
+ *
+ * Each entry says which variant, if any, selecting it should choose:
+ * a hero is `variantId: null` and leaves the current choice alone.
+ */
+export const galleryOf = (product) => {
+  if (!product) return [];
+  const heroes = (product.heroPhotos || []).map((photo, i) => ({
+    photo, variantId: null, label: i === 0 ? product.name : `${product.name} — ${i + 1}`
+  }));
+  const shots = (product.variants || [])
+    .filter((v) => v.photo)
+    .map((v) => ({ photo: v.photo, variantId: v.id, label: v.label }));
+  if (heroes.length || shots.length) return [...heroes, ...shots];
+  return product.photo ? [{ photo: product.photo, variantId: null, label: product.name }] : [];
+};
+
 export const photoOf = (product, variantId) => {
   if (!product) return null;
   const v = variantId && product.variants?.find((x) => x.id === variantId);
-  return v?.photo || product.photo || null;
+  if (v?.photo) return v.photo;
+
+  /* Falling back to the product's own photo is right when that photo is a shot
+     of the thing itself — one jar, several scents inside it. It is wrong when
+     the photo *is* a variant's, as it is for the Body Buff, where every image
+     is a label with a scent name printed on it: showing the Sunlit Cider label
+     while Coffee Cinnamon is selected states the wrong scent in the customer's
+     own language. So a per-variant image is never borrowed; an unlabelled
+     variant falls through to the generated vessel instead. */
+  if (variantId && product.photo &&
+      product.variants?.some((x) => x.photo === product.photo)) {
+    return null;
+  }
+  return product.heroPhotos?.[0] || product.photo || null;
 };
 
 export const getSet = (id) => SETS.find((s) => s.id === id) || null;

@@ -18,9 +18,10 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const { PRODUCTS, SETS, getProduct, setPricing, photoWidthsOf } =
+const { PRODUCTS, SETS, CATEGORIES, getProduct, setPricing, photoWidthsOf } =
   await import(join(root, 'assets/js/data/products.js'));
-const { ROUTINES, SCENT_MATCHES, INGREDIENTS, SCENT_PROFILES, SCENT_QUIZ, CONCERNS } =
+const { ROUTINES, SCENT_MATCHES, INGREDIENTS, INGREDIENT_FAMILIES,
+        SCENT_PROFILES, SCENT_QUIZ, CONCERNS } =
   await import(join(root, 'assets/js/data/content.js'));
 
 const problems = [];
@@ -60,6 +61,38 @@ for (const ing of INGREDIENTS) {
   (ing.foundIn || []).forEach((pid) => {
     if (!known.has(pid)) fail(`INGREDIENTS.${ing.id}.foundIn`, `unknown product "${pid}"`);
   });
+}
+
+/* ── every keyIngredient has an encyclopedia entry ───────────────────────── */
+/* A product naming an ingredient the library has never heard of does not throw:
+   the detail panel just renders one fewer link, and the entry is quietly
+   missing from the explorer. Nine of these had accumulated before anyone
+   noticed. */
+const ingredientIds = new Set(INGREDIENTS.map((i) => i.id));
+for (const p of PRODUCTS) {
+  (p.keyIngredients || []).forEach((k) => {
+    if (!ingredientIds.has(k)) {
+      fail(`PRODUCTS.${p.id}.keyIngredients`, `no encyclopedia entry for "${k}"`);
+    }
+  });
+}
+const familyIds = new Set(INGREDIENT_FAMILIES.map((f) => f.id));
+for (const i of INGREDIENTS) {
+  if (!familyIds.has(i.family)) {
+    fail(`INGREDIENTS.${i.id}`, `family "${i.family}" is not in INGREDIENT_FAMILIES`);
+  }
+}
+
+/* ── categories nest at most one level, and every parent exists ──────────── */
+const catIds = new Set(CATEGORIES.map((c) => c.id));
+for (const c of CATEGORIES) {
+  if (!c.parent) continue;
+  if (!catIds.has(c.parent)) fail(`CATEGORIES.${c.id}`, `unknown parent "${c.parent}"`);
+  const gp = CATEGORIES.find((x) => x.id === c.parent);
+  if (gp?.parent) fail(`CATEGORIES.${c.id}`, 'nests more than one level deep');
+}
+for (const p of PRODUCTS) {
+  if (!catIds.has(p.category)) fail(`PRODUCTS.${p.id}`, `unknown category "${p.category}"`);
 }
 
 /* ── scent families and concerns line up in both directions ──────────────── */

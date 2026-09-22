@@ -261,7 +261,7 @@ const FORMS = {
             fill="${shade(body, -0.55)}" opacity="0.78" letter-spacing="2.4">AEINDRY</text>
       <rect x="72" y="169" width="56" height="1.3" rx="0.6" fill="${shade(accent, -0.1)}" opacity="0.8"/>
       <text x="100" y="180" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="6"
-            fill="${shade(body, -0.42)}" opacity="0.6" letter-spacing="1.6">ALL NATURAL</text>
+            fill="${shade(body, -0.42)}" opacity="0.6" letter-spacing="1.6">${escapeAttr(art.sub || 'ALL NATURAL')}</text>
       <!-- speculars -->
       <path d="M56 146 Q50 172 66 184" stroke="${shade(body, 0.5)}" stroke-width="3.4" fill="none" opacity="0.34" stroke-linecap="round"/>
       <path d="M146 146 Q152 170 138 184" stroke="${shade(body, -0.42)}" stroke-width="5" fill="none" opacity="0.26" stroke-linecap="round"/>
@@ -305,7 +305,7 @@ const FORMS = {
             fill="${shade(cap, -0.2)}" opacity="0.85" letter-spacing="2">AEINDRY</text>
       <rect x="82" y="168" width="36" height="1.1" rx="0.5" fill="${accent}" opacity="0.85"/>
       <text x="100" y="176" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="5.4"
-            fill="${shade(cap, -0.1)}" opacity="0.65" letter-spacing="1.3">FACE CREAM</text>
+            fill="${shade(cap, -0.1)}" opacity="0.65" letter-spacing="1.3">${escapeAttr(art.sub || '')}</text>
     </g>`;
   },
 
@@ -342,7 +342,7 @@ const FORMS = {
             fill="${shade(body, -0.62)}" opacity="0.82" letter-spacing="2.2">AEINDRY</text>
       <rect x="84" y="160" width="32" height="1.1" rx="0.5" fill="${accent}" opacity="0.9"/>
       <text x="100" y="169" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="4.6"
-            fill="${shade(body, -0.5)}" opacity="0.6" letter-spacing="0.9">POWDER TO FOAM</text>
+            fill="${shade(body, -0.5)}" opacity="0.6" letter-spacing="0.9">${escapeAttr(art.sub || '')}</text>
       <path d="M62 138 Q57 168 70 186" stroke="${shade(body, 0.48)}" stroke-width="3.6" fill="none" opacity="0.3" stroke-linecap="round"/>
     </g>`;
   },

@@ -145,6 +145,18 @@ const INGREDIENT_ENTRIES = [
 
   /* ── Oils ────────────────────────────────────────────────────────────── */
   {
+    id: 'apricot-kernel-oil', name: 'Apricot Kernel Oil', latin: 'Prunus armeniaca', origin: 'Central Asia',
+    family: 'oil', color: '#F2DCA8',
+    role: 'Light and quick',
+    body: 'Thin, fast-absorbing and close to odourless, which is why it carries a scent without arguing with it. It is the oil that keeps a rich polish from feeling like a coating.'
+  },
+  {
+    id: 'sweet-almond-oil', name: 'Sweet Almond Oil', latin: 'Prunus amygdalus dulcis', origin: 'The Mediterranean',
+    family: 'oil', color: '#EFE0C0',
+    role: 'The gentle standby',
+    body: 'The oil most often reached for on skin that reacts to everything else — mild, well tolerated and old enough as a cosmetic ingredient to have very little left to find out about it.'
+  },
+  {
     id: 'coconut-oil', name: 'Organic Virgin Coconut Oil', latin: 'Cocos nucifera', origin: 'South & Southeast Asia',
     family: 'oil', color: '#F6F0E2',
     role: 'Cleansing & antibacterial',
@@ -170,6 +182,30 @@ const INGREDIENT_ENTRIES = [
   },
 
   /* ── Extracts & actives ──────────────────────────────────────────────── */
+  {
+    id: 'cane-sugar', name: 'Cane Sugar', latin: 'Saccharum officinarum', origin: 'Tropical cane',
+    family: 'extract', color: '#EFE2C4',
+    role: 'The polish itself',
+    body: 'Fine enough to buff without scoring. Sugar dissolves as it works, which is why a sugar scrub softens under the water where a salt one keeps grinding — and why it suits a body polish meant to end in cream.'
+  },
+  {
+    id: 'elderberry', name: 'Elderberry', latin: 'Sambucus nigra', origin: 'Europe & North America',
+    family: 'extract', color: '#4A2A52',
+    role: 'The dark berry',
+    body: 'A deep-pigmented fruit extract, unusually rich in anthocyanins — the same compounds that make the berry almost black. It appears in every Body Buff, whatever the scent.'
+  },
+  {
+    id: 'vitamin-e', name: 'Vitamin E', latin: 'Tocopherol', origin: 'Plant oils',
+    family: 'extract', color: '#EAD79A',
+    role: 'Keeps oils honest',
+    body: 'Not a preservative — it cannot stop microbes. It is an antioxidant that keeps the oils themselves from turning, which is the only kind of spoiling an anhydrous formula can do.'
+  },
+  {
+    id: 'colloidal-oat', name: 'Colloidal Oat', latin: 'Avena sativa', origin: 'Northern Europe',
+    family: 'extract', color: '#F0E8D4',
+    role: 'Soft and soothing',
+    body: 'Milled fine enough to suspend in water instead of sinking to the bottom, which is what gives an oat bath its silky, softening feel.'
+  },
   {
     id: 'bakuchiol', name: 'Bakuchiol', latin: 'Psoralea corylifolia', origin: 'India & Sri Lanka',
     family: 'extract', color: '#C9A8D8',
@@ -253,6 +289,26 @@ const INGREDIENT_ENTRIES = [
     body: 'Never fragrance oil. Every scent in the range comes from steam-distilled or cold-pressed plant material, used at percentages that respect what these compounds actually do on skin.'
   },
 
+  /* ── Minerals ────────────────────────────────────────────────────────── */
+  {
+    id: 'kaolin-clay', name: 'Kaolin Clay', latin: 'Kaolinite', origin: 'China & Cornwall',
+    family: 'mineral', color: '#EFE8DC',
+    role: 'Gentle draw',
+    body: 'The mildest of the cosmetic clays. It absorbs excess oil without stripping, and gives a cleanser or a polish its silky, non-chalky feel.'
+  },
+  {
+    id: 'bentonite-clay', name: 'Bentonite Clay', latin: 'Montmorillonite', origin: 'Volcanic ash beds',
+    family: 'mineral', color: '#CFC3B0',
+    role: 'Blade slip',
+    body: 'Swells in water into something genuinely slippery. In a shaving soap it is the difference between a blade gliding and a blade dragging.'
+  },
+  {
+    id: 'epsom-salt', name: 'Epsom Salt', latin: 'Magnesium sulfate', origin: 'Mineral springs',
+    family: 'mineral', color: '#F4F6F5',
+    role: 'The long soak',
+    body: 'Dissolves warm and soft. Whether the magnesium truly crosses the skin is still argued over; that a hot Epsom soak unknots a back is not.'
+  },
+
   /* ── Wax ─────────────────────────────────────────────────────────────── */
   {
     id: 'beeswax', name: 'Beeswax', latin: 'Cera alba', origin: 'Local Washington apiaries',
@@ -279,6 +335,7 @@ export const INGREDIENT_FAMILIES = [
   { id: 'butter',  label: 'Butters' },
   { id: 'oil',     label: 'Oils' },
   { id: 'extract', label: 'Extracts & Actives' },
+  { id: 'mineral', label: 'Clays & Minerals' },
   { id: 'herb',    label: 'Herbs' },
   { id: 'aroma',   label: 'Aromatics' },
   { id: 'wax',     label: 'Waxes' }
