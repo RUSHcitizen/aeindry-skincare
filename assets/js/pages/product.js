@@ -149,7 +149,7 @@ export default function product({ params, query }) {
 
             ${p.variants?.length ? `
             <fieldset class="variants" data-reveal="up">
-              <legend class="field__label">Choose your ${p.category === 'aroma' || p.category === 'home' ? 'blend' : 'option'} — ${p.variants.length} available</legend>
+              <legend class="field__label">Choose your ${p.category === 'aroma' ? 'blend' : 'option'} — ${p.variants.length} available</legend>
               <div class="variants__list" data-variants>
                 ${p.variants.map((v) => `
                   <button type="button" class="variant ${v.id === initialVariant ? 'is-on' : ''}"

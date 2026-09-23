@@ -18,8 +18,8 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const { PRODUCTS, SETS, CATEGORIES, getProduct, setPricing, photoWidthsOf,
-        PHOTO_SHAPES, photoShape } =
+const { PRODUCTS, SETS, CATEGORIES, CATALOGUE_ORDER, getProduct, setPricing,
+        photoWidthsOf, PHOTO_SHAPES, photoShape, shelvesOf } =
   await import(join(root, 'assets/js/data/products.js'));
 const { ROUTINES, SCENT_MATCHES, INGREDIENTS, INGREDIENT_FAMILIES,
         SCENT_PROFILES, SCENT_QUIZ, CONCERNS } =
@@ -184,6 +184,65 @@ if (pending.length) {
   note.push('');
   note.push(`${pending.length} product(s) still carry a placeholder price — set these before selling:`);
   for (const p of pending) note.push(`  ${p.id.padEnd(28)} $${p.price}   ${p.name}`);
+}
+
+/* ── sizes nobody has given ──────────────────────────────────────────────── */
+const sized = PRODUCTS.filter((p) => p.sizePending);
+if (sized.length) {
+  note.push('');
+  note.push(`${sized.length} product(s) carry a guessed size — a guess the shop quotes `
+    + 'postage from, so replace these:');
+  for (const p of sized) note.push(`  ${p.id.padEnd(28)} ${String(p.weight).padEnd(16)} ${p.name}`);
+}
+
+/* ── the shop's running order ────────────────────────────────────────────────
+   ORDER is the owner's, given rather than derived, and it lives apart from the
+   entries it orders. That is what makes it worth checking: the two can drift
+   without anything looking wrong, and the symptom — a product quietly at the
+   bottom of the shop — is not one anybody reports. */
+{
+  const ids = new Set(PRODUCTS.map((p) => p.id));
+  const seen = new Set();
+  for (const id of CATALOGUE_ORDER) {
+    if (!ids.has(id)) fail('ORDER', `names a product that does not exist: "${id}"`);
+    if (seen.has(id)) fail('ORDER', `names "${id}" twice`);
+    seen.add(id);
+  }
+  for (const p of PRODUCTS) {
+    if (!seen.has(p.id)) {
+      fail(`PRODUCTS.${p.id}`, 'is not in ORDER, so it falls to the bottom of the shop');
+    }
+  }
+}
+
+/* ── every shelf a product names must exist, and must be a real shelf ────── */
+{
+  const known = new Map(CATEGORIES.map((c) => [c.id, c]));
+  for (const p of PRODUCTS) {
+    for (const id of shelvesOf(p)) {
+      if (!known.has(id)) fail(`PRODUCTS.${p.id}`, `unknown category "${id}"`);
+      else if (id === 'all') fail(`PRODUCTS.${p.id}`, '"all" is not a shelf to file on');
+    }
+    if (new Set(shelvesOf(p)).size !== shelvesOf(p).length) {
+      fail(`PRODUCTS.${p.id}`, 'names the same shelf twice');
+    }
+    const home = known.get(p.category);
+    if (home && p.categoryLabel !== home.label) {
+      fail(`PRODUCTS.${p.id}`,
+        `categoryLabel is "${p.categoryLabel}" but category "${p.category}" is "${home.label}"`);
+    }
+  }
+  /* A shelf with nothing on it is a sign pointing at an empty aisle. */
+  for (const c of CATEGORIES) {
+    if (c.id === 'all') continue;
+    const under = [c.id, ...CATEGORIES.filter((x) => x.parent === c.id).map((x) => x.id)];
+    if (!PRODUCTS.some((p) => shelvesOf(p).some((s) => under.includes(s)))) {
+      fail('CATEGORIES', `"${c.id}" has no products on it`);
+    }
+    if (c.parent && known.get(c.parent)?.parent) {
+      fail('CATEGORIES', `"${c.id}" is nested two levels deep; the shop renders one`);
+    }
+  }
 }
 
 /* ── report ──────────────────────────────────────────────────────────────── */

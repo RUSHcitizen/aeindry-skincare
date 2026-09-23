@@ -29,7 +29,10 @@
 
 import { createServer } from 'node:http';
 import { randomUUID, createHmac } from 'node:crypto';
-import { PRODUCTS, getProduct, priceOf } from '../assets/js/data/products.js';
+import { PRODUCTS, CATEGORIES, getProduct, priceOf } from '../assets/js/data/products.js';
+
+/** A category's display name, for the shelves a product names beyond its home. */
+const label = (id) => CATEGORIES.find((c) => c.id === id)?.label || id;
 import { rateBasket, RATES_REVISED } from './usps.mjs';
 import { localRates, nearbyPickups, isLocal } from './fulfilment.mjs';
 import { buildInvoice, invoiceNumber } from './invoice.mjs';
@@ -202,7 +205,10 @@ function productJson(p) {
     },
     is_in_stock: (stock.get(p.id) ?? 0) > 0,
     is_purchasable: true,
-    categories: [{ id: p.category, name: p.categoryLabel, slug: p.category }],
+    /* The home shelf first, then any other the product is filed on — a client
+       reading only the first entry still gets the right one. */
+    categories: [{ id: p.category, name: p.categoryLabel, slug: p.category },
+                 ...(p.alsoIn || []).map((id) => ({ id, name: label(id), slug: id }))],
     images: [],
     attributes: p.variants?.length ? [{
       id: 1, name: 'Variant', taxonomy: 'pa_variant', has_variations: true,

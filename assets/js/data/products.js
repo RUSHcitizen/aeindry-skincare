@@ -30,22 +30,28 @@
  */
 
 /**
- * Categories, one level deep.
+ * Categories, one level deep, in the owner's order.
  *
- * `parent` makes a shelf a sub-shelf: Soap sits inside Body rather than beside
- * it, so filtering to Body returns the soap too. A product still names exactly
- * one category — the most specific one — and `categoriesUnder` walks down from
- * there. One level is deliberate: a second would need breadcrumbs inside the
- * shop, and nothing in this range is that deep.
+ * The order of this list is the order of the shop, and it was given rather
+ * than derived: Bath first, Pets last. Nothing sorts it.
+ *
+ * `parent` makes a shelf a sub-shelf: Lips sits inside Face rather than beside
+ * it, so filtering to Face returns the lip products too. One level is
+ * deliberate — a second would need breadcrumbs inside the shop, and nothing in
+ * this range is that deep.
  */
 export const CATEGORIES = [
-  { id: 'all',  label: 'Everything' },
-  { id: 'face', label: 'Face' },
-  { id: 'body', label: 'Body & Hands' },
-  { id: 'soap', label: 'Soap & Bath', parent: 'body' },
-  { id: 'hair', label: 'Hair & Beard' },
-  { id: 'home', label: 'Home & Aroma' },
-  { id: 'kits', label: 'Sets & Packs' }
+  { id: 'all',   label: 'Everything' },
+  { id: 'bath',  label: 'Bath' },
+  { id: 'body',  label: 'Body' },
+  { id: 'face',  label: 'Face' },
+  { id: 'lips',  label: 'Lips', parent: 'face' },
+  { id: 'hair',  label: 'Hair' },
+  { id: 'kids',  label: 'Kids' },
+  { id: 'men',   label: 'Men' },
+  { id: 'aroma', label: 'Aromatherapy' },
+  { id: 'pets',  label: 'Pets' },
+  { id: 'kits',  label: 'Sets & Packs' }
 ];
 
 /** A category and everything filed beneath it. */
@@ -58,9 +64,26 @@ export const childCategories = (id) => CATEGORIES.filter((c) => c.parent === id)
 /** Top-level shelves only — what the shop lays out as aisles. */
 export const topCategories = () => CATEGORIES.filter((c) => c.id !== 'all' && !c.parent);
 
+/**
+ * The shelves a product is filed on directly.
+ *
+ * Nearly always one. `alsoIn` is for the product the owner listed on two
+ * shelves at once — the Face Scrub is a scrub you use in the bath and a thing
+ * you put on your face, and it was named under both. `category` stays the
+ * product's home: it is what the breadcrumb and the card say, and what the
+ * store sends as the primary category.
+ */
+export const shelvesOf = (product) => [product.category, ...(product.alsoIn || [])];
+
+/** True when a product is filed on this shelf itself, rather than one below it. */
+export const filedIn = (product, id) => shelvesOf(product).includes(id);
+
 /** True when a product belongs to this category or anything under it. */
-export const inCategory = (product, id) =>
-  id === 'all' || categoriesUnder(id).includes(product.category);
+export const inCategory = (product, id) => {
+  if (id === 'all') return true;
+  const under = categoriesUnder(id);
+  return shelvesOf(product).some((c) => under.includes(c));
+};
 
 /** Not yet priced, or priced provisionally — see the note above. */
 const PENDING = true;
@@ -68,7 +91,7 @@ const PENDING = true;
 /** What we say when the label has not been transcribed into this file. */
 const ON_LABEL = 'See the label — the full ingredient list is printed on every one.';
 
-export const PRODUCTS = [
+const CATALOGUE = [
   /* ══════════════════════════ FACE ══════════════════════════ */
 
   {
@@ -209,7 +232,7 @@ export const PRODUCTS = [
   {
     id: 'face-scrub',
     name: 'Face Scrub',
-    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face', alsoIn: ['bath'],
     tagline: 'Bud of Rose · Black Rose · Lavender Cloud',
     blurb: 'A gentle polish, once or twice a week.',
     description:
@@ -233,7 +256,7 @@ export const PRODUCTS = [
 
   {
     id: 'face-cleanser',
-    name: 'Face Cleanser',
+    name: 'Face Soap & Cleanser',
     brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
     tagline: 'Solid, powder, oil or clay — four ways to wash',
     blurb: 'Six cleansers in four formats, because skin does not agree on this one.',
@@ -313,7 +336,7 @@ export const PRODUCTS = [
   {
     id: 'lip-oil',
     name: 'Lip Oil',
-    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
     tagline: 'Shine without the stick',
     blurb: 'A lip oil with a doe-foot, for the ones who cannot stand a balm.',
     description:
@@ -333,7 +356,7 @@ export const PRODUCTS = [
   {
     id: 'lip-balm',
     name: 'Lip Balm',
-    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
     tagline: 'The one you lose and buy again',
     blurb: 'A plain, honest balm in a tube.',
     description:
@@ -353,7 +376,7 @@ export const PRODUCTS = [
   {
     id: 'lip-gloss',
     name: 'Lip Gloss',
-    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
     tagline: 'Gloss, and nothing else to think about',
     blurb: 'A clear gloss with a wand.',
     description: 'Shine, applied with a wand, over bare lips or over a balm. That is the whole product.',
@@ -371,7 +394,7 @@ export const PRODUCTS = [
   {
     id: 'lip-scrub',
     name: 'Lip Scrub',
-    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
     tagline: 'For the week the balm stops working',
     blurb: 'Sugar, and then a balm.',
     description:
@@ -393,7 +416,7 @@ export const PRODUCTS = [
   {
     id: 'botanical-hand-butter',
     name: 'Botanical Hand Butter',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
     tagline: 'Deep nourishing, with oat extract',
     blurb: 'The original tin — whipped, slow-melting, and made for hands that work.',
     description:
@@ -422,7 +445,7 @@ export const PRODUCTS = [
   {
     id: 'hand-butter',
     name: 'Hand Butter',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
     tagline: 'Eight scents, one 2 oz tin',
     blurb: 'The wider scent range — same tin, eight ways to smell.',
     description:
@@ -453,7 +476,7 @@ export const PRODUCTS = [
   {
     id: 'body-oil',
     name: 'Body Oil',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
     tagline: 'Straight out of the shower, onto wet skin',
     blurb: 'An oil for the whole body, in two sizes.',
     description:
@@ -477,7 +500,7 @@ export const PRODUCTS = [
   {
     id: 'body-cream',
     name: 'Body Cream',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
     tagline: 'Six blends, from the everyday to the special',
     blurb: 'Atharv, Aranya and Pomegranate Berry Velvet sit above the rest of the shelf.',
     description:
@@ -506,7 +529,7 @@ export const PRODUCTS = [
   {
     id: 'body-buff',
     name: 'Body Buff',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
     tagline: 'A polish that turns to cream under the water',
     blurb: 'Fine cane sugar in plant butters — it emulsifies as you rinse, so nothing is left greasy.',
     description:
@@ -592,7 +615,7 @@ export const PRODUCTS = [
   {
     id: 'body-balm',
     name: 'Body Balm',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
     tagline: 'Green Alchemist · Barrier Repair · Brow Renew',
     blurb: 'Three small balms, each for one specific job.',
     description:
@@ -617,7 +640,7 @@ export const PRODUCTS = [
   {
     id: 'foot-cream',
     name: 'Foot Cream',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
     tagline: 'For heels that have given up',
     blurb: 'The heaviest cream we make, aimed at the thickest skin.',
     description:
@@ -638,7 +661,7 @@ export const PRODUCTS = [
   {
     id: 'lotion-bar',
     name: 'Lotion Bar',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
     tagline: 'Solid until it touches you',
     blurb: 'A bar of lotion. No bottle, no water, no preservative.',
     description:
@@ -659,7 +682,7 @@ export const PRODUCTS = [
   {
     id: 'deodorant-creme',
     name: 'Natural Deodorant Creme',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
     tagline: 'All natural, and it actually works',
     blurb: 'A cream deodorant in a jar. No aluminium, no alcohol, no stick.',
     description:
@@ -687,7 +710,7 @@ export const PRODUCTS = [
   {
     id: 'essential-oil-roll-on',
     name: 'Essential Oil Roll-On',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'Pulse points, pocket-sized',
     blurb: 'Pre-diluted essential oil in a roller bottle.',
     description:
@@ -707,7 +730,7 @@ export const PRODUCTS = [
   {
     id: 'solid-perfume',
     name: 'Solid Perfume',
-    brand: 'Aeindry', category: 'body', categoryLabel: 'Body & Hands',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'Scent you can put in a pocket',
     blurb: 'A perfume in a tin, worn with a fingertip.',
     description:
@@ -728,7 +751,7 @@ export const PRODUCTS = [
   {
     id: 'hair-butter',
     name: 'Hair Butter & Intensive Treatment Mask',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
     tagline: 'Root strength, botanical power',
     blurb: 'A weekly mask for scalp and lengths, built on cupuaçu and murumuru.',
     description:
@@ -755,7 +778,7 @@ export const PRODUCTS = [
   {
     id: 'hair-leave-in',
     name: 'Hair Leave-in Conditioner & Serum',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
     tagline: 'Lavender Meadow · Verdant Bloom',
     blurb: 'Goes on damp and stays in — no rinsing.',
     description:
@@ -778,7 +801,7 @@ export const PRODUCTS = [
   {
     id: 'leave-in-keratin',
     name: 'Leave-in Conditioner — Keratin Strength',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
     tagline: 'The one for hair that snaps',
     blurb: 'A leave-in aimed at strength rather than softness.',
     description:
@@ -798,7 +821,7 @@ export const PRODUCTS = [
   {
     id: 'elixir-hair-oil',
     name: 'Elixir Hair Oil',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
     tagline: 'For the scalp, not the ends',
     blurb: 'A pre-wash oil, massaged in and washed out.',
     description:
@@ -819,7 +842,7 @@ export const PRODUCTS = [
   {
     id: 'copper-hair-serum',
     name: 'Rice Renew Copper Hair Serum',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
     tagline: 'The scalp serum',
     blurb: 'A leave-on serum for the scalp rather than the hair.',
     description:
@@ -840,7 +863,7 @@ export const PRODUCTS = [
   {
     id: 'nocturn-balm',
     name: 'Nocturn Hair & Face Balm',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
     tagline: 'The one that does both, overnight',
     blurb: 'Our most expensive balm, and the smallest amount you will use of anything.',
     description:
@@ -861,7 +884,7 @@ export const PRODUCTS = [
   {
     id: 'shampoo-bar',
     name: 'Shampoo Bar',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
     tagline: 'Five bars, no bottle',
     blurb: 'A solid shampoo that outlasts three bottles and travels in a tin.',
     description:
@@ -888,7 +911,7 @@ export const PRODUCTS = [
   {
     id: 'conditioner-bar',
     name: 'Conditioner Bar',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
     tagline: 'Hemp Pan Rosemary · Repair and Growth · Revitalize and Transform',
     blurb: 'The other half of the no-bottle wash.',
     description:
@@ -913,7 +936,7 @@ export const PRODUCTS = [
   {
     id: 'beard-balm',
     name: 'Beard Balm',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
     tagline: 'Shape, and the skin underneath',
     blurb: 'A balm for the beard and the face it grows on.',
     description:
@@ -934,7 +957,7 @@ export const PRODUCTS = [
   {
     id: 'beard-oil',
     name: 'Beard Oil',
-    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair & Beard',
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
     tagline: 'The daily one',
     blurb: 'A few drops, worked down to the skin.',
     description:
@@ -956,7 +979,7 @@ export const PRODUCTS = [
   {
     id: 'pine-tar-soap',
     name: 'Pine Tar Soap',
-    brand: 'Aeindry', category: 'soap', categoryLabel: 'Soap & Bath',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
     tagline: 'Unscented, all natural, handmade artisan soap',
     blurb: 'The plainest bar we make, and the one people come back for.',
     description:
@@ -977,7 +1000,7 @@ export const PRODUCTS = [
   {
     id: 'handmade-soap',
     name: 'Handmade Soap',
-    brand: 'Aeindry', category: 'soap', categoryLabel: 'Soap & Bath',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
     tagline: 'Cold process, cured six weeks',
     blurb: 'The everyday bar. Scents change with what is being made.',
     description:
@@ -999,7 +1022,7 @@ export const PRODUCTS = [
   {
     id: 'shaving-soap',
     name: 'Old Fashioned Shaving Soap',
-    brand: 'Aeindry', category: 'soap', categoryLabel: 'Soap & Bath',
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
     tagline: 'Cabane · Sangria — with or without the tin',
     blurb: 'A hard puck for a brush, the way shaving soap used to come.',
     description:
@@ -1025,7 +1048,7 @@ export const PRODUCTS = [
   {
     id: 'shower-steamers',
     name: 'Shower Steamers',
-    brand: 'Aeindry', category: 'soap', categoryLabel: 'Soap & Bath',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'Drop one on the floor and stand in it',
     blurb: 'Made for a shower, where the steam does the work.',
     description:
@@ -1057,7 +1080,7 @@ export const PRODUCTS = [
   {
     id: 'milk-bath',
     name: 'Milk Bath',
-    brand: 'Aeindry', category: 'soap', categoryLabel: 'Soap & Bath',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'A long soak, and a ring round the tub',
     blurb: 'A scoop under running water and the whole bath turns soft.',
     description:
@@ -1077,7 +1100,7 @@ export const PRODUCTS = [
   {
     id: 'coconut-milk-bath-salt',
     name: 'Coconut Milk Bath Salt',
-    brand: 'Aeindry', category: 'soap', categoryLabel: 'Soap & Bath',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'Salt and coconut milk',
     blurb: 'The salt soak, softened.',
     description:
@@ -1097,7 +1120,7 @@ export const PRODUCTS = [
   {
     id: 'foot-soak',
     name: 'Mineral Detox Foot Soak',
-    brand: 'Aeindry', category: 'soap', categoryLabel: 'Soap & Bath',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'A bowl, hot water, twenty minutes',
     blurb: 'For feet that have done a market day.',
     description:
@@ -1118,7 +1141,7 @@ export const PRODUCTS = [
   {
     id: 'bamboo-soap-dish',
     name: 'Bamboo Soap Dish',
-    brand: 'Aeindry', category: 'soap', categoryLabel: 'Soap & Bath',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
     tagline: 'The cheapest way to make a bar last',
     blurb: 'Slatted bamboo, in two sizes.',
     description:
@@ -1143,7 +1166,7 @@ export const PRODUCTS = [
   {
     id: 'beeswax-candle',
     name: 'Beeswax Candle',
-    brand: 'Aeindry', category: 'home', categoryLabel: 'Home & Aroma',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'All-natural wax, hand-poured in Washington',
     blurb: 'Beeswax, a cotton wick, and a jar you will keep.',
     description:
@@ -1168,7 +1191,7 @@ export const PRODUCTS = [
   {
     id: 'room-diffuser',
     name: 'Room Diffuser',
-    brand: 'Bloom In Clover', category: 'home', categoryLabel: 'Home & Aroma',
+    brand: 'Bloom In Clover', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: '100% natural, made in USA',
     blurb: 'Reed diffusers in five scents. They fill a room and then stay out of the way.',
     description:
@@ -1201,7 +1224,7 @@ export const PRODUCTS = [
   {
     id: 'car-diffuser',
     name: 'Car Diffuser',
-    brand: 'Bloom In Clover', category: 'home', categoryLabel: 'Home & Aroma',
+    brand: 'Bloom In Clover', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'For the other room you sit in',
     blurb: 'A small diffuser that clips to a vent.',
     description:
@@ -1221,7 +1244,7 @@ export const PRODUCTS = [
   {
     id: 'room-spray',
     name: 'Room Spray',
-    brand: 'Aeindry', category: 'home', categoryLabel: 'Home & Aroma',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
     tagline: 'For a room, and for linen',
     blurb: 'A mist for the air, the sofa and the bed.',
     description:
@@ -1388,8 +1411,473 @@ export const PRODUCTS = [
     benefits: ['Three of the five blends', 'Enough for one mask each', 'Made by hand in Washington'],
     howToUse: 'Mix, spread thick, leave fifteen minutes, then lift from one edge and peel.',
     art: { form: 'pot', sub: 'MASK × 3', tint: ['#FBF4F6', '#F0DDE4'], body: '#F5E3E8', cap: '#7E9A72', accent: '#B32644' }
-  }
+  },
+
+  /* ═════════════════════ NAMED BY THE OWNER, NOT YET DETAILED ══════════════
+     Everything below is on the owner's product tree, so the products are real.
+     What is *not* from the owner is the price, the size and the copy. Prices
+     were guessed on request and carry `pricePending`; sizes carry
+     `sizePending`; both are listed by tools/check-catalogue.mjs on every run so
+     they can be replaced with the real numbers.
+
+     `keyIngredients` is empty and `ingredients` says to read the label,
+     because nobody has read one. That is the rule the top of this file sets and
+     it matters most exactly here: an invented ingredient list would flow
+     straight into the encyclopedia and read as fact. The copy describes what
+     the form *is* — what a salve is, what a bath bomb does in water — and
+     makes no claim about any particular formula.
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  {
+    id: 'foot-scrub',
+    name: 'Foot Scrub',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
+    tagline: 'For the part of you that gets no attention',
+    blurb: 'A coarser scrub than the one for your face, because feet are not faces.',
+    description:
+      'Heels and the balls of the feet build hard skin faster than anywhere else on the '
+      + 'body, and they take a coarser grit than a face or a body scrub would. Worked over '
+      + 'damp feet in the bath or the shower and rinsed off, it leaves them smooth enough '
+      + 'that a cream has somewhere to go.',
+    price: 12, pricePending: PENDING,
+    weight: '6 oz jar', sizePending: PENDING,
+    scentFamily: ['herbal', 'citrus'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Coarser grit than a face scrub', 'Rinses clean', 'Made in Washington'],
+    howToUse: 'Sit on the edge of the bath. Work a handful over damp feet, concentrating on the heel, then rinse and dry properly before standing up.',
+    art: { form: 'jar', sub: 'FOOT SCRUB', tint: ['#F4F8F3', '#DFE9DD'], body: '#E7EFE4', cap: '#4E7A46', accent: '#8FBF6A' }
+  },
+
+  {
+    id: 'body-butter',
+    name: 'Body Butter',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'Whipped, not poured',
+    blurb: 'Plant butter whipped until it scoops — no water in it at all.',
+    description:
+      'A body butter is butters and oils whipped together and nothing else: no water, which '
+      + 'is why it scoops rather than pumps and why it goes further than it looks. It sits '
+      + 'heavier on the skin than a cream does and is meant to — this is the one for after a '
+      + 'bath, for shins and elbows in January, not the one for a summer morning.',
+    price: 18, pricePending: PENDING,
+    weight: '4 oz jar', sizePending: PENDING,
+    scentFamily: ['sweet', 'floral'], concerns: ['dry', 'eczema'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['No water, so no preservative', 'Scoops rather than pumps', 'Made in Washington'],
+    howToUse: 'Scoop a little less than you think. Warm it between your palms until it turns to oil, then press it into damp skin.',
+    art: { form: 'jar', sub: 'BODY BUTTER', tint: ['#FBF6EC', '#EFE3CC'], body: '#F4EAD6', cap: '#C8961E', accent: '#E9C97A' }
+  },
+
+  {
+    id: 'lip-rouge-cream',
+    name: 'Lip Rouge Cream',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
+    tagline: 'Colour with the feel of a balm',
+    blurb: 'A tinted cream in a pot — worn with a fingertip, not a wand.',
+    description:
+      'A rouge cream is colour carried in a balm base rather than in a drying matte one, so '
+      + 'it goes on with a fingertip and wears like something you would put on anyway. '
+      + 'Pressed on thinly it reads as a stain; built up it reads as a lipstick.',
+    price: 12, pricePending: PENDING,
+    weight: '0.25 oz pot', sizePending: PENDING,
+    scentFamily: ['sweet'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Wears like a balm', 'Sheer or built up', 'Made in Washington'],
+    howToUse: 'Press on with a fingertip from the middle of the lip outwards. Add a second pass where you want it stronger.',
+    art: { form: 'pot', sub: 'LIP ROUGE', tint: ['#FBF2F3', '#F0DCDE'], body: '#F6E4E6', cap: '#A81F2D', accent: '#D4747E' }
+  },
+
+  {
+    id: 'acv-hair-rinse',
+    name: 'Apple Cider Vinegar Herbal Hair Rinse',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'The last thing in the shower',
+    blurb: 'A diluted vinegar rinse with herbs, poured through after conditioner.',
+    description:
+      'A vinegar rinse is the traditional last step after washing: diluted, poured through '
+      + 'the lengths, left a moment and rinsed out. It is the usual companion to a shampoo '
+      + 'bar, which is why it sits next to them here. The vinegar smell goes as the hair '
+      + 'dries.',
+    price: 16, pricePending: PENDING,
+    weight: '8 oz bottle', sizePending: PENDING,
+    scentFamily: ['herbal'], concerns: ['oily', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['The traditional finish to a bar wash', 'Dilutes to go further', 'Made in Washington'],
+    howToUse: 'Dilute as the label says, pour through the lengths after conditioner, leave a moment and rinse. The smell goes as it dries.',
+    art: { form: 'bottle', sub: 'ACV RINSE', tint: ['#FAF6EA', '#EDE2C9'], body: '#F3EBD6', cap: '#8C5A2B', accent: '#C8961E' }
+  },
+
+  /* ── Kids ─────────────────────────────────────────────────────────────── */
+
+  {
+    id: 'kids-soap',
+    name: 'Kids Soap',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'A bar sized for smaller hands',
+    blurb: 'The same cold-process bar, cut smaller and kept plain.',
+    description:
+      'A cold-process bar cut to a size a child can actually hold, and kept simple — nothing '
+      + 'in it is there to make it novel. It lasts the way any bar does if it gets to drain '
+      + 'between baths, which is the whole argument for a soap dish.',
+    price: 8, pricePending: PENDING,
+    weight: '3.5 oz bar', sizePending: PENDING,
+    scentFamily: ['unscented', 'sweet'], concerns: ['sensitive', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Sized for small hands', 'Cold-process, cured slowly', 'Made in Washington'],
+    howToUse: 'Lather in the hands rather than rubbing the bar on skin, and stand it somewhere it can drain.',
+    art: { form: 'bar', sub: 'KIDS SOAP', tint: ['#F5F9FB', '#DDE9EF'], body: '#E8F0F4', cap: '#4A83A8', accent: '#8FC4DD' }
+  },
+
+  {
+    id: 'kids-body-cream',
+    name: 'Kids Body Cream',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'For after the bath, before pyjamas',
+    blurb: 'A light cream that sinks in fast enough to get dressed after.',
+    description:
+      'A cream rather than a butter, because the point at bedtime is to be absorbed before '
+      + 'anyone puts pyjamas on. Light enough for that, and plain enough to go on every '
+      + 'night without becoming an event.',
+    price: 16, pricePending: PENDING,
+    weight: '4 oz jar', sizePending: PENDING,
+    scentFamily: ['unscented', 'floral'], concerns: ['sensitive', 'dry'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Sinks in before pyjamas', 'Plain enough for every night', 'Made in Washington'],
+    howToUse: 'Smooth over warm, towel-dried skin straight out of the bath.',
+    art: { form: 'jar', sub: 'KIDS CREAM', tint: ['#F7F6FB', '#E6E3F1'], body: '#EFEDF7', cap: '#6B5CA8', accent: '#A99BD8' }
+  },
+
+  {
+    id: 'kids-salve',
+    name: 'Kids Salve',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'The tin that lives in the bag',
+    blurb: 'A firm balm in a tin, for the small rough patches.',
+    description:
+      'A salve is an oil-and-wax balm set firm in a tin — no water, nothing to leak, nothing '
+      + 'to preserve. It is the format that ends up in a changing bag or a coat pocket, for '
+      + 'the dry patch on a cheek in winter or the back of a hand.',
+    price: 12, pricePending: PENDING,
+    weight: '2 oz tin', sizePending: PENDING,
+    scentFamily: ['unscented', 'herbal'], concerns: ['sensitive', 'eczema', 'dry'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Nothing to leak in a bag', 'No water, so no preservative', 'Made in Washington'],
+    howToUse: 'Warm a little on a fingertip and press it into the patch rather than rubbing it in.',
+    art: { form: 'tin', sub: 'KIDS SALVE', tint: ['#F6F8F2', '#E3EAD9'], body: '#ECF1E3', cap: '#5C7F3A', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'kids-massage-oil',
+    name: 'Kids Massage Oil',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'Slow enough to take your time',
+    blurb: 'A plain carrier oil that stays slippery long enough to be useful.',
+    description:
+      'A massage oil is chosen for how long it stays slippery rather than how fast it sinks '
+      + 'in — the opposite of a body oil. That is what makes it work for the unhurried part '
+      + 'of the evening, when the point is the time spent rather than the product.',
+    price: 14, pricePending: PENDING,
+    weight: '4 oz bottle', sizePending: PENDING,
+    scentFamily: ['unscented', 'floral'], concerns: ['sensitive', 'sleep'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Stays slippery, does not vanish', 'Plain by design', 'Made in Washington'],
+    howToUse: 'Warm a little between your palms first — cold oil out of the bottle is the fastest way to end a massage.',
+    art: { form: 'bottle', sub: 'MASSAGE OIL', tint: ['#FBF8F1', '#EFE7D6'], body: '#F5EFE1', cap: '#B58A4E', accent: '#E9C97A' }
+  },
+
+  {
+    id: 'kids-body-butter',
+    name: 'Kids Body Butter',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'For the stubborn winter patches',
+    blurb: 'The heavier one, for when a cream is not holding.',
+    description:
+      'The step up from the cream: butters whipped with no water in them, so it sits on the '
+      + 'skin longer instead of disappearing into it. This is the one for shins and elbows '
+      + 'in the middle of winter, not the one for every night.',
+    price: 16, pricePending: PENDING,
+    weight: '4 oz jar', sizePending: PENDING,
+    scentFamily: ['unscented', 'sweet'], concerns: ['sensitive', 'dry', 'eczema'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Heavier than the cream', 'No water, so no preservative', 'Made in Washington'],
+    howToUse: 'Warm between the palms until it turns to oil, then press into damp skin after a bath.',
+    art: { form: 'jar', sub: 'KIDS BUTTER', tint: ['#FBF7F3', '#EFE4DA'], body: '#F5ECE4', cap: '#C07A4A', accent: '#E8A87C' }
+  },
+
+  /* ── Men ──────────────────────────────────────────────────────────────── */
+
+  {
+    id: 'mens-soap',
+    name: "Men's Soap",
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
+    tagline: 'A big plain bar',
+    blurb: 'Cold-process, cut large, scented the other way from the rest of the range.',
+    description:
+      'The same cold-process method as the rest of the soap, cut into a larger bar and taken '
+      + 'in a different direction on scent — woodier and sharper than the florals elsewhere '
+      + 'on the shelf. It is a body bar; it will wash hair too if that is the kind of '
+      + 'household this is.',
+    price: 9, pricePending: PENDING,
+    weight: '5 oz bar', sizePending: PENDING,
+    scentFamily: ['woody', 'herbal', 'citrus'], concerns: ['daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Cut larger than the standard bar', 'Cold-process, cured slowly', 'Made in Washington'],
+    howToUse: 'Stand it somewhere it drains between showers — a bar left in a puddle is a bar you replace twice as often.',
+    art: { form: 'bar', sub: "MEN'S SOAP", tint: ['#F4F4F2', '#DEDFD9'], body: '#E9EAE4', cap: '#3F4A38', accent: '#7E8C63' }
+  },
+
+  {
+    id: 'face-beard-scrub',
+    name: 'Face & Beard Scrub',
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
+    tagline: 'Gets under the beard, not just over it',
+    blurb: 'A scrub coarse enough to reach the skin through a beard.',
+    description:
+      'The problem with washing a face under a beard is that most of what you use never '
+      + 'reaches the skin. This is worked in at the roots with the fingertips rather than '
+      + 'over the surface, which is also what lifts the hairs that would otherwise grow back '
+      + 'into the jaw.',
+    price: 12, pricePending: PENDING,
+    weight: '4 oz jar', sizePending: PENDING,
+    scentFamily: ['woody', 'citrus'], concerns: ['oily', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Reaches skin under a beard', 'Lifts hairs before they turn in', 'Made in Washington'],
+    howToUse: 'On a wet face, work it in at the roots with the fingertips, not over the top of the beard. Rinse and follow with an oil.',
+    art: { form: 'jar', sub: 'FACE & BEARD', tint: ['#F5F4F0', '#E0DED4'], body: '#EBE9E0', cap: '#4A2E1C', accent: '#9C7A4E' }
+  },
+
+  /* ── Aromatherapy ─────────────────────────────────────────────────────── */
+
+  {
+    id: 'bath-bomb',
+    name: 'Bath Bomb',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'Drop it and wait',
+    blurb: 'Fizzes out over a minute or two and scents the whole room.',
+    description:
+      'A bath bomb is pressed dry and only reacts once it hits water, which is why it keeps '
+      + 'on a shelf and then goes off all at once. It fizzes out over a minute or two, '
+      + 'scenting the water and most of the room with it.',
+    price: 6, pricePending: PENDING,
+    weight: '4.5 oz bomb', sizePending: PENDING,
+    scentFamily: ['floral', 'citrus', 'herbal'], concerns: ['muscle', 'sleep'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Keeps dry on a shelf', 'One bath, one bomb', 'Made in Washington'],
+    howToUse: 'Run the bath first, then drop it in — added under a running tap it spends itself before you are in.',
+    art: { form: 'sphere', sub: 'BATH BOMB', tint: ['#FBF4F7', '#F0DEE6'], body: '#F6E6EE', cap: '#C4557E', accent: '#E89BB8' }
+  },
+
+  {
+    id: 'foot-bomb',
+    name: 'Foot Bombs',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'A bath bomb for a washing-up bowl',
+    blurb: 'Smaller bombs, sized for a basin rather than a bath.',
+    description:
+      'The same thing as a bath bomb, pressed smaller, because a basin of water for your '
+      + 'feet is a fraction of the volume of a bath and a full-size bomb in it is a waste. '
+      + 'Sold as a set so one soak does not use the lot.',
+    price: 6, pricePending: PENDING,
+    weight: '2 oz bombs', sizePending: PENDING,
+    scentFamily: ['herbal', 'citrus'], concerns: ['muscle', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Sized for a basin, not a bath', 'Keeps dry on a shelf', 'Made in Washington'],
+    howToUse: 'Fill a basin with water as hot as you can stand, drop one in, and give it ten minutes you were not going to use anyway.',
+    art: { form: 'sphere', sub: 'FOOT BOMB', tint: ['#F3F8F5', '#DCE9E1'], body: '#E6F0EA', cap: '#3F7A5E', accent: '#7FBF9B' }
+  },
+
+  /* ── Pets ─────────────────────────────────────────────────────────────── */
+
+  {
+    id: 'pet-soap',
+    name: 'Pet Soap',
+    brand: 'Aeindry', category: 'pets', categoryLabel: 'Pets',
+    tagline: 'For the bath nobody volunteers for',
+    blurb: 'A cold-process bar made for a dog rather than adapted from one for people.',
+    description:
+      'A bar rather than a bottle, which is easier to hold with one hand while the other one '
+      + 'holds the dog. Made for animals from the start instead of being a people soap with a '
+      + 'different label — a dog’s skin is not a person’s and the formula is not either.',
+    price: 9, pricePending: PENDING,
+    weight: '4.5 oz bar', sizePending: PENDING,
+    scentFamily: ['herbal', 'unscented'], concerns: ['sensitive', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['One-handed to use', 'Made for animals, not adapted', 'Made in Washington'],
+    howToUse: 'Wet the coat through first, lather the bar in your hands rather than on the animal, and rinse until the water runs clear. Keep it away from eyes and ears.',
+    art: { form: 'bar', sub: 'PET SOAP', tint: ['#F6F7F1', '#E3E6D7'], body: '#ECEEE1', cap: '#6B7A3A', accent: '#A8BF5C' }
+  },
+
+  {
+    id: 'pet-lotion-bar',
+    name: 'Pet Lotion Bar',
+    brand: 'Aeindry', category: 'pets', categoryLabel: 'Pets',
+    tagline: 'Rubbed on, not squeezed out',
+    blurb: 'A solid bar for paw pads and noses — nothing to spill on a floor.',
+    description:
+      'A solid bar melts on contact and goes exactly where you rub it, which matters more '
+      + 'with an animal than with a person: there is no bottle to knock over and no puddle '
+      + 'to walk through. For paw pads and noses after a winter walk on salted pavement.',
+    price: 6, pricePending: PENDING,
+    weight: '1 oz bar', sizePending: PENDING,
+    scentFamily: ['unscented'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Nothing to spill', 'Goes where you rub it', 'Made in Washington'],
+    howToUse: 'Rub straight onto the pad or nose and hold the paw a moment so it is absorbed rather than licked off.',
+    art: { form: 'puck', sub: 'PET BAR', tint: ['#FAF7F0', '#EDE5D2'], body: '#F3EDDF', cap: '#8C6A3A', accent: '#D4B06A' }
+  },
+
+  {
+    id: 'pet-acv-rinse',
+    name: 'Apple Cider Vinegar Herbal Rinse',
+    brand: 'Aeindry', category: 'pets', categoryLabel: 'Pets',
+    tagline: 'The last pour before the towel',
+    blurb: 'A diluted vinegar rinse poured through the coat after washing.',
+    description:
+      'The same idea as the rinse on the hair shelf, made for a coat: diluted, poured '
+      + 'through after the soap, worked in and rinsed or left depending on the label. The '
+      + 'vinegar smell goes as the coat dries, which is the usual first question.',
+    price: 16, pricePending: PENDING,
+    weight: '8 oz bottle', sizePending: PENDING,
+    scentFamily: ['herbal'], concerns: ['sensitive', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Dilutes to go further', 'The smell goes as it dries', 'Made in Washington'],
+    howToUse: 'Dilute as the label says and pour through the coat after washing, keeping it away from eyes and ears. Towel as normal.',
+    art: { form: 'bottle', sub: 'ACV RINSE', tint: ['#F7F8F0', '#E5E8D4'], body: '#EFF1E0', cap: '#7A6A2E', accent: '#BFAE55' }
+  },
 ];
+
+/**
+ * The order of the shop, top to bottom.
+ *
+ * The owner gave this order and said twice that it matters, so it is written
+ * out rather than derived: no sort produces it, and nothing about a product
+ * implies its place. "Featured" on the shop page is this list.
+ *
+ * It lives apart from the entries above because the entries are long and a
+ * reorder would otherwise mean moving three thousand lines and hoping. Here a
+ * move is one line. `tools/check-catalogue.mjs` fails if a product is missing
+ * from it or named twice, so the two cannot drift.
+ *
+ * Marked ※: not named on the owner's tree. Real products with prices the owner
+ * gave, filed on the nearest shelf rather than dropped — say the word and they
+ * move or go.
+ */
+const ORDER = [
+  /* ── Bath ─────────────────────────────────────────────────────────────── */
+  'handmade-soap', 'pine-tar-soap',       // Soap
+  'body-buff',                            // Body Buff Scrubs
+  'foot-scrub',                           // Foot Scrub
+  'bamboo-soap-dish',                     // ※ the dish the soap stands on
+  // Face Scrub is filed under Face and shelved here too — see `alsoIn`.
+
+  /* ── Body ─────────────────────────────────────────────────────────────── */
+  'body-cream',                           // Body Cream
+  'foot-cream',                           // Foot Cream
+  'body-butter',                          // Body Butter
+  'body-oil',                             // Body Oil
+  'botanical-hand-butter', 'hand-butter', // Hand Butter
+  'deodorant-creme',                      // Deodorant
+  'lotion-bar',                           // Lotion Bar
+  'body-balm',                            // Body Balm
+
+  /* ── Face ─────────────────────────────────────────────────────────────── */
+  'face-cream',                                                  // Face Cream
+  'face-serum', 'copper-face-serum', 'under-eye-serum',          // Face Serum
+  'face-oil',                                                    // Face Oil
+  'face-toner',                                                  // Face Toner
+  'face-cleanser',                                               // Face Soap and Cleanser
+  'jelly-face-mask', 'clay-face-mask',                           // Face Pack
+  'face-scrub',                                                  // Face Scrub
+  /* ── Face › Lips ──────────────────────────────────────────────────────── */
+  'lip-balm', 'lip-scrub', 'lip-oil', 'lip-gloss', 'lip-rouge-cream',
+
+  /* ── Hair ─────────────────────────────────────────────────────────────── */
+  'shampoo-bar',                           // Shampoo Bar
+  'conditioner-bar',                       // Conditioner Bar
+  'hair-leave-in', 'leave-in-keratin',     // Leave in Conditioner
+  'elixir-hair-oil',                       // Hair Oil
+  'hair-butter',                           // ※ an oil treatment, so it sits with the oil
+  'copper-hair-serum',                     // Hair Serum
+  'nocturn-balm',                          // ※ a hair-and-face balm, nearest the serum
+  'acv-hair-rinse',                        // Apple Cider Vinegar Herbal Hair Rinse
+
+  /* ── Kids ─────────────────────────────────────────────────────────────── */
+  'kids-soap', 'kids-body-cream', 'kids-salve', 'kids-massage-oil', 'kids-body-butter',
+
+  /* ── Men ──────────────────────────────────────────────────────────────── */
+  'mens-soap', 'beard-oil', 'beard-balm', 'shaving-soap', 'face-beard-scrub',
+
+  /* ── Aromatherapy ─────────────────────────────────────────────────────── */
+  'shower-steamers',                             // Shower Steamer
+  'milk-bath', 'coconut-milk-bath-salt',         // Bath Milk & Salts
+  'bath-bomb',                                   // Bath Bomb
+  'foot-bomb',                                   // Foot Bombs
+  'foot-soak',                                   // ※ a foot soak, next to the foot bombs
+  'essential-oil-roll-on',                       // Essential Oil Roll On
+  'room-spray',                                  // Room and Linen Spray
+  'beeswax-candle',                              // Beeswax Candle
+  'room-diffuser', 'car-diffuser',               // ※ the other two ways to scent a room
+  'solid-perfume',                               // ※ the one you wear rather than burn
+
+  /* ── Pets ─────────────────────────────────────────────────────────────── */
+  'pet-soap', 'pet-lotion-bar', 'pet-acv-rinse',
+
+  /* ── Sets & Packs ─────────────────────────────────────────────────────── */
+  /* ※ The whole shelf. Not on the tree, but every one of them is a real pack
+     the owner priced, so they keep a shelf of their own at the end. */
+  'mini-hand-butter-pack', 'mini-body-oil-pack', 'mini-beeswax-pack',
+  'lotion-bar-pack', 'lip-balm-pack', 'roll-on-pack', 'jelly-mask-mini-pack'
+];
+
+/**
+ * The catalogue in shop order.
+ *
+ * A product ORDER forgets is appended rather than dropped: a typo in that list
+ * should cost the shop its running order, not a product. The checker fails on
+ * it, loudly, which is where a typo belongs.
+ */
+export const PRODUCTS = (() => {
+  const byId = new Map(CATALOGUE.map((p) => [p.id, p]));
+  const placed = ORDER.map((id) => byId.get(id)).filter(Boolean);
+  const seen = new Set(placed.map((p) => p.id));
+  return [...placed, ...CATALOGUE.filter((p) => !seen.has(p.id))];
+})();
+
+/** What ORDER says, for the checker to hold the catalogue against. */
+export const CATALOGUE_ORDER = ORDER;
+
 
 /**
  * Sets — several products bought together for one reason.

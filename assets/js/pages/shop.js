@@ -1,7 +1,7 @@
 /** Shop — live filtering, sorting and search across the whole range. */
 
 import { $, $$, esc, debounce } from '../lib/dom.js';
-import { PRODUCTS, CATEGORIES, priceOf, inCategory, childCategories,
+import { PRODUCTS, CATEGORIES, priceOf, inCategory, filedIn, childCategories,
          topCategories } from '../data/products.js';
 import { productGrid } from '../ui/pcard.js';
 import { pageField, initBotField } from '../ui/bot-field.js';
@@ -54,10 +54,12 @@ function render(list, state) {
     return productGrid(list);
   }
   /* An aisle and, indented under it, its sub-shelves. Products filed directly
-     on the parent come first; Soap gets its own sign inside Body rather than a
-     shelf of its own beside it. */
+     on the parent come first; Lips gets its own sign inside Face rather than a
+     shelf of its own beside it. `filedIn` rather than `p.category ===` so a
+     product shelved in two places — the Face Scrub, which the owner named
+     under both Bath and Face — appears under both. */
   const shelf = (c, cls, id) => {
-    const own = list.filter((p) => p.category === c.id);
+    const own = list.filter((p) => filedIn(p, c.id));
     const kids = childCategories(c.id)
       .map((k) => shelf(k, 'aisle aisle--sub', `aisle-${k.id}`))
       .filter(Boolean);
