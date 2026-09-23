@@ -1,0 +1,11 @@
+node_modules
+node_modules/
+.DS_Store
+*.log
+
+# Scratch renders from the verification harnesses. They are written into the
+# working tree by tools run from here; none of them are inputs to the site.
+/invoice.pdf
+/invoice.png
+/*-cover.png
+/*-shelf.png

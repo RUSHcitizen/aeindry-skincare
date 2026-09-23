@@ -1,0 +1,284 @@
+/* ============================================================
+   Motion system — reveals, keyframes, transitions
+   ============================================================ */
+
+/* ---------- Scroll reveal ----------
+   Elements opt in with [data-reveal]; the observer adds .is-in.
+   Variants change the "from" transform only, so timing stays uniform. */
+[data-reveal] {
+  --reveal-y: 26px;
+  --reveal-x: 0px;
+  --reveal-scale: 1;
+  --reveal-rotate: 0deg;
+  --reveal-blur: 6px;
+  --reveal-delay: 0ms;
+  --reveal-dur: var(--dur-slower);
+  opacity: 0;
+  transform: translate3d(var(--reveal-x), var(--reveal-y), 0)
+             scale(var(--reveal-scale)) rotate(var(--reveal-rotate));
+  filter: blur(var(--reveal-blur));
+  transition:
+    opacity var(--reveal-dur) var(--ease-out-expo) var(--reveal-delay),
+    transform var(--reveal-dur) var(--ease-out-expo) var(--reveal-delay),
+    filter var(--reveal-dur) var(--ease-out-expo) var(--reveal-delay);
+  will-change: opacity, transform;
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  filter: blur(0);
+}
+
+/* Once the motion is over, get out of the way.
+   A zero blur is still a filter, and `will-change` still promotes: both hold
+   the element on its own composited layer for the life of the page, and text
+   on a composited layer loses subpixel antialiasing. On Bodoni at display
+   sizes that reads as permanent softness — the blur is genuinely 0 and the
+   type is genuinely blurry. Dropping both is what makes the headline crisp.
+   Added by reveal.js on transitionend, so it never interrupts the animation. */
+[data-reveal].is-settled {
+  filter: none;
+  will-change: auto;
+}
+/* The identity transform promotes too — translate3d always does — so it goes
+   as well, except where something else drives the element after the reveal.
+   Those opt out by name rather than by cascade order, since this selector
+   out-specifies a plain class and would silently win. */
+[data-reveal].is-settled:not([data-keep-transform]) {
+  transform: none;
+}
+
+[data-reveal="up"]     { --reveal-y: 40px; }
+[data-reveal="down"]   { --reveal-y: -32px; }
+[data-reveal="left"]   { --reveal-x: 48px; --reveal-y: 0; }
+[data-reveal="right"]  { --reveal-x: -48px; --reveal-y: 0; }
+[data-reveal="scale"]  { --reveal-scale: 0.92; --reveal-y: 18px; }
+[data-reveal="zoom"]   { --reveal-scale: 1.12; --reveal-y: 0; --reveal-blur: 10px; }
+[data-reveal="tilt"]   { --reveal-rotate: -3.5deg; --reveal-y: 46px; --reveal-scale: 0.96; }
+[data-reveal="fade"]   { --reveal-y: 0; --reveal-blur: 0px; }
+
+/* Clip-reveal — a wipe rather than a fade, for images and art */
+[data-reveal="clip"] {
+  --reveal-y: 0;
+  --reveal-blur: 0px;
+  clip-path: inset(0 0 100% 0);
+  transition:
+    opacity var(--dur-cinematic) var(--ease-out-expo) var(--reveal-delay),
+    clip-path var(--dur-cinematic) var(--ease-out-expo) var(--reveal-delay),
+    transform var(--dur-cinematic) var(--ease-out-expo) var(--reveal-delay);
+}
+[data-reveal="clip"].is-in { clip-path: inset(0 0 0 0); }
+
+/* ---------- Line-by-line / word-by-word text reveal ---------- */
+.split-line {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.06em;
+  margin-block: -0.06em;
+}
+.split-line__inner {
+  display: block;
+  transform: translate3d(0, 108%, 0) rotate(2.2deg);
+  opacity: 0;
+  transition:
+    transform var(--dur-cinematic) var(--ease-out-expo) var(--line-delay, 0ms),
+    opacity 700ms var(--ease-out-quart) var(--line-delay, 0ms);
+  transform-origin: left top;
+  will-change: transform;
+}
+.is-in .split-line__inner,
+.split-line.is-in .split-line__inner { transform: translate3d(0, 0, 0) rotate(0); opacity: 1; }
+
+.split-word {
+  display: inline-block;
+  transform: translate3d(0, 0.5em, 0);
+  opacity: 0;
+  filter: blur(4px);
+  transition:
+    transform 760ms var(--ease-out-expo) var(--word-delay, 0ms),
+    opacity 560ms var(--ease-soft) var(--word-delay, 0ms),
+    filter 560ms var(--ease-soft) var(--word-delay, 0ms);
+}
+.is-in .split-word { transform: none; opacity: 1; filter: blur(0); }
+
+.split-char {
+  display: inline-block;
+  transform: translate3d(0, 0.7em, 0) rotate(6deg);
+  opacity: 0;
+  transition:
+    transform 700ms var(--ease-spring) var(--char-delay, 0ms),
+    opacity 420ms linear var(--char-delay, 0ms);
+}
+.is-in .split-char { transform: none; opacity: 1; }
+
+/* ---------- Stagger helper ---------- */
+[data-stagger] > * { --reveal-delay: calc(var(--i, 0) * var(--stagger-step, 70ms)); }
+
+/* ---------- Keyframes ---------- */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-14px) rotate(1.6deg); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  33%      { transform: translate3d(10px, -18px, 0) rotate(2deg); }
+  66%      { transform: translate3d(-8px, -8px, 0) rotate(-1.5deg); }
+}
+@keyframes drift {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(3%, -4%, 0) scale(1.06); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes pulse-ring {
+  0%   { transform: scale(0.85); opacity: .7; }
+  70%  { transform: scale(1.45); opacity: 0; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+@keyframes shimmer { to { background-position: 200% 0; } }
+@keyframes fade-up {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-7deg); }
+  75% { transform: rotate(7deg); }
+}
+@keyframes steam {
+  0%   { opacity: 0; transform: translateY(0) scaleX(1); }
+  25%  { opacity: .55; }
+  100% { opacity: 0; transform: translateY(-52px) scaleX(1.7); }
+}
+@keyframes bubble-rise {
+  0%   { transform: translateY(0) scale(0.4); opacity: 0; }
+  15%  { opacity: .8; }
+  100% { transform: translateY(-130px) scale(1); opacity: 0; }
+}
+
+.anim-float { animation: float-y 7s var(--ease-soft) infinite; }
+.anim-float-slow { animation: float-slow 16s var(--ease-soft) infinite; }
+.anim-spin-slow { animation: spin-slow 40s linear infinite; }
+
+/* ---------- Page transition curtain ---------- */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
+.curtain__panel {
+  background: var(--stem-900);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  will-change: transform;
+}
+.curtain.is-covering { pointer-events: all; }
+.curtain.is-covering .curtain__panel {
+  transform-origin: bottom;
+  animation: curtain-in 620ms var(--ease-out-expo) forwards;
+  animation-delay: calc(var(--p) * 46ms);
+}
+.curtain.is-revealing .curtain__panel {
+  transform-origin: top;
+  transform: scaleY(1);
+  animation: curtain-out 620ms var(--ease-out-expo) forwards;
+  animation-delay: calc(var(--p) * 46ms);
+}
+@keyframes curtain-in  { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes curtain-out { from { transform: scaleY(1); } to { transform: scaleY(0); } }
+
+/* Route content enter */
+.route-enter { animation: route-in 700ms var(--ease-out-expo) both; }
+@keyframes route-in {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
+  .split-line__inner, .split-word, .split-char { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .curtain { display: none !important; }
+}
+
+/* ---------- Ink reveal ----------
+   A heavier blur than the default, clearing as the words settle. Reads as
+   type coming into focus rather than sliding in, which suits a headline set
+   above a hand-painted mark. */
+[data-reveal="ink"] {
+  --reveal-y: 22px;
+  --reveal-blur: 16px;
+  --reveal-scale: 1.03;
+}
+
+/* ---------- Specimen line-draw ----------
+   Each path is given its own --len in JS from getTotalLength(), because a
+   single guessed dash length finishes early on short paths and never finishes
+   on long ones. */
+.is-drawable {
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+}
+.is-drawn .is-drawable {
+  animation: specimen-draw 1500ms var(--ease-out-expo) var(--draw-delay, 0ms) forwards;
+}
+@keyframes specimen-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ---------- Watercolour sweep on the primary button ----------
+   A pigment wash crossing the button rather than a flat colour change. */
+.btn--primary { position: relative; overflow: hidden; isolation: isolate; }
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  inset: -40% -10%;
+  z-index: -1;
+  background:
+    radial-gradient(closest-side at 30% 50%, var(--magenta-ink), transparent 70%),
+    radial-gradient(closest-side at 62% 46%, var(--violet-ink), transparent 72%),
+    radial-gradient(closest-side at 88% 56%, var(--rose-ink), transparent 70%);
+  opacity: 0;
+  transform: translateX(-34%) scale(1.1);
+  transition: opacity var(--dur-slow) var(--ease-soft), transform var(--dur-cinematic) var(--ease-out-expo);
+}
+.btn--primary:hover::after,
+.btn--primary:focus-visible::after { opacity: .9; transform: translateX(0) scale(1.16); }
+
+/* ---------- Rules that draw themselves ----------
+   The cover's rule opens outward from the sprig set into its middle. */
+.cover__rule span {
+  transform: scaleX(0);
+  transition: transform var(--dur-cinematic) var(--ease-out-expo) var(--reveal-delay, 0ms);
+}
+.cover__rule span:first-child  { transform-origin: right center; }
+.cover__rule span:last-child   { transform-origin: left center; }
+.cover__rule.is-in span        { transform: scaleX(1); }
+
+/* The blanket rule above already collapses every animation to 0.01ms, so these
+   only need to undo the *static* from-states that would otherwise stick. */
+@media (prefers-reduced-motion: reduce) {
+  .is-drawable { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .cover__rule span { transform: scaleX(1); }
+  .btn--primary::after { display: none; }
+}

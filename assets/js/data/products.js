@@ -1,0 +1,2123 @@
+/**
+ * Product catalogue — Aeindry Skincare and Bloom In Clover
+ *
+ * Every product, price, size and variant name here came from the owner. Where
+ * something has been photographed the photograph is named; everything else
+ * falls back to the generated vessel in lib/art.js, which is why `art` is
+ * filled in for all of them.
+ *
+ * ── WHAT THIS FILE DOES NOT INVENT ────────────────────────────────────────
+ * Copy describes what the product *is* — what a lotion bar or a jelly mask is,
+ * and how the form is used — and stops there. It makes no claim about what a
+ * particular formula contains or does. `keyIngredients` is filled in only
+ * where a label has actually been read, because it feeds the ingredient
+ * encyclopedia; an empty list means nobody has read that label yet, not that
+ * the jar is empty.
+ *
+ * An empty `variants` list means the thing is sold one way, not that nobody
+ * has asked — the range notes named the scents wherever there were any. The
+ * two exceptions say so in a comment: Handmade Soap ("will update on variety")
+ * and Clay Face Mask ("will update later"). `pricePending: true` marks the
+ * three products that were never given a price, and
+ * `tools/check-catalogue.mjs` prints them.
+ *
+ * Two products may share a name and be different things — Botanical Hand
+ * Butter and Hand Butter, the two leave-ins — so ids, not names, are the
+ * identity.
+ *
+ * When a WooCommerce store is connected the store's own prices win; these
+ * drive the catalogue preview and the offline demo.
+ */
+
+/**
+ * Categories, one level deep, in the owner's order.
+ *
+ * The order of this list is the order of the shop, and it was given rather
+ * than derived: Bath first, Pets last. Nothing sorts it.
+ *
+ * `parent` makes a shelf a sub-shelf: Lips sits inside Face rather than beside
+ * it, so filtering to Face returns the lip products too. One level is
+ * deliberate — a second would need breadcrumbs inside the shop, and nothing in
+ * this range is that deep.
+ */
+export const CATEGORIES = [
+  { id: 'all',   label: 'Everything' },
+  { id: 'bath',  label: 'Bath' },
+  { id: 'body',  label: 'Body' },
+  { id: 'face',  label: 'Face' },
+  { id: 'lips',  label: 'Lips', parent: 'face' },
+  { id: 'hair',  label: 'Hair' },
+  { id: 'kids',  label: 'Kids' },
+  { id: 'men',   label: 'Men' },
+  { id: 'aroma', label: 'Aromatherapy' },
+  { id: 'pets',  label: 'Pets' },
+  { id: 'kits',  label: 'Sets & Packs' }
+];
+
+/** A category and everything filed beneath it. */
+export const categoriesUnder = (id) =>
+  [id, ...CATEGORIES.filter((c) => c.parent === id).map((c) => c.id)];
+
+/** The sub-shelves of a category, in catalogue order. */
+export const childCategories = (id) => CATEGORIES.filter((c) => c.parent === id);
+
+/** Top-level shelves only — what the shop lays out as aisles. */
+export const topCategories = () => CATEGORIES.filter((c) => c.id !== 'all' && !c.parent);
+
+/**
+ * The shelves a product is filed on directly.
+ *
+ * Nearly always one. `alsoIn` is for the product the owner listed on two
+ * shelves at once — the Face Scrub is a scrub you use in the bath and a thing
+ * you put on your face, and it was named under both. `category` stays the
+ * product's home: it is what the breadcrumb and the card say, and what the
+ * store sends as the primary category.
+ */
+export const shelvesOf = (product) => [product.category, ...(product.alsoIn || [])];
+
+/** True when a product is filed on this shelf itself, rather than one below it. */
+export const filedIn = (product, id) => shelvesOf(product).includes(id);
+
+/** True when a product belongs to this category or anything under it. */
+export const inCategory = (product, id) => {
+  if (id === 'all') return true;
+  const under = categoriesUnder(id);
+  return shelvesOf(product).some((c) => under.includes(c));
+};
+
+/** Not yet priced, or priced provisionally — see the note above. */
+const PENDING = true;
+
+/** What we say when the label has not been transcribed into this file. */
+const ON_LABEL = 'See the label — the full ingredient list is printed on every one.';
+
+const CATALOGUE = [
+  /* ══════════════════════════ FACE ══════════════════════════ */
+
+  {
+    id: 'face-serum',
+    name: 'Face Serum',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'A few drops, every night',
+    blurb: 'The concentrated step, in a dropper bottle.',
+    description:
+      'A serum is the thinnest thing in a routine and the one that goes on first, straight '
+      + 'onto damp skin so it has something to hold. A few drops covers a face — it is meant to '
+      + 'be used sparingly and to last.',
+    price: 15,
+    weight: '1 oz dropper bottle',
+    scentFamily: ['unscented'], concerns: ['daily', 'aging'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Goes on first, onto damp skin', 'A few drops is a whole application', 'Made in small batches in Washington'],
+    howToUse: 'Two or three drops pressed into damp skin, morning or night. Follow with a cream or an oil.',
+    art: { form: 'dropper', sub: 'FACE SERUM', tint: ['#FAF8F4', '#EBE6DC'], body: '#E7DECB', cap: '#5F6355', accent: '#C8961E' }
+  },
+
+  {
+    id: 'copper-face-serum',
+    name: 'Copper Serum',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'The one that costs more, and is meant to',
+    blurb: 'Our most concentrated face serum.',
+    description:
+      'Priced above the rest of the serum shelf because of what goes into it. Used the same '
+      + 'way — a few drops onto damp skin before anything heavier.',
+    price: 20,
+    weight: '1 oz dropper bottle',
+    scentFamily: ['unscented'], concerns: ['aging', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['The most concentrated serum we make', 'A few drops is a whole application', 'Small batches, made in Washington'],
+    howToUse: 'Two or three drops pressed into damp skin at night. Follow with a cream if you use one.',
+    art: { form: 'dropper', sub: 'COPPER SERUM', tint: ['#FBF5EF', '#EFDCC9'], body: '#D9A273', cap: '#8B5A2B', accent: '#C4713A' }
+  },
+
+  {
+    id: 'under-eye-serum',
+    name: 'Time Lock Under Eye Serum',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'For the thinnest skin on your face',
+    blurb: 'A small bottle for a small area, because that is all you need.',
+    description:
+      'The skin under an eye is the thinnest on the body, which is why it gets its own step and '
+      + 'its own smaller bottle. Patted rather than rubbed — the ring finger presses hardest of '
+      + 'the ones that can be trusted not to drag.',
+    price: 20,
+    weight: '0.5 oz dropper bottle',
+    scentFamily: ['unscented'], concerns: ['aging', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Made for the eye area specifically', 'A drop per eye', 'Small batches, made in Washington'],
+    howToUse: 'One drop per eye, patted along the bone with a ring finger. Never rubbed.',
+    art: { form: 'dropper', sub: 'UNDER EYE', tint: ['#F8F6F5', '#E6E1E4'], body: '#DCD3DE', cap: '#7E4EAE', accent: '#9B8FC7' }
+  },
+
+  {
+    id: 'face-toner',
+    name: 'Face Toner',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'Rose Rosemary · Sweet Grass Neroli',
+    blurb: 'The step between washing and everything else.',
+    description:
+      'Misted or pressed on after cleansing, while skin is still damp. Everything that goes on '
+      + 'afterwards has an easier time of it — a serum spreads further on wet skin than on dry.',
+    price: 14,
+    weight: '4 fl oz',
+    scentFamily: ['floral', 'herbal'], concerns: ['daily', 'sensitive'],
+    variants: [
+      { id: 'rose-rosemary',      label: 'Rose Rosemary',      swatch: '#C98E8E' },
+      { id: 'sweet-grass-neroli', label: 'Sweet Grass Neroli', swatch: '#A8C63C' }
+    ],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Two scents, both from essential oil', 'Leaves skin damp for the next step', 'Made in Washington'],
+    howToUse: 'After cleansing, mist or press over the face and go straight into a serum or oil.',
+    art: { form: 'spray', sub: 'FACE TONER', tint: ['#FAF7F6', '#EDE2E2'], body: '#F0E6E4', cap: '#C98E8E', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'face-cream',
+    name: 'Face Cream',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'The last step, and the one that holds',
+    blurb: 'A cream to seal in everything underneath it.',
+    description:
+      'A cream is the lid on a routine: it stops what you put on first from evaporating back '
+      + 'off. Applied last, over a serum or an oil, on skin that is still slightly damp.',
+    price: 20,
+    weight: '2 oz jar',
+    scentFamily: ['unscented'], concerns: ['dry', 'daily', 'aging'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Goes on last, over everything else', 'Small batches, made by hand', 'Made in Washington'],
+    howToUse: 'A pea-sized amount, warmed between fingertips, over damp skin at the end of a routine.',
+    art: { form: 'jar', sub: 'FACE CREAM', tint: ['#FBF9F4', '#EDE7DA'], body: '#F4EEE2', cap: '#6E7263', accent: '#C8961E' }
+  },
+
+  {
+    id: 'face-oil',
+    name: 'Face Oil',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'Four oils, four different jobs',
+    blurb: 'Be Free, Berry Bakuchiol, Armor and Rose — pick the one that matches the week.',
+    description:
+      'An oil goes on damp skin and gives it something to hold onto. Four blends rather than '
+      + 'one, because a face in February and a face in July are not asking for the same thing. '
+      + 'A few drops pressed in is a whole application.',
+    /* "Will update on price later" — 34 is carried over from the old
+       single-variant Berry Bakuchiol entry and is a stand-in, not a quote. */
+    price: 34, pricePending: PENDING,
+    weight: '1 oz dropper bottle',
+    photo: 'face-oil-berry-bakuchiol',
+    scentFamily: ['fruity', 'floral', 'unscented'], concerns: ['dry', 'aging', 'daily'],
+    variants: [
+      { id: 'be-free',        label: 'Be Free',         swatch: '#A8C63C' },
+      { id: 'berry-bakuchiol', label: 'Berry Bakuchiol', swatch: '#B32644', note: 'Bakuchiol and berry-seed oils',
+        photo: 'face-oil-berry-bakuchiol' },
+      { id: 'armor',          label: 'Armor',           swatch: '#5F6355' },
+      { id: 'rose',           label: 'Rose',            swatch: '#E8A0B4' }
+    ],
+    keyIngredients: ['bakuchiol', 'rosehip-oil', 'raspberry-seed-oil'],
+    ingredients: ON_LABEL,
+    benefits: ['Four blends, not one', 'A few drops is a whole application', 'Small batches, made in Washington'],
+    howToUse: 'Two or three drops pressed into damp skin at night. Follow with a cream if you use one.',
+    art: { form: 'dropper', sub: 'FACE OIL', tint: ['#F7F2F6', '#E9DCE8'], body: '#C9A8D8', cap: '#7E4EAE', accent: '#B32644' }
+  },
+
+  {
+    id: 'face-scrub',
+    name: 'Face Scrub',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face', alsoIn: ['bath'],
+    tagline: 'Bud of Rose · Black Rose · Lavender Cloud',
+    blurb: 'A gentle polish, once or twice a week.',
+    description:
+      'A scrub is a once-or-twice-a-week thing, not a daily one. Worked over damp skin with '
+      + 'very little pressure — the grains do the work, and leaning on them is how people end '
+      + 'up with a red face and a compromised barrier.',
+    price: 10,
+    weight: '2 oz jar',
+    scentFamily: ['floral'], concerns: ['oily', 'daily'],
+    variants: [
+      { id: 'bud-of-rose',    label: 'Bud of Rose',    swatch: '#E8A0B4' },
+      { id: 'black-rose',     label: 'Black Rose',     swatch: '#6B3550' },
+      { id: 'lavender-cloud', label: 'Lavender Cloud', swatch: '#9B8FC7' }
+    ],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Once or twice a week, not daily', 'Three scents', 'Made by hand in Washington'],
+    howToUse: 'On damp skin, in small circles, with almost no pressure. Rinse warm.',
+    art: { form: 'jar', sub: 'FACE SCRUB', tint: ['#FAF6F7', '#EDE0E4'], body: '#F0E4E6', cap: '#6B3550', accent: '#E8A0B4' }
+  },
+
+  {
+    id: 'face-cleanser',
+    name: 'Face Soap & Cleanser',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'Solid, powder, oil or clay — four ways to wash',
+    blurb: 'Six cleansers in four formats, because skin does not agree on this one.',
+    description:
+      'The solid bars are the plainest and the cheapest to keep going. The powder foams when '
+      + 'it meets water in your palm. The oil-to-milk turns white as you rinse it, which is how '
+      + 'you know it has lifted what it was meant to. The clay is the one for a week that has '
+      + 'gone oily.',
+    price: 14,
+    weight: 'Varies by format',
+    scentFamily: ['sweet', 'floral', 'unscented'], concerns: ['daily', 'oily', 'sensitive'],
+    variants: [
+      { id: 'solid-oats-honey',   label: 'Solid — Oats & Honey',        swatch: '#E9C97A', price: 10, note: 'Solid bar' },
+      { id: 'solid-mango-lav',    label: 'Solid — Mango Lavender Meadow', swatch: '#C9B7DE', price: 10, note: 'Solid bar' },
+      { id: 'powder-to-foam',     label: 'Powder to Foam',              swatch: '#F0E6D2', note: 'Foams in your palm' },
+      { id: 'oil-to-milk',        label: 'Oil to Milk',                 swatch: '#EFD9A8', note: 'Turns milky as it rinses' },
+      { id: 'clay',               label: 'Clay Cleanser',               swatch: '#B9A78F', note: 'For an oily week' }
+    ],
+    keyIngredients: ['kaolin-clay'],
+    ingredients: ON_LABEL,
+    benefits: ['Four formats, one shelf', 'The solid bars are the longest-lasting', 'Made in Washington'],
+    howToUse: 'Wet hands, work up a lather or a milk, take a minute over it, rinse warm. Never hot.',
+    art: { form: 'puck', sub: 'CLEANSER', tint: ['#FBF8F1', '#EDE5D4'], body: '#F2E9D8', cap: '#C8961E', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'jelly-face-mask',
+    name: 'Jelly Face Mask',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'Five masks, fifteen minutes each',
+    blurb: 'The wobbly kind that peels off in one piece.',
+    description:
+      'Mixed in the little bowl, spread on thick, and left to set. Fifteen minutes later it '
+      + 'lifts away as one sheet, which is by some distance the best part. Five blends, and a '
+      + 'mini set if you would rather try them all before committing.',
+    price: 14,
+    weight: '2 oz',
+    scentFamily: ['fruity', 'sweet', 'herbal'], concerns: ['dry', 'oily', 'aging', 'daily'],
+    variants: [
+      { id: 'berry-bloom-radiance', label: 'Berry Bloom Radiance', swatch: '#B32644' },
+      { id: 'aloe-honey-oats',      label: 'Aloe Honey Oats',      swatch: '#E9C97A' },
+      { id: 'green-alchemy',        label: 'Green Alchemy Renewal', swatch: '#7E9A72' },
+      { id: 'rice-berry-protein',   label: 'Rice Berry Protein',   swatch: '#E9B08C' },
+      { id: 'root-and-bloom',       label: 'Root and Bloom',       swatch: '#8B6444' }
+    ],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Peels off in one piece', 'Five blends', 'Made by hand in Washington'],
+    howToUse: 'Mix, spread thick, leave fifteen minutes, then lift from one edge and peel.',
+    art: { form: 'pot', sub: 'JELLY MASK', tint: ['#FBF4F6', '#F0DDE4'], body: '#F5E3E8', cap: '#B32644', accent: '#7E9A72' }
+  },
+
+  {
+    id: 'clay-face-mask',
+    name: 'Clay Face Mask',
+    brand: 'Aeindry', category: 'face', categoryLabel: 'Face',
+    tagline: 'The traditional draw',
+    blurb: 'Clay, water, and ten minutes.',
+    description:
+      'The oldest mask there is. Mixed with a little water into a paste, worn until it is just '
+      + 'about dry — not cracked, which is past the point where it is doing anything useful — '
+      + 'and rinsed off warm.',
+    /* The only product with both still open: the range notes said "will
+       update later" against its variants, and never gave it a price at all.
+       14 is a stand-in chosen to sit with the other masks. */
+    price: 14, pricePending: PENDING,
+    weight: '2 oz jar',
+    scentFamily: ['unscented'], concerns: ['oily', 'daily'],
+    variants: [],
+    keyIngredients: ['kaolin-clay', 'bentonite-clay'],
+    ingredients: ON_LABEL,
+    benefits: ['Mixed fresh each time', 'Rinse before it cracks', 'Made in Washington'],
+    howToUse: 'Mix a teaspoon with water into a paste. Ten minutes, then rinse warm — do not let it crack.',
+    art: { form: 'jar', sub: 'CLAY MASK', tint: ['#F8F5EF', '#E5DCCB'], body: '#B9A78F', cap: '#5F6355', accent: '#8B6444' }
+  },
+
+  {
+    id: 'lip-oil',
+    name: 'Lip Oil',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
+    tagline: 'Shine without the stick',
+    blurb: 'A lip oil with a doe-foot, for the ones who cannot stand a balm.',
+    description:
+      'Lighter than a balm and glossier than nothing. Sits on rather than sinks in, which is '
+      + 'the point of it — the shine is the product doing its job.',
+    price: 14,
+    weight: '0.2 fl oz',
+    scentFamily: ['sweet'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Lighter than a balm', 'Doe-foot applicator', 'Made in Washington'],
+    howToUse: 'Whenever. Over a balm at night if lips are having a bad week.',
+    art: { form: 'roller', sub: 'LIP OIL', tint: ['#FBF5F5', '#F0DEDE'], body: '#F3E2E2', cap: '#C98E8E', accent: '#E8A0B4' }
+  },
+
+  {
+    id: 'lip-balm',
+    name: 'Lip Balm',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
+    tagline: 'The one you lose and buy again',
+    blurb: 'A plain, honest balm in a tube.',
+    description:
+      'Nothing complicated. A tube that lives in a coat pocket and gets used without thinking '
+      + 'about it — which is why they are priced to be bought five at a time.',
+    price: 3.5,
+    weight: '0.15 oz tube',
+    scentFamily: ['sweet'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: ['beeswax'],
+    ingredients: ON_LABEL,
+    benefits: ['Cheap enough to keep one everywhere', 'Beeswax base', 'Made in Washington'],
+    howToUse: 'As often as you like. Last thing at night is when it does the most.',
+    art: { form: 'tube', sub: 'LIP BALM', tint: ['#FBF8F2', '#EEE6D6'], body: '#F2EADA', cap: '#C8961E', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'lip-gloss',
+    name: 'Lip Gloss',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
+    tagline: 'Gloss, and nothing else to think about',
+    blurb: 'A clear gloss with a wand.',
+    description: 'Shine, applied with a wand, over bare lips or over a balm. That is the whole product.',
+    price: 10,
+    weight: '0.2 fl oz',
+    scentFamily: ['sweet'], concerns: ['daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Wand applicator', 'Wears over a balm', 'Made in Washington'],
+    howToUse: 'Over bare lips, or over the balm when you want the shine to last.',
+    art: { form: 'roller', sub: 'LIP GLOSS', tint: ['#FBF6F8', '#F1E0E7'], body: '#F5E6EC', cap: '#B32644', accent: '#E8A0B4' }
+  },
+
+  {
+    id: 'lip-scrub',
+    name: 'Lip Scrub',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
+    tagline: 'For the week the balm stops working',
+    blurb: 'Sugar, and then a balm.',
+    description:
+      'When lips are flaking, a balm sits on top of the flakes instead of under them. This '
+      + 'takes the flakes off first. Once a week is plenty; more than that and you are just '
+      + 'making the problem you are treating.',
+    price: 5,
+    weight: '0.5 oz pot',
+    scentFamily: ['sweet'], concerns: ['dry'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Once a week, no more', 'Follow with a balm', 'Made in Washington'],
+    howToUse: 'A fingertip, rubbed gently over damp lips, then wiped off and followed with a balm.',
+    art: { form: 'pot', sub: 'LIP SCRUB', tint: ['#FBF6F1', '#F0E1D3'], body: '#F4E7DA', cap: '#C4713A', accent: '#E8A0B4' }
+  },
+  /* ═════════════════════ BODY & HANDS ═════════════════════ */
+
+  {
+    id: 'botanical-hand-butter',
+    name: 'Botanical Hand Butter',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'Deep nourishing, with oat extract',
+    blurb: 'The original tin — whipped, slow-melting, and made for hands that work.',
+    description:
+      'Whipped rather than poured, so it goes on light and then sinks in. Oat extract is the '
+      + 'quiet workhorse — it is what makes a rich butter calm rather than merely greasy — and '
+      + 'the Bud of Rose tin carries calendula instead.',
+    price: 15,
+    weight: '2 oz tin',
+    photo: 'hand-butter',
+    scentFamily: ['citrus', 'floral', 'herbal', 'sweet'],
+    concerns: ['dry', 'eczema', 'daily', 'sensitive'],
+    variants: [
+      { id: 'citrus-mint',    label: 'Citrus Mint',    swatch: '#A8C63C', note: 'With oat extract' },
+      { id: 'lavender-lemon', label: 'Lavender Lemon', swatch: '#7B2E86', note: 'With oat extract' },
+      { id: 'orange-blossom', label: 'Orange Blossom', swatch: '#C8961E', note: 'With oat extract' },
+      { id: 'bud-of-rose',    label: 'Bud of Rose',    swatch: '#E8A0B4', note: 'With calendula extract' },
+      { id: 'vanilla',        label: 'Vanilla',        swatch: '#D9CDBA', note: 'With mango flower extract' }
+    ],
+    keyIngredients: ['shea-butter', 'cocoa-butter', 'oat-extract', 'calendula'],
+    ingredients: ON_LABEL,
+    benefits: ['Whipped, so it absorbs rather than sits', 'Oat extract to settle skin that reacts', 'Small batches, made in Washington'],
+    howToUse: 'Warm a little between your fingers and work into hands and cuticles. Best last thing at night.',
+    art: { form: 'tin', sub: 'HAND BUTTER', tint: ['#FAF6EE', '#EDE3D2'], body: '#EFE7D8', cap: '#A8C63C', accent: '#C8961E' }
+  },
+
+  {
+    id: 'hand-butter',
+    name: 'Hand Butter',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'Eight scents, one 2 oz tin',
+    blurb: 'The wider scent range — same tin, eight ways to smell.',
+    description:
+      'The scent shelf. Eight blends across citrus, floral and the greener end, all in the '
+      + 'same 2 oz tin, all whipped the same way. If you already know you want a hand butter '
+      + 'and are only choosing a smell, this is the shelf to stand in front of.',
+    price: 14,
+    weight: '2 oz tin',
+    scentFamily: ['citrus', 'floral', 'woody', 'sweet', 'herbal'],
+    concerns: ['dry', 'daily'],
+    variants: [
+      { id: 'bud-of-rose',    label: 'Bud of Rose',    swatch: '#E8A0B4' },
+      { id: 'mango-blossom',  label: 'Mango Blossom',  swatch: '#EFC46B' },
+      { id: 'yuzu-forest',    label: 'Yuzu Forest',    swatch: '#7E9A72' },
+      { id: 'orange-blossom', label: 'Orange Blossom', swatch: '#C8961E' },
+      { id: 'amber-orange',   label: 'Amber Orange',   swatch: '#C4713A' },
+      { id: 'citrus-hearth',  label: 'Citrus Hearth',  swatch: '#D98A4A' },
+      { id: 'lavender-lemon', label: 'Lavender Lemon', swatch: '#7B2E86' },
+      { id: 'highland-mist',  label: 'Highland Mist',  swatch: '#8FA3A8' }
+    ],
+    keyIngredients: ['shea-butter', 'cocoa-butter'],
+    ingredients: ON_LABEL,
+    benefits: ['Eight scents in the one tin size', 'Whipped, so it absorbs rather than sits', 'Made by hand in Washington'],
+    howToUse: 'Warm a little between your fingers and work into hands and cuticles.',
+    art: { form: 'tin', sub: 'HAND BUTTER', tint: ['#FAF7F0', '#ECE2D0'], body: '#F0E8D9', cap: '#C4713A', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'body-oil',
+    name: 'Body Oil',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'Straight out of the shower, onto wet skin',
+    blurb: 'An oil for the whole body, in two sizes.',
+    description:
+      'Body oil works best on skin that is still wet — the water is what it seals in, and a '
+      + 'towel-dry first is the most common way to waste it. The 8 oz bottle is the one to buy '
+      + 'if you are using it daily.',
+    price: 20,
+    weight: '4 fl oz · 8 fl oz',
+    scentFamily: ['floral', 'woody'], concerns: ['dry', 'daily'],
+    variants: [
+      { id: 'standard', label: '4 fl oz', swatch: '#E9C97A' },
+      { id: 'large',    label: '8 fl oz', swatch: '#C8961E', price: 41, note: 'The daily-use size' }
+    ],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Made for damp skin, not dry', 'Two sizes', 'Small batches, made in Washington'],
+    howToUse: 'Straight out of the shower, onto skin that is still wet. Pat dry afterwards, do not rub.',
+    art: { form: 'bottle', sub: 'BODY OIL', tint: ['#FBF8EF', '#EFE5CC'], body: '#F3EBD7', cap: '#C8961E', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'body-cream',
+    name: 'Body Cream',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'Six blends, from the everyday to the special',
+    blurb: 'Atharv, Aranya and Pomegranate Berry Velvet sit above the rest of the shelf.',
+    description:
+      'The largest scent range we make, and the one where the price is not flat: Atharv, Aranya '
+      + 'and Pomegranate Berry Velvet cost more than the others because of what is in them. All '
+      + 'six are the same rich cream underneath.',
+    price: 20,
+    weight: '4 oz jar',
+    scentFamily: ['herbal', 'sweet', 'fruity', 'woody'],
+    concerns: ['dry', 'daily', 'sensitive'],
+    variants: [
+      { id: 'atharv',            label: 'Atharv',                  swatch: '#8B6444', price: 30 },
+      { id: 'aloe-oats-honey',   label: 'Aloe Oats Honey',         swatch: '#E9C97A' },
+      { id: 'lemon-turmeric',    label: 'Lemon Turmeric',          swatch: '#E0B33A' },
+      { id: 'aranya',            label: 'Aranya',                  swatch: '#5F6355', price: 30 },
+      { id: 'matcha',            label: 'Matcha',                  swatch: '#7E9A72' },
+      { id: 'pomegranate-berry', label: 'Pomegranate Berry Velvet', swatch: '#B32644', price: 30 }
+    ],
+    keyIngredients: ['shea-butter'],
+    ingredients: ON_LABEL,
+    benefits: ['Six blends', 'Rich enough for winter shins and elbows', 'Made by hand in Washington'],
+    howToUse: 'After a shower, on skin that is still slightly damp.',
+    art: { form: 'jar', sub: 'BODY CREAM', tint: ['#FAF8F2', '#ECE6D6'], body: '#F2ECDE', cap: '#7E9A72', accent: '#B32644' }
+  },
+
+  {
+    id: 'body-buff',
+    name: 'Body Buff',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
+    tagline: 'A polish that turns to cream under the water',
+    blurb: 'Fine cane sugar in plant butters — it emulsifies as you rinse, so nothing is left greasy.',
+    description:
+      'Turn your shower into a skin-softening ritual. Body Buff is a rich, emulsifying body '
+      + 'polish created to exfoliate, condition and leave skin feeling exceptionally smooth '
+      + 'without the heavy, greasy feel of a traditional oil scrub.\n\n'
+      + 'Fine cane sugar gently buffs away dry, rough surface skin while a nourishing blend of '
+      + 'plant butters and botanical oils helps replenish softness and comfort. When water is '
+      + 'added, the buttery scrub transforms into a light, creamy lotion-like emulsion that '
+      + 'rinses beautifully, leaving behind skin that feels soft, polished, supple and '
+      + 'touchably smooth.\n\n'
+      + 'Formulated with skin-loving ingredients such as Shea Butter, Apricot Kernel Oil, Sweet '
+      + 'Almond Oil, Coconut Oil, Vitamin E and Elderberry Fruit Extract, along with carefully '
+      + 'selected botanical clays, plant powders, seeds and aromatic essential oils in '
+      + 'individual formulations. Each ingredient is thoughtfully chosen to make exfoliation '
+      + 'feel indulgent while helping maintain the skin\'s naturally conditioned feel.\n\n'
+      + 'Unlike a simple sugar-and-oil scrub, Body Buff is designed to emulsify with water. '
+      + 'Massage it over wet skin and the rich botanical oils, butters and sugar begin '
+      + 'polishing. Add a little water and the formula transforms into a silky cream, allowing '
+      + 'it to spread easily before rinsing away. The result is freshly polished skin with a '
+      + 'soft, velvety finish and a healthy-looking glow.',
+    price: 14,
+    weight: '5 oz jar',
+    /* The whole range in one frame leads, because that is the picture of the
+       product: nine jars on a tray, which no single label can say. Then the
+       three group rows, then each scent's own label — the labels are the
+       product shot for this range, since a photograph of nine identical jars
+       would carry less information than the printing on them does. */
+    photo: 'buff-hero-1',
+    heroPhotos: ['buff-hero-1', 'buff-hero-2', 'buff-hero-3', 'buff-hero-4'],
+    scentFamily: ['citrus', 'sweet', 'floral', 'herbal', 'woody', 'fruity'],
+    concerns: ['dry', 'daily'],
+    variants: [
+      { id: 'twilight-orchard', label: 'Twilight Orchard', swatch: '#6B4E8C',
+        photo: 'buff-twilight-orchard' },
+      { id: 'coffee-cinnamon',  label: 'Coffee Cinnamon',  swatch: '#6B4A32',
+        photo: 'buff-coffee-cinnamon' },
+      { id: 'lavender-citrus',  label: 'Lavender Citrus',  swatch: '#9B8FC7',
+        photo: 'buff-lavender-citrus' },
+      { id: 'orange-bergamot',  label: 'Orange Bergamot',  swatch: '#E08A2E',
+        photo: 'buff-orange-bergamot' },
+      { id: 'sweet-sunrise',    label: 'Sweet Sunrise',    swatch: '#E4574F',
+        note: 'Citrus-floral — grapefruit, lemongrass, geranium',
+        photo: 'buff-sweet-sunrise' },
+      { id: 'zen-zest',         label: 'Zen Zest',         swatch: '#6B2E8C',
+        note: 'Herbal-citrus — clary sage, frankincense, litsea cubeba',
+        photo: 'buff-zen-zest' },
+      { id: 'orchard-breeze',   label: 'Orchard Breeze',   swatch: '#2E5B33',
+        note: 'Citrus-mint — orange, lemon, peppermint',
+        photo: 'buff-orchard-breeze' },
+      { id: 'smoky-citrus',     label: 'Smoky Citrus',     swatch: '#4A2E1C',
+        note: 'Smoky-citrus — orange with turmeric and cocoa',
+        photo: 'buff-smoky-citrus' },
+      { id: 'sunlit-cider',     label: 'Sunlit Cider',     swatch: '#A81F2D',
+        note: 'Golden cider — apple and cinnamon with yellow clay',
+        photo: 'buff-sunlit-cider' }
+    ],
+    keyIngredients: ['shea-butter', 'coconut-oil', 'apricot-kernel-oil',
+                     'sweet-almond-oil', 'vitamin-e', 'elderberry', 'cane-sugar'],
+    ingredients:
+      'Shea Butter, Apricot Kernel Oil, Sweet Almond Oil, Cetearyl Olivate (and) Sorbitan '
+      + 'Olivate, Cetearyl Alcohol, Extra-virgin Coconut Oil, Cane Sugar, Vitamin E '
+      + '(Tocopherol), Sambucus Nigra (Elderberry) Fruit Extract. Each scent then adds its own '
+      + 'clays, plant powders, seeds and essential oils — the full list is printed on every jar.',
+    benefits: [
+      'Gently polishes away dry, rough-feeling skin',
+      'Rich in nourishing botanical oils and butters',
+      'Turns creamy and milky when water is added',
+      'Rinses clean without leaving skin excessively oily',
+      'Helps skin feel softer, smoother and more supple',
+      'An ideal pre-shave or weekly body-care treatment',
+      'Beautifully aromatic, for a spa-like shower',
+      'All natural, made in Washington'
+    ],
+    howToUse:
+      'Apply a handful to wet skin and massage gently in circular motions, concentrating on '
+      + 'rough areas such as elbows, knees, legs and arms. Add a small amount of water to '
+      + 'emulsify it into a creamy lotion. Rinse thoroughly and pat dry. Use one to three times '
+      + 'a week, or whenever skin needs a little extra polishing.',
+    art: { form: 'jar', sub: 'BODY BUFF', tint: ['#FBF7F3', '#EFE3D8'], body: '#F4EADF', cap: '#C4713A', accent: '#E8A0B4' }
+  },
+
+  {
+    id: 'body-balm',
+    name: 'Body Balm',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'Green Alchemist · Barrier Repair · Brow Renew',
+    blurb: 'Three small balms, each for one specific job.',
+    description:
+      'Balms rather than creams: no water in them, so they seal rather than soak. Three of '
+      + 'them, and each is aimed at something narrower than "body" suggests — the third is for '
+      + 'brows.',
+    price: 15,
+    weight: '3 oz tin',
+    scentFamily: ['herbal', 'unscented'], concerns: ['eczema', 'dry', 'sensitive'],
+    variants: [
+      { id: 'green-alchemist', label: 'Green Alchemist', swatch: '#7E9A72' },
+      { id: 'barrier-repair',  label: 'Barrier Repair',  swatch: '#E9C97A', price: 20 },
+      { id: 'brow-renew',      label: 'Brow Renew',      swatch: '#8B6444' }
+    ],
+    keyIngredients: ['beeswax'],
+    ingredients: ON_LABEL,
+    benefits: ['Anhydrous — nothing to preserve against', 'Three, each for one job', 'Made in Washington'],
+    howToUse: 'A fingertip, warmed and pressed in. A balm goes on last, over anything wetter.',
+    art: { form: 'tin', sub: 'BODY BALM', tint: ['#F8F7F1', '#E7E5D6'], body: '#EDEBDD', cap: '#7E9A72', accent: '#C8961E' }
+  },
+
+  {
+    id: 'foot-cream',
+    name: 'Foot Cream',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'For heels that have given up',
+    blurb: 'The heaviest cream we make, aimed at the thickest skin.',
+    description:
+      'Heels are the thickest skin on the body and need a cream built for it. Put it on at '
+      + 'night and put socks on over the top — that is not a folk remedy, it is just how you '
+      + 'stop it ending up on the sheets.',
+    price: 20,
+    weight: '4 oz jar',
+    scentFamily: ['herbal'], concerns: ['dry', 'muscle'],
+    variants: [],
+    keyIngredients: ['shea-butter'],
+    ingredients: ON_LABEL,
+    benefits: ['Built for the thickest skin on you', 'Best worn overnight', 'Made in Washington'],
+    howToUse: 'A thick layer at bedtime, socks over the top, and leave it to work.',
+    art: { form: 'jar', sub: 'FOOT CREAM', tint: ['#F7F9F4', '#E3E9DC'], body: '#EDF0E6', cap: '#5F6355', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'lotion-bar',
+    name: 'Botanical Lotion Bar',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'A little tin of melt-on-contact moisture',
+    blurb: 'Solid moisturiser in a reusable tin — no pump, no spills, no watery lotion.',
+    description:
+      'Meet the lotion bar that turns everyday moisturising into a small ritual you will '
+      + 'actually look forward to.\n\n'
+      + 'Handcrafted in small batches, our Botanical Lotion Bars are rich, solid moisturisers '
+      + 'made with a decadent blend of cocoa butter, mango butter, beeswax and skin-loving '
+      + 'botanical oils. Warm the bar between your hands or glide it directly over dry skin '
+      + 'and watch it soften on contact, releasing a silky layer of concentrated moisture.\n\n'
+      + 'No pump. No spills. No watery lotion. Just beautifully rich, portable moisture tucked '
+      + 'inside a reusable tin.\n\n'
+      + 'Each bar is moulded into a seasonal shape — from pumpkins and leaves to acorns — '
+      + 'which makes opening the tin almost as good as using it.\n\n'
+      + 'There is no bottle to fight with. Remove the bar, warm it against your skin, and '
+      + 'glide it over hands, elbows, knees, heels or anywhere that needs extra moisture. '
+      + 'Massage in and enjoy the soft, velvety finish.\n\n'
+      + 'Beautiful enough to gift, tempting enough to keep: pair several scents together for a '
+      + 'seasonal gift, a stocking filler or a hostess present — or put one aside for yourself '
+      + 'before your favourite disappears.',
+    price: 5,
+    weight: '1 oz bar in a reusable tin',
+    /* Six scents and one photograph with all six labels in it, so that is the
+       lead and there are no per-scent shots to fall back on. The moulded-shape
+       frame follows, because the shapes are half of what is being sold. */
+    photo: 'lb-hero-1',
+    heroPhotos: ['lb-hero-1', 'lb-hero-2', 'lb-hero-3', 'lb-hero-4'],
+    scentFamily: ['citrus', 'sweet', 'floral', 'woody', 'herbal'],
+    concerns: ['dry', 'daily'],
+    variants: [
+      { id: 'orange-clove',  label: 'Orange Clove',  swatch: '#E08A2E',
+        note: 'Bright citrus wrapped in warm, comforting spice' },
+      { id: 'pumpkin-spice', label: 'Pumpkin Spice', swatch: '#C2662A',
+        note: 'Crisp autumn afternoons and warm spice' },
+      { id: 'anise-citrus',  label: 'Anise Citrus',  swatch: '#8C6E3A',
+        note: 'Sparkling citrus against the warmth of star anise' },
+      { id: 'serene-bloom',  label: 'Serene Bloom',  swatch: '#B98BB5',
+        note: 'A softer botanical escape — peaceful and floral' },
+      { id: 'golden-pine',   label: 'Golden Pine',   swatch: '#4E7A46',
+        note: 'Fresh greenery softened with warm seasonal notes' },
+      { id: 'solstice-spice', label: 'Solstice Spice', swatch: '#A8412F',
+        note: 'Rich, festive and warming — made for sweater weather' }
+    ],
+    /* Read off the tins in the photograph rather than off the write-up: the
+       label names three the copy leaves out. Which botanical extract a scent
+       carries is printed on its own tin — Orange Clove says calendula, Pumpkin
+       Spice says chamomile — so both are listed and neither is claimed for a
+       scent nobody has checked. */
+    keyIngredients: ['cocoa-butter', 'mango-butter', 'beeswax', 'coconut-oil',
+                     'jojoba-oil', 'avocado-oil', 'grapeseed-oil', 'arrowroot',
+                     'calendula', 'chamomile', 'vitamin-e', 'essential-oils'],
+    ingredients:
+      'Cocoa Butter, Mango Butter, Beeswax, Extra-virgin Coconut Oil, Jojoba Oil, Avocado Oil, '
+      + 'Grapeseed Oil, Arrowroot Powder, Essential Oil Blend, Calendula Extract, Vitamin E. '
+      + 'Water-free and concentrated. Each scent names its own botanical extract on its tin.',
+    benefits: ['Melts with your body warmth', 'Water-free, so a little goes a long way',
+               'Reusable tin — no pump, nothing to spill', 'Small-batch, made in Washington'],
+    howToUse: 'Warm the bar between your hands or glide it straight over dry skin — hands, elbows, knees, heels. Massage in, and put it back in its tin.',
+    art: { form: 'tin', sub: 'LOTION BAR', tint: ['#FBF8EE', '#EEE6CE'], body: '#F1E8D2', cap: '#C8961E', accent: '#E9C97A' }
+  },
+
+  {
+    id: 'deodorant-creme',
+    name: 'Natural Deodorant Creme',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'All natural, and it actually works',
+    blurb: 'A cream deodorant in a jar. No aluminium, no alcohol, no stick.',
+    description:
+      'Applied with a fingertip rather than swiped. It is a cream, so it goes on without the '
+      + 'drag a stick leaves on freshly shaved skin, and there is no aluminium in it at all.',
+    price: 12,
+    weight: '2.15 oz jar',
+    photo: 'deodorant-lavender-meadows',
+    scentFamily: ['floral', 'herbal', 'fruity', 'citrus'],
+    concerns: ['sensitive', 'daily'],
+    variants: [
+      { id: 'lavender-meadows', label: 'Lavender Meadows', swatch: '#9B8FC7', note: 'Soft, herbal, calm',
+        photo: 'deodorant-lavender-meadows' },
+      { id: 'plush-pear',       label: 'Plush Pear',       swatch: '#C9D4A0', note: 'Soft · juicy · elegant' },
+      { id: 'smoky-citrus',     label: 'Smoky Citrus',     swatch: '#C4713A', note: 'Orange, lemon, woodsmoke',
+        photo: 'deodorant-smoky-citrus' }
+    ],
+    keyIngredients: ['shea-butter', 'arrowroot', 'coconut-oil', 'essential-oils'],
+    ingredients: ON_LABEL,
+    benefits: ['No aluminium', 'A cream, so no drag on shaved skin', 'Scented with essential oil only'],
+    howToUse: 'A pea-sized amount, warmed between fingertips and smoothed on. Less than you think.',
+    art: { form: 'jar', sub: 'DEODORANT', tint: ['#F7F4FA', '#E7E1F0'], body: '#F2EDE6', cap: '#9B8FC7', accent: '#C4713A' }
+  },
+
+  {
+    id: 'essential-oil-roll-on',
+    name: 'Essential Oil Roll-On',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'Pulse points, pocket-sized',
+    blurb: 'Pre-diluted essential oil in a roller bottle.',
+    description:
+      'Already diluted in a carrier, so it goes straight onto wrists and temples without any '
+      + 'mixing. Small enough to live in a bag and cheap enough to keep one in every one.',
+    price: 5,
+    weight: '10 ml roller',
+    scentFamily: ['herbal', 'citrus', 'floral'], concerns: ['sleep', 'muscle', 'daily'],
+    variants: [],
+    keyIngredients: ['essential-oils'],
+    ingredients: ON_LABEL,
+    benefits: ['Pre-diluted — no mixing', 'Pocket-sized', 'Essential oil, never fragrance oil'],
+    howToUse: 'Roll onto wrists, temples or the back of the neck. Warm it in with a thumb.',
+    art: { form: 'roller', sub: 'ROLL-ON', tint: ['#F7F9F6', '#E2E9E0'], body: '#EAF0E7', cap: '#5F6355', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'solid-perfume',
+    name: 'Solid Perfume',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'Scent you can put in a pocket',
+    blurb: 'A perfume in a tin, worn with a fingertip.',
+    description:
+      'A wax-based perfume rather than an alcohol one. It sits closer to the skin and lasts '
+      + 'differently — quieter at arm\'s length, longer on the wrist — and it cannot spill in a bag.',
+    price: 15,
+    weight: '0.5 oz tin',
+    scentFamily: ['floral', 'woody', 'sweet'], concerns: ['daily'],
+    variants: [],
+    keyIngredients: ['essential-oils'],
+    ingredients: ON_LABEL,
+    benefits: ['No alcohol', 'Cannot spill', 'Essential oil, never fragrance oil'],
+    howToUse: 'A fingertip warmed on the tin, pressed onto wrists and the base of the throat.',
+    art: { form: 'tin', sub: 'SOLID PERFUME', tint: ['#FAF6F8', '#EDDEE6'], body: '#F1E5EB', cap: '#B32644', accent: '#C8961E' }
+  },
+  /* ═════════════════════ HAIR & BEARD ═════════════════════ */
+
+  {
+    id: 'hair-butter',
+    name: 'Hair Butter & Intensive Treatment Mask',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'Root strength, botanical power',
+    blurb: 'A weekly mask for scalp and lengths, built on cupuaçu and murumuru.',
+    description:
+      'A thick treatment rather than a conditioner. Coconut oil and the cupuaçu and murumuru '
+      + 'butters do the conditioning; rosemary, neem, fenugreek and moringa are the scalp half '
+      + 'of the formula. Left on long enough it behaves like a mask, which is what it is.',
+    /* The range notes ran into the next product before this one got a
+       number; 24 is carried over from the old catalogue. */
+    price: 24, pricePending: PENDING,
+    weight: '4 oz jar',
+    photo: 'hair-butter',
+    /* Cropped out of one panel of a three-panel listing image — the only frame
+       of this product on file — so 740 is as large as it honestly goes. */
+    photoWidths: [480, 740],
+    scentFamily: ['herbal', 'woody'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: ['coconut-oil', 'cupuacu-butter', 'murumuru-butter', 'rosemary', 'neem', 'fenugreek', 'moringa'],
+    ingredients: ON_LABEL,
+    benefits: ['Cupuaçu and murumuru, not a silicone', 'Scalp herbs as well as conditioning butters', 'Made in Washington'],
+    howToUse: 'Work through the scalp and lengths, leave an hour or overnight, then wash out. Once a week.',
+    art: { form: 'jar', sub: 'HAIR MASK', tint: ['#F6F2E8', '#E4DCC8'], body: '#EFE9DA', cap: '#6E7263', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'hair-leave-in',
+    name: 'Hair Leave-in Conditioner & Serum',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'Lavender Meadow · Verdant Bloom',
+    blurb: 'Goes on damp and stays in — no rinsing.',
+    description:
+      'Sprayed or worked through towel-dried hair and left there. It is doing its work while '
+      + 'the hair dries, which is why the timing matters more than the amount.',
+    price: 17,
+    weight: '4 fl oz',
+    scentFamily: ['floral', 'herbal'], concerns: ['dry', 'daily'],
+    variants: [
+      { id: 'lavender-meadow', label: 'Lavender Meadow', swatch: '#9B8FC7' },
+      { id: 'verdant-bloom',   label: 'Verdant Bloom',   swatch: '#7E9A72' }
+    ],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['No rinsing', 'Two scents', 'Made by hand in Washington'],
+    howToUse: 'On towel-dried hair, mid-length to ends. Comb through and leave it.',
+    art: { form: 'spray', sub: 'LEAVE-IN', tint: ['#F8F6FA', '#E8E3F0'], body: '#EFEAF3', cap: '#9B8FC7', accent: '#7E9A72' }
+  },
+
+  {
+    id: 'leave-in-keratin',
+    name: 'Leave-in Conditioner — Keratin Strength',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'The one for hair that snaps',
+    blurb: 'A leave-in aimed at strength rather than softness.',
+    description:
+      'The other leave-in is about slip and scent; this one is about hair that breaks. Same '
+      + 'method — on damp hair, left in — different job.',
+    price: 17,
+    weight: '4 fl oz',
+    scentFamily: ['unscented'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Aimed at breakage, not softness', 'No rinsing', 'Made in Washington'],
+    howToUse: 'On towel-dried hair, concentrated where it breaks. Comb through and leave it.',
+    art: { form: 'spray', sub: 'KERATIN', tint: ['#F8F8F5', '#E6E5DD'], body: '#EEEDE5', cap: '#5F6355', accent: '#C8961E' }
+  },
+
+  {
+    id: 'elixir-hair-oil',
+    name: 'Elixir Hair Oil',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'For the scalp, not the ends',
+    blurb: 'A pre-wash oil, massaged in and washed out.',
+    description:
+      'Hair oil is most useful before a wash rather than after one: worked into the scalp, '
+      + 'left an hour, then shampooed out. On the ends afterwards it is a finishing product, '
+      + 'and a very little goes a long way.',
+    price: 20,
+    weight: '2 fl oz',
+    scentFamily: ['herbal', 'woody'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: ['rosemary'],
+    ingredients: ON_LABEL,
+    benefits: ['Made for a pre-wash massage', 'A little on the ends afterwards', 'Made in Washington'],
+    howToUse: 'Into the scalp an hour before washing. A drop on the ends after drying, if at all.',
+    art: { form: 'dropper', sub: 'HAIR OIL', tint: ['#FAF7EE', '#EBE2CC'], body: '#E0CBA0', cap: '#6E7263', accent: '#C8961E' }
+  },
+
+  {
+    id: 'copper-hair-serum',
+    name: 'Rice Renew Copper Hair Serum',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'The scalp serum',
+    blurb: 'A leave-on serum for the scalp rather than the hair.',
+    description:
+      'Parted through to the scalp and left on — this is a treatment for the skin the hair '
+      + 'grows out of, so the lengths are not really the point. Used a few times a week rather '
+      + 'than daily.',
+    price: 24,
+    weight: '2 fl oz',
+    scentFamily: ['unscented'], concerns: ['daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Aimed at the scalp, not the lengths', 'Left on, not rinsed', 'Made in Washington'],
+    howToUse: 'Part the hair, apply along the parting, and massage in. A few times a week.',
+    art: { form: 'dropper', sub: 'SCALP SERUM', tint: ['#FBF6F0', '#EFDECB'], body: '#D9A273', cap: '#8B5A2B', accent: '#C4713A' }
+  },
+
+  {
+    id: 'nocturn-balm',
+    name: 'Nocturn Hair & Face Balm',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'The one that does both, overnight',
+    blurb: 'Our most expensive balm, and the smallest amount you will use of anything.',
+    description:
+      'A night balm that works on hair ends and on face alike — the same problem in two places, '
+      + 'which is skin and keratin losing water while you sleep. The price reflects what is in '
+      + 'it; the amount you need does not.',
+    price: 35,
+    weight: '1 oz jar',
+    scentFamily: ['woody', 'floral'], concerns: ['dry', 'aging', 'sleep'],
+    variants: [],
+    keyIngredients: ['beeswax'],
+    ingredients: ON_LABEL,
+    benefits: ['Works on ends and on face', 'Made for overnight', 'The smallest amount of anything we make'],
+    howToUse: 'The very smallest amount, warmed between fingertips, over face or through ends at night.',
+    art: { form: 'pot', sub: 'NIGHT BALM', tint: ['#F4F2F6', '#DEDBE6'], body: '#E6E2EE', cap: '#3F3B31', accent: '#9B8FC7' }
+  },
+
+  {
+    id: 'shampoo-bar',
+    name: 'Shampoo Bar',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'Five bars, no bottle',
+    blurb: 'A solid shampoo that outlasts three bottles and travels in a tin.',
+    description:
+      'Rubbed straight onto wet hair or worked up in the hands first. It takes a wash or two to '
+      + 'get the amount right — most people use far too much at the start — and it wants a '
+      + 'draining dish or it turns to mush.',
+    price: 14,
+    weight: '2.5 oz bar',
+    scentFamily: ['floral', 'herbal', 'sweet', 'woody'], concerns: ['daily', 'sensitive'],
+    variants: [
+      { id: 'rose-billbury', label: 'Rose Billbury', swatch: '#C98E8E' },
+      { id: 'hem-charcoal',  label: 'Hem Charcoal',  swatch: '#3F3B31' },
+      { id: 'neem-ale',      label: 'Neem Ale',      swatch: '#7E9A72' },
+      { id: 'rice-lavender', label: 'Rice Lavender', swatch: '#9B8FC7' },
+      { id: 'aloe-honey',    label: 'Aloe Honey',    swatch: '#E9C97A' }
+    ],
+    keyIngredients: ['neem'],
+    ingredients: ON_LABEL,
+    benefits: ['No bottle', 'Five scents', 'Keep it on a draining dish and it lasts'],
+    howToUse: 'Rub onto wet hair or lather in your hands first. Use less than you think, rinse well.',
+    art: { form: 'bar', sub: 'SHAMPOO BAR', tint: ['#F6F4EE', '#E2DDCE'], body: '#D9CBA8', cap: '#6E7263', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'conditioner-bar',
+    name: 'Conditioner Bar',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'Hemp Pan Rosemary · Repair and Growth · Revitalize and Transform',
+    blurb: 'The other half of the no-bottle wash.',
+    description:
+      'Glided down the lengths rather than rubbed into the scalp — conditioner belongs on the '
+      + 'ends, and putting a bar on your roots is the fastest way to decide bars do not work '
+      + 'for you.',
+    price: 10,
+    weight: '2 oz bar',
+    scentFamily: ['herbal', 'woody'], concerns: ['dry', 'daily'],
+    variants: [
+      { id: 'hemp-pan-rosemary', label: 'Hemp Pan Rosemary',        swatch: '#7E9A72' },
+      { id: 'repair-growth',     label: 'Repair and Growth',        swatch: '#C8961E' },
+      { id: 'revitalize',        label: 'Revitalize and Transform', swatch: '#5F6355' }
+    ],
+    keyIngredients: ['rosemary'],
+    ingredients: ON_LABEL,
+    benefits: ['No bottle', 'Three blends', 'Keep it on a draining dish and it lasts'],
+    howToUse: 'Glide down the lengths, mid-shaft to ends. Comb through, then rinse.',
+    art: { form: 'bar', sub: 'CONDITIONER', tint: ['#F5F7F1', '#DFE5D6'], body: '#CBD8BE', cap: '#5F6355', accent: '#7E9A72' }
+  },
+
+  {
+    id: 'beard-balm',
+    name: 'Beard Balm',
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
+    tagline: 'Shape, and the skin underneath',
+    blurb: 'A balm for the beard and the face it grows on.',
+    description:
+      'A balm holds where an oil does not, and most of the itch people blame on a beard is the '
+      + 'skin under it being dry. Warmed between the palms first, then worked in from the skin '
+      + 'outwards.',
+    price: 14,
+    weight: '2 oz tin',
+    scentFamily: ['woody', 'herbal'], concerns: ['dry', 'sensitive', 'daily'],
+    variants: [],
+    keyIngredients: ['beeswax', 'shea-butter'],
+    ingredients: ON_LABEL,
+    benefits: ['Holds shape, unlike an oil', 'Works on the skin underneath', 'Made in Washington'],
+    howToUse: 'Warm between the palms, work in from the skin outwards, then comb through.',
+    art: { form: 'tin', sub: 'BEARD BALM', tint: ['#F6F4EF', '#E3DDD0'], body: '#EAE4D6', cap: '#3F3B31', accent: '#8B6444' }
+  },
+
+  {
+    id: 'beard-oil',
+    name: 'Beard Oil',
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
+    tagline: 'The daily one',
+    blurb: 'A few drops, worked down to the skin.',
+    description:
+      'Lighter than the balm and meant for every day. The drops go on the palms, the palms go '
+      + 'on the face, and the important part is getting it down to the skin rather than leaving '
+      + 'it sitting on the hair.',
+    price: 10,
+    weight: '1 fl oz dropper bottle',
+    scentFamily: ['woody', 'citrus'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Light enough for daily use', 'A few drops is a whole application', 'Made in Washington'],
+    howToUse: 'Three or four drops into the palms, worked down to the skin, then combed out.',
+    art: { form: 'dropper', sub: 'BEARD OIL', tint: ['#F8F5EE', '#E7DFCB'], body: '#C9A86E', cap: '#3F3B31', accent: '#8B6444' }
+  },
+  /* ═════════════════════ SOAP & BATH ═════════════════════ */
+
+  {
+    id: 'pine-tar-soap',
+    name: 'Pine Tar Soap',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
+    tagline: 'Unscented, all natural, handmade artisan soap',
+    blurb: 'The plainest bar we make, and the one people come back for.',
+    description:
+      'Pine tar soap has been made for a very long time for a reason. This one is unscented — '
+      + 'the smell is the pine tar itself — and stamped by hand. Nothing added to make it prettier.',
+    price: 12,
+    weight: '4 oz bar',
+    photo: 'pine-tar-soap',
+    scentFamily: ['unscented', 'woody'], concerns: ['eczema', 'sensitive', 'dry'],
+    variants: [],
+    keyIngredients: ['pine-tar', 'olive-oil', 'coconut-oil', 'shea-butter'],
+    ingredients: ON_LABEL,
+    benefits: ['Unscented — no essential oil at all', 'Hand-stamped, cured, cut by hand', 'A long-standing traditional formula'],
+    howToUse: 'Lather on a cloth or between wet hands. Keep it on a draining dish and it will last.',
+    art: { form: 'bar', sub: 'PINE TAR', tint: ['#F4EFE7', '#DFD3C2'], body: '#6B4A32', cap: '#3F3B31', accent: '#8B6444' }
+  },
+
+  {
+    id: 'handmade-soap',
+    name: 'Handmade Soap',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
+    tagline: 'Cold process, cured six weeks',
+    blurb: 'The everyday bar. Scents change with what is being made.',
+    description:
+      'Cold process, with the glycerin left in, cured six weeks on a rack before it is sold. '
+      + 'Six weeks is the least glamorous part of soapmaking and the part that decides whether '
+      + 'a bar lasts a fortnight or two months.',
+    price: 9,
+    weight: '4 oz bar',
+    scentFamily: ['floral', 'herbal', 'citrus'], concerns: ['daily', 'sensitive'],
+    /* The scent range was still being counted when this was written. */
+    variants: [],
+    keyIngredients: ['olive-oil', 'coconut-oil', 'shea-butter'],
+    ingredients: ON_LABEL,
+    benefits: ['Cured six weeks, so it lasts', 'Glycerin left in', 'Made by hand in Washington'],
+    howToUse: 'Lather on a cloth or between wet hands. A draining dish doubles how long it lasts.',
+    art: { form: 'bar', sub: 'HANDMADE SOAP', tint: ['#FAF6EE', '#EBE1CE'], body: '#EADFC4', cap: '#A8C63C', accent: '#C8961E' }
+  },
+
+  {
+    id: 'shaving-soap',
+    name: 'Old Fashioned Shaving Soap',
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
+    tagline: 'Cabane · Sangria — with or without the tin',
+    blurb: 'A hard puck for a brush, the way shaving soap used to come.',
+    description:
+      'Loaded onto a wet brush and worked into a lather in a bowl or on the face. It takes '
+      + 'longer than a can of foam and gives a slicker, denser lather that a blade actually '
+      + 'glides through. Buy it with the tin the first time; refills go without.',
+    price: 14,
+    weight: '3.5 oz puck',
+    scentFamily: ['woody', 'fruity'], concerns: ['sensitive', 'daily'],
+    variants: [
+      { id: 'cabane-tin',      label: 'Cabane — with tin',     swatch: '#6B4A32', price: 17 },
+      { id: 'cabane',          label: 'Cabane — refill',       swatch: '#8B6444' },
+      { id: 'sangria-tin',     label: 'Sangria — with tin',    swatch: '#8E2036', price: 17 },
+      { id: 'sangria',         label: 'Sangria — refill',      swatch: '#B32644' }
+    ],
+    keyIngredients: ['bentonite-clay'],
+    ingredients: ON_LABEL,
+    benefits: ['Made for a brush, not a can', 'Refills cost less than the tin', 'Made in Washington'],
+    howToUse: 'Wet the brush, load from the puck, and build the lather in a bowl or on the face.',
+    art: { form: 'puck', sub: 'SHAVING SOAP', tint: ['#F7F3EC', '#E4DBC9'], body: '#EFE7D4', cap: '#6B4A32', accent: '#8E2036' }
+  },
+
+  {
+    id: 'shower-steamers',
+    name: 'Shower Steamers',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'Drop one on the floor and stand in it',
+    blurb: 'Made for a shower, where the steam does the work.',
+    description:
+      'Not a bath bomb. These go on the shower floor, out of the direct stream, and release '
+      + 'as the steam builds — put one under the water and it will be gone in thirty seconds. '
+      + 'Two sizes: the small one is a single shower, the big one is several.',
+    price: 15,
+    weight: 'Large 5.6 oz · Small 1.2 oz',
+    photo: 'shower-steamers',
+    scentFamily: ['citrus', 'herbal'], concerns: ['sleep', 'muscle', 'daily'],
+    variants: [
+      { id: 'lavender-large',   label: 'Lavender — large',            swatch: '#9B8FC7' },
+      { id: 'lavender-small',   label: 'Lavender — small',            swatch: '#C9B7DE', price: 5 },
+      { id: 'euc-mint-large',   label: 'Eucalyptus Peppermint — large', swatch: '#5E9E7A' },
+      { id: 'euc-mint-small',   label: 'Eucalyptus Peppermint — small', swatch: '#9AC7B0', price: 5 },
+      { id: 'lemongrass-large', label: 'Lemongrass Orange — large',   swatch: '#C8961E',
+        photo: 'shower-steamers' },
+      { id: 'lemongrass-small', label: 'Lemongrass Orange — small',   swatch: '#E0B33A', price: 5 }
+    ],
+    keyIngredients: ['lemongrass', 'sweet-orange', 'mandarin', 'essential-oils'],
+    ingredients:
+      'Sodium bicarbonate, citric acid, cornstarch, sunflower oil, L-menthol, lemongrass essential oil, '
+      + 'sweet orange essential oil, mandarin essential oil.',
+    benefits: ['Essential oil, never fragrance oil', 'Made for showers, not baths', 'Two sizes'],
+    howToUse: 'Place one at the far end of the shower floor, out of the direct stream. It will last the wash.',
+    art: { form: 'sphere', sub: 'STEAMERS', tint: ['#FAF7EC', '#EDE6CE'], body: '#F2EDDF', cap: '#A8C63C', accent: '#C8961E' }
+  },
+
+  {
+    id: 'milk-bath',
+    name: 'Milk Bath',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'A long soak, and a ring round the tub',
+    blurb: 'A scoop under running water and the whole bath turns soft.',
+    description:
+      'Poured under the tap as the bath fills so it dissolves properly. It leaves the water '
+      + 'silky and the tub needing a rinse afterwards, which is a fair trade.',
+    price: 10,
+    weight: '8 oz',
+    scentFamily: ['floral', 'sweet'], concerns: ['dry', 'sleep'],
+    variants: [],
+    keyIngredients: ['colloidal-oat'],
+    ingredients: ON_LABEL,
+    benefits: ['Dissolves under running water', 'Made by hand in Washington', 'Essential oil only'],
+    howToUse: 'A scoop under the running tap as the bath fills. Rinse the tub after.',
+    art: { form: 'net', sub: 'MILK BATH', tint: ['#FBF9F3', '#EFE9D9'], body: '#F5F0E2', cap: '#E8A0B4', accent: '#C8961E' }
+  },
+
+  {
+    id: 'coconut-milk-bath-salt',
+    name: 'Coconut Milk Bath Salt',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'Salt and coconut milk',
+    blurb: 'The salt soak, softened.',
+    description:
+      'A salt soak on its own can leave skin feeling stripped; the coconut milk is what stops '
+      + 'that. Dissolved under the running tap, same as the milk bath.',
+    price: 10,
+    weight: '8 oz',
+    scentFamily: ['sweet'], concerns: ['muscle', 'dry', 'sleep'],
+    variants: [],
+    keyIngredients: ['epsom-salt'],
+    ingredients: ON_LABEL,
+    benefits: ['Softer than a plain salt soak', 'Dissolves under running water', 'Made in Washington'],
+    howToUse: 'A generous scoop under the running tap. Twenty minutes is the useful part.',
+    art: { form: 'net', sub: 'BATH SALT', tint: ['#FBFAF6', '#EFEBDF'], body: '#F6F3E9', cap: '#D9CDBA', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'foot-soak',
+    name: 'Mineral Detox Foot Soak',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'A bowl, hot water, twenty minutes',
+    blurb: 'For feet that have done a market day.',
+    description:
+      'A mineral soak for a basin rather than a bath. Twenty minutes in water as hot as you '
+      + 'can stand, and then the foot cream while the skin is still soft — that order matters '
+      + 'more than either product does alone.',
+    price: 10,
+    weight: '8 oz',
+    scentFamily: ['herbal'], concerns: ['muscle', 'dry'],
+    variants: [],
+    keyIngredients: ['epsom-salt'],
+    ingredients: ON_LABEL,
+    benefits: ['Sized for a basin', 'Follow with the foot cream', 'Made in Washington'],
+    howToUse: 'A scoop in a bowl of hot water, twenty minutes, then foot cream on damp skin.',
+    art: { form: 'net', sub: 'FOOT SOAK', tint: ['#F6F9F5', '#E0E8DD'], body: '#EAF0E6', cap: '#5F6355', accent: '#5E9E7A' }
+  },
+
+  {
+    id: 'bamboo-soap-dish',
+    name: 'Bamboo Soap Dish',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
+    tagline: 'The cheapest way to make a bar last',
+    blurb: 'Slatted bamboo, in two sizes.',
+    description:
+      'A bar of soap sitting in its own puddle dissolves at roughly twice the rate of one that '
+      + 'drains. This is not an accessory so much as the thing that decides whether a $9 bar '
+      + 'lasts a fortnight or two months. Large fits a shampoo bar; small fits a soap.',
+    price: 5,
+    weight: 'Small · Large',
+    scentFamily: ['unscented'], concerns: ['daily'],
+    variants: [
+      { id: 'small', label: 'Small — for a soap bar',    swatch: '#D9CDBA' },
+      { id: 'large', label: 'Large — for a shampoo bar', swatch: '#B9A78F', price: 8 }
+    ],
+    keyIngredients: [],
+    ingredients: 'Bamboo. That is the entire list.',
+    benefits: ['Doubles how long a bar lasts', 'Slatted so it drains', 'Two sizes'],
+    howToUse: 'Somewhere the water can run off it. Rinse and dry it out every few weeks.',
+    art: { form: 'bar', sub: 'SOAP DISH', tint: ['#FAF7EE', '#EBE2CC'], body: '#D7C49B', cap: '#8B6444', accent: '#A8C63C' }
+  },
+  /* ═════════════════════ HOME & AROMA ═════════════════════ */
+
+  {
+    id: 'beeswax-candle',
+    name: 'Beeswax Candle',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'All-natural wax, hand-poured in Washington',
+    blurb: 'Beeswax, a cotton wick, and a jar you will keep.',
+    description:
+      'Beeswax burns slower and cleaner than paraffin and smells faintly of honey before it is '
+      + 'scented at all. Two sizes, poured in small batches — the small one is a two-evening '
+      + 'candle, the large one lasts a season of them.',
+    price: 6,
+    weight: 'Small · Large',
+    photo: 'candle-summer-meadow',
+    scentFamily: ['floral', 'sweet'], concerns: ['sleep'],
+    variants: [
+      { id: 'small', label: 'Small',  swatch: '#E9C97A', photo: 'candle-summer-meadow' },
+      { id: 'large', label: 'Large',  swatch: '#C8961E', price: 10, photo: 'candle-hearth-and-haze' }
+    ],
+    keyIngredients: ['beeswax', 'essential-oils'],
+    ingredients: 'Beeswax, cotton wick, essential oils.',
+    benefits: ['Beeswax, not paraffin or a soy blend', 'Cotton wick', 'Hand-poured in Washington'],
+    howToUse: 'First burn, let the melt pool reach the edge — it sets how the rest of the candle burns.',
+    art: { form: 'jar', sub: 'BEESWAX CANDLE', tint: ['#FBF7EC', '#F0E7D2'], body: '#F3EBD8', cap: '#C8961E', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'room-diffuser',
+    name: 'Room Diffuser',
+    brand: 'Bloom In Clover', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: '100% natural, made in USA',
+    blurb: 'Reed diffusers in five scents. They fill a room and then stay out of the way.',
+    description:
+      'A glass bottle, rattan reeds and a natural base. Turn the reeds when the scent fades '
+      + 'and it lifts again. From Bloom In Clover, our sister line.',
+    price: 20,
+    weight: '4 fl oz',
+    photo: 'diffuser-calming-mind',
+    scentFamily: ['woody', 'citrus', 'floral', 'sweet', 'fruity'],
+    concerns: ['sleep', 'daily'],
+    variants: [
+      { id: 'calming-mind',    label: 'Calming Mind',    swatch: '#8B8474', note: 'Palo santo · lemon · rosewood',
+        photo: 'diffuser-calming-mind' },
+      { id: 'bright-and-deep', label: 'Bright and Deep', swatch: '#5F6355', note: 'Bergamot · musk · amber',
+        photo: 'diffuser-bright-and-deep' },
+      { id: 'almond-blossom',  label: 'Almond Blossom',  swatch: '#E8D9C0', note: 'Almond blossom · vanilla · lilac',
+        photo: 'diffuser-almond-blossom' },
+      { id: 'island-comfort',  label: 'Island Comfort',  swatch: '#D9CDBA', note: 'Coconut · vanilla · brown sugar',
+        photo: 'diffuser-island-comfort' },
+      { id: 'peachy-summer',   label: 'Peachy Summer',   swatch: '#E5B98C', note: 'Grapefruit · peach · apricot',
+        photo: 'diffuser-peachy-summer' }
+    ],
+    keyIngredients: ['essential-oils'],
+    ingredients: ON_LABEL,
+    benefits: ['No flame, no electricity', 'Turn the reeds to refresh', '100% natural, made in USA'],
+    howToUse: 'Put the reeds in and leave them an hour to draw. Turn them once a week.',
+    art: { form: 'bottle', sub: 'ROOM DIFFUSER', tint: ['#FBFAF6', '#EFEADC'], body: '#F5F1E6', cap: '#C8961E', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'car-diffuser',
+    name: 'Car Diffuser',
+    brand: 'Bloom In Clover', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'For the other room you sit in',
+    blurb: 'A small diffuser that clips to a vent.',
+    description:
+      'The cheapest thing on the shelf and the one people buy in threes. Clips to a vent and '
+      + 'works off the airflow, so it is strongest on the drive and quiet when parked.',
+    price: 8,
+    weight: 'Vent clip',
+    scentFamily: ['woody', 'citrus', 'floral'], concerns: ['daily'],
+    variants: [],
+    keyIngredients: ['essential-oils'],
+    ingredients: ON_LABEL,
+    benefits: ['No flame, no electricity', 'Works off the vent airflow', 'Essential oil, never fragrance oil'],
+    howToUse: 'Clip to a vent. A few drops to refresh it when it fades.',
+    art: { form: 'roller', sub: 'CAR DIFFUSER', tint: ['#F9F8F3', '#E9E5D6'], body: '#F0ECDF', cap: '#5F6355', accent: '#C8961E' }
+  },
+
+  {
+    id: 'room-spray',
+    name: 'Room Spray',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'For a room, and for linen',
+    blurb: 'A mist for the air, the sofa and the bed.',
+    description:
+      'The immediate version of a diffuser — a diffuser is for a room all week, this is for a '
+      + 'room in the next ten minutes. Fine enough to go over fabric, though it is worth '
+      + 'testing a hem before you do the whole sofa.',
+    price: 10,
+    weight: '4 fl oz',
+    scentFamily: ['floral', 'herbal', 'citrus'], concerns: ['sleep', 'daily'],
+    variants: [],
+    keyIngredients: ['essential-oils'],
+    ingredients: ON_LABEL,
+    benefits: ['Works on air and on linen', 'Essential oil, never fragrance oil', 'Made in Washington'],
+    howToUse: 'Two or three mists into the air, or over bedding an hour before you get in.',
+    art: { form: 'spray', sub: 'ROOM & LINEN', tint: ['#F8F9F5', '#E4E9DD'], body: '#EEF1E8', cap: '#5F6355', accent: '#A8C63C' }
+  },
+  /* ═════════════════════ SETS & PACKS ═════════════════════
+     Priced by the owner as single items rather than as bundles of the
+     products above, so they are products in their own right — not SETS
+     entries, which are computed from their lines.
+     ═══════════════════════════════════════════════════════ */
+
+  {
+    id: 'mini-hand-butter-pack',
+    name: 'Pack of 5 Mini Hand Butters',
+    brand: 'Aeindry', category: 'kits', categoryLabel: 'Sets & Packs',
+    tagline: 'Five 1 oz tins',
+    blurb: 'The way to find out which scent is yours.',
+    description:
+      'Five one-ounce tins instead of one two-ounce one. It is the sampler, and it is also the '
+      + 'answer for anyone who wants a tin in the car, one at the desk and one by the bed.',
+    price: 30,
+    weight: '5 × 1 oz tins',
+    scentFamily: ['citrus', 'floral', 'woody', 'sweet', 'herbal'],
+    concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: ['shea-butter', 'cocoa-butter'],
+    ingredients: ON_LABEL,
+    benefits: ['Five scents in one box', 'One-ounce tins travel', 'Made by hand in Washington'],
+    howToUse: 'Keep them where your hands are: the car, the desk, the bedside, a coat pocket.',
+    art: { form: 'tin', sub: 'MINI × 5', tint: ['#FAF7F0', '#ECE2D0'], body: '#F0E8D9', cap: '#E8A0B4', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'mini-body-oil-pack',
+    name: 'Set of 6 Mini Body Oils',
+    brand: 'Aeindry', category: 'kits', categoryLabel: 'Sets & Packs',
+    tagline: 'Six to try, before you commit to eight ounces',
+    blurb: 'The whole oil shelf, in small bottles.',
+    description:
+      'Six small bottles rather than one large one. Body oil is the product people are most '
+      + 'often wrong about liking, so trying six is a cheaper mistake than buying the 8 oz and '
+      + 'finding out.',
+    price: 35,
+    weight: '6 × mini bottles',
+    scentFamily: ['floral', 'woody', 'citrus', 'sweet'],
+    concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Six scents in one box', 'Travel-sized', 'Made in Washington'],
+    howToUse: 'Straight out of the shower, onto skin that is still wet.',
+    art: { form: 'bottle', sub: 'MINI × 6', tint: ['#FBF8EF', '#EFE5CC'], body: '#F3EBD7', cap: '#7E9A72', accent: '#C8961E' }
+  },
+
+  {
+    id: 'mini-beeswax-pack',
+    name: 'Pack of 4 Small Beeswax Candles',
+    brand: 'Aeindry', category: 'kits', categoryLabel: 'Sets & Packs',
+    tagline: 'Four smalls, for four rooms',
+    blurb: 'Four of the small candles, boxed.',
+    description:
+      'Four smalls, which is what most people actually want — one on the table, one in the '
+      + 'bathroom, and two still in the box for when someone comes round.',
+    price: 20,
+    weight: '4 × small candles',
+    photo: 'candle-hearth-and-haze',
+    scentFamily: ['floral', 'sweet'], concerns: ['sleep'],
+    variants: [],
+    keyIngredients: ['beeswax', 'essential-oils'],
+    ingredients: 'Beeswax, cotton wick, essential oils.',
+    benefits: ['Four for the price of a little over three', 'Beeswax, not paraffin', 'Hand-poured in Washington'],
+    howToUse: 'First burn, let the melt pool reach the edge — it sets how the rest of the candle burns.',
+    art: { form: 'jar', sub: 'CANDLE × 4', tint: ['#FBF7EC', '#F0E7D2'], body: '#F3EBD8', cap: '#C8961E', accent: '#E9C97A' }
+  },
+
+  {
+    id: 'lotion-bar-pack',
+    name: 'Set of 6 Lotion Bars',
+    brand: 'Aeindry', category: 'kits', categoryLabel: 'Sets & Packs',
+    tagline: 'Six bars, four dollars off',
+    blurb: 'A year of lotion bars, in a box.',
+    description:
+      'Lotion bars keep more or less indefinitely — there is no water in them — so buying six '
+      + 'is not stockpiling so much as not thinking about it again for a while.',
+    price: 20,
+    weight: '6 × 1 oz bars',
+    scentFamily: ['sweet', 'herbal', 'floral'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: ['beeswax', 'shea-butter'],
+    ingredients: ON_LABEL,
+    benefits: ['Six for the price of four', 'No water, so they keep', 'Made in Washington'],
+    howToUse: 'Rub the bar straight onto dry patches and let body heat do the rest.',
+    art: { form: 'puck', sub: 'LOTION × 6', tint: ['#FBF8EE', '#EEE6CE'], body: '#F1E8D2', cap: '#A8C63C', accent: '#E9C97A' }
+  },
+
+  {
+    id: 'lip-balm-pack',
+    name: 'Pack of 5 Lip Balms',
+    brand: 'Aeindry', category: 'kits', categoryLabel: 'Sets & Packs',
+    tagline: 'One for every coat',
+    blurb: 'Five balms, because you will lose four of them.',
+    description:
+      'The honest maths on lip balm: you do not lose them so much as distribute them. Five is '
+      + 'the number that gets you through a winter with one always in reach.',
+    price: 14,
+    weight: '5 × 0.15 oz tubes',
+    scentFamily: ['sweet'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: ['beeswax'],
+    ingredients: ON_LABEL,
+    benefits: ['Five for the price of four', 'Beeswax base', 'Made in Washington'],
+    howToUse: 'One in every coat, bag and bedside drawer. That is the system.',
+    art: { form: 'tube', sub: 'BALM × 5', tint: ['#FBF8F2', '#EEE6D6'], body: '#F2EADA', cap: '#E8A0B4', accent: '#C8961E' }
+  },
+
+  {
+    id: 'roll-on-pack',
+    name: 'Pack of 5 Essential Oil Roll-Ons',
+    brand: 'Aeindry', category: 'kits', categoryLabel: 'Sets & Packs',
+    tagline: 'Five blends, five bags',
+    blurb: 'The whole roll-on shelf at once.',
+    description:
+      'Five pre-diluted rollers. Cheaper together, and it means you can leave one in the desk '
+      + 'drawer and stop carrying the same bottle between rooms.',
+    price: 20,
+    weight: '5 × 10 ml rollers',
+    scentFamily: ['herbal', 'citrus', 'floral', 'woody'],
+    concerns: ['sleep', 'muscle', 'daily'],
+    variants: [],
+    keyIngredients: ['essential-oils'],
+    ingredients: ON_LABEL,
+    benefits: ['Five for the price of four', 'Pre-diluted — no mixing', 'Essential oil, never fragrance oil'],
+    howToUse: 'Roll onto wrists, temples or the back of the neck. Warm it in with a thumb.',
+    art: { form: 'roller', sub: 'ROLL-ON × 5', tint: ['#F7F9F6', '#E2E9E0'], body: '#EAF0E7', cap: '#9B8FC7', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'jelly-mask-mini-pack',
+    name: 'Set of 3 Mini Jelly Masks',
+    brand: 'Aeindry', category: 'kits', categoryLabel: 'Sets & Packs',
+    tagline: 'Three masks, three Fridays',
+    blurb: 'Try three before you buy a full one.',
+    description:
+      'Three minis. A jelly mask is a fifteen-minute commitment and a fairly memorable one, so '
+      + 'trying three of the five is a reasonable way to find out which you would repeat.',
+    price: 20,
+    weight: '3 × mini pots',
+    scentFamily: ['fruity', 'sweet', 'herbal'],
+    concerns: ['dry', 'oily', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Three of the five blends', 'Enough for one mask each', 'Made by hand in Washington'],
+    howToUse: 'Mix, spread thick, leave fifteen minutes, then lift from one edge and peel.',
+    art: { form: 'pot', sub: 'MASK × 3', tint: ['#FBF4F6', '#F0DDE4'], body: '#F5E3E8', cap: '#7E9A72', accent: '#B32644' }
+  },
+
+  /* ═════════════════════ NAMED BY THE OWNER, NOT YET DETAILED ══════════════
+     Everything below is on the owner's product tree, so the products are real.
+     What is *not* from the owner is the price, the size and the copy. Prices
+     were guessed on request and carry `pricePending`; sizes carry
+     `sizePending`; both are listed by tools/check-catalogue.mjs on every run so
+     they can be replaced with the real numbers.
+
+     `keyIngredients` is empty and `ingredients` says to read the label,
+     because nobody has read one. That is the rule the top of this file sets and
+     it matters most exactly here: an invented ingredient list would flow
+     straight into the encyclopedia and read as fact. The copy describes what
+     the form *is* — what a salve is, what a bath bomb does in water — and
+     makes no claim about any particular formula.
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  {
+    id: 'foot-scrub',
+    name: 'Foot Scrub',
+    brand: 'Aeindry', category: 'bath', categoryLabel: 'Bath',
+    tagline: 'For the part of you that gets no attention',
+    blurb: 'A coarser scrub than the one for your face, because feet are not faces.',
+    description:
+      'Heels and the balls of the feet build hard skin faster than anywhere else on the '
+      + 'body, and they take a coarser grit than a face or a body scrub would. Worked over '
+      + 'damp feet in the bath or the shower and rinsed off, it leaves them smooth enough '
+      + 'that a cream has somewhere to go.',
+    price: 12, pricePending: PENDING,
+    weight: '6 oz jar', sizePending: PENDING,
+    scentFamily: ['herbal', 'citrus'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Coarser grit than a face scrub', 'Rinses clean', 'Made in Washington'],
+    howToUse: 'Sit on the edge of the bath. Work a handful over damp feet, concentrating on the heel, then rinse and dry properly before standing up.',
+    art: { form: 'jar', sub: 'FOOT SCRUB', tint: ['#F4F8F3', '#DFE9DD'], body: '#E7EFE4', cap: '#4E7A46', accent: '#8FBF6A' }
+  },
+
+  {
+    id: 'body-butter',
+    name: 'Body Butter',
+    brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
+    tagline: 'Whipped, not poured',
+    blurb: 'Plant butter whipped until it scoops — no water in it at all.',
+    description:
+      'A body butter is butters and oils whipped together and nothing else: no water, which '
+      + 'is why it scoops rather than pumps and why it goes further than it looks. It sits '
+      + 'heavier on the skin than a cream does and is meant to — this is the one for after a '
+      + 'bath, for shins and elbows in January, not the one for a summer morning.',
+    price: 18, pricePending: PENDING,
+    weight: '4 oz jar', sizePending: PENDING,
+    scentFamily: ['sweet', 'floral'], concerns: ['dry', 'eczema'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['No water, so no preservative', 'Scoops rather than pumps', 'Made in Washington'],
+    howToUse: 'Scoop a little less than you think. Warm it between your palms until it turns to oil, then press it into damp skin.',
+    art: { form: 'jar', sub: 'BODY BUTTER', tint: ['#FBF6EC', '#EFE3CC'], body: '#F4EAD6', cap: '#C8961E', accent: '#E9C97A' }
+  },
+
+  {
+    id: 'lip-rouge-cream',
+    name: 'Lip Rouge Cream',
+    brand: 'Aeindry', category: 'lips', categoryLabel: 'Lips',
+    tagline: 'Colour with the feel of a balm',
+    blurb: 'A tinted cream in a pot — worn with a fingertip, not a wand.',
+    description:
+      'A rouge cream is colour carried in a balm base rather than in a drying matte one, so '
+      + 'it goes on with a fingertip and wears like something you would put on anyway. '
+      + 'Pressed on thinly it reads as a stain; built up it reads as a lipstick.',
+    price: 12, pricePending: PENDING,
+    weight: '0.25 oz pot', sizePending: PENDING,
+    scentFamily: ['sweet'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Wears like a balm', 'Sheer or built up', 'Made in Washington'],
+    howToUse: 'Press on with a fingertip from the middle of the lip outwards. Add a second pass where you want it stronger.',
+    art: { form: 'pot', sub: 'LIP ROUGE', tint: ['#FBF2F3', '#F0DCDE'], body: '#F6E4E6', cap: '#A81F2D', accent: '#D4747E' }
+  },
+
+  {
+    id: 'acv-hair-rinse',
+    name: 'Apple Cider Vinegar Herbal Hair Rinse',
+    brand: 'Aeindry', category: 'hair', categoryLabel: 'Hair',
+    tagline: 'The last thing in the shower',
+    blurb: 'A diluted vinegar rinse with herbs, poured through after conditioner.',
+    description:
+      'A vinegar rinse is the traditional last step after washing: diluted, poured through '
+      + 'the lengths, left a moment and rinsed out. It is the usual companion to a shampoo '
+      + 'bar, which is why it sits next to them here. The vinegar smell goes as the hair '
+      + 'dries.',
+    price: 16, pricePending: PENDING,
+    weight: '8 oz bottle', sizePending: PENDING,
+    scentFamily: ['herbal'], concerns: ['oily', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['The traditional finish to a bar wash', 'Dilutes to go further', 'Made in Washington'],
+    howToUse: 'Dilute as the label says, pour through the lengths after conditioner, leave a moment and rinse. The smell goes as it dries.',
+    art: { form: 'bottle', sub: 'ACV RINSE', tint: ['#FAF6EA', '#EDE2C9'], body: '#F3EBD6', cap: '#8C5A2B', accent: '#C8961E' }
+  },
+
+  /* ── Kids ─────────────────────────────────────────────────────────────── */
+
+  {
+    id: 'kids-soap',
+    name: 'Kids Soap',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'A bar sized for smaller hands',
+    blurb: 'The same cold-process bar, cut smaller and kept plain.',
+    description:
+      'A cold-process bar cut to a size a child can actually hold, and kept simple — nothing '
+      + 'in it is there to make it novel. It lasts the way any bar does if it gets to drain '
+      + 'between baths, which is the whole argument for a soap dish.',
+    price: 8, pricePending: PENDING,
+    weight: '3.5 oz bar', sizePending: PENDING,
+    scentFamily: ['unscented', 'sweet'], concerns: ['sensitive', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Sized for small hands', 'Cold-process, cured slowly', 'Made in Washington'],
+    howToUse: 'Lather in the hands rather than rubbing the bar on skin, and stand it somewhere it can drain.',
+    art: { form: 'bar', sub: 'KIDS SOAP', tint: ['#F5F9FB', '#DDE9EF'], body: '#E8F0F4', cap: '#4A83A8', accent: '#8FC4DD' }
+  },
+
+  {
+    id: 'kids-body-cream',
+    name: 'Kids Body Cream',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'For after the bath, before pyjamas',
+    blurb: 'A light cream that sinks in fast enough to get dressed after.',
+    description:
+      'A cream rather than a butter, because the point at bedtime is to be absorbed before '
+      + 'anyone puts pyjamas on. Light enough for that, and plain enough to go on every '
+      + 'night without becoming an event.',
+    price: 16, pricePending: PENDING,
+    weight: '4 oz jar', sizePending: PENDING,
+    scentFamily: ['unscented', 'floral'], concerns: ['sensitive', 'dry'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Sinks in before pyjamas', 'Plain enough for every night', 'Made in Washington'],
+    howToUse: 'Smooth over warm, towel-dried skin straight out of the bath.',
+    art: { form: 'jar', sub: 'KIDS CREAM', tint: ['#F7F6FB', '#E6E3F1'], body: '#EFEDF7', cap: '#6B5CA8', accent: '#A99BD8' }
+  },
+
+  {
+    id: 'kids-salve',
+    name: 'Kids Salve',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'The tin that lives in the bag',
+    blurb: 'A firm balm in a tin, for the small rough patches.',
+    description:
+      'A salve is an oil-and-wax balm set firm in a tin — no water, nothing to leak, nothing '
+      + 'to preserve. It is the format that ends up in a changing bag or a coat pocket, for '
+      + 'the dry patch on a cheek in winter or the back of a hand.',
+    price: 12, pricePending: PENDING,
+    weight: '2 oz tin', sizePending: PENDING,
+    scentFamily: ['unscented', 'herbal'], concerns: ['sensitive', 'eczema', 'dry'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Nothing to leak in a bag', 'No water, so no preservative', 'Made in Washington'],
+    howToUse: 'Warm a little on a fingertip and press it into the patch rather than rubbing it in.',
+    art: { form: 'tin', sub: 'KIDS SALVE', tint: ['#F6F8F2', '#E3EAD9'], body: '#ECF1E3', cap: '#5C7F3A', accent: '#A8C63C' }
+  },
+
+  {
+    id: 'kids-massage-oil',
+    name: 'Kids Massage Oil',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'Slow enough to take your time',
+    blurb: 'A plain carrier oil that stays slippery long enough to be useful.',
+    description:
+      'A massage oil is chosen for how long it stays slippery rather than how fast it sinks '
+      + 'in — the opposite of a body oil. That is what makes it work for the unhurried part '
+      + 'of the evening, when the point is the time spent rather than the product.',
+    price: 14, pricePending: PENDING,
+    weight: '4 oz bottle', sizePending: PENDING,
+    scentFamily: ['unscented', 'floral'], concerns: ['sensitive', 'sleep'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Stays slippery, does not vanish', 'Plain by design', 'Made in Washington'],
+    howToUse: 'Warm a little between your palms first — cold oil out of the bottle is the fastest way to end a massage.',
+    art: { form: 'bottle', sub: 'MASSAGE OIL', tint: ['#FBF8F1', '#EFE7D6'], body: '#F5EFE1', cap: '#B58A4E', accent: '#E9C97A' }
+  },
+
+  {
+    id: 'kids-body-butter',
+    name: 'Kids Body Butter',
+    brand: 'Aeindry', category: 'kids', categoryLabel: 'Kids',
+    tagline: 'For the stubborn winter patches',
+    blurb: 'The heavier one, for when a cream is not holding.',
+    description:
+      'The step up from the cream: butters whipped with no water in them, so it sits on the '
+      + 'skin longer instead of disappearing into it. This is the one for shins and elbows '
+      + 'in the middle of winter, not the one for every night.',
+    price: 16, pricePending: PENDING,
+    weight: '4 oz jar', sizePending: PENDING,
+    scentFamily: ['unscented', 'sweet'], concerns: ['sensitive', 'dry', 'eczema'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Heavier than the cream', 'No water, so no preservative', 'Made in Washington'],
+    howToUse: 'Warm between the palms until it turns to oil, then press into damp skin after a bath.',
+    art: { form: 'jar', sub: 'KIDS BUTTER', tint: ['#FBF7F3', '#EFE4DA'], body: '#F5ECE4', cap: '#C07A4A', accent: '#E8A87C' }
+  },
+
+  /* ── Men ──────────────────────────────────────────────────────────────── */
+
+  {
+    id: 'mens-soap',
+    name: "Men's Soap",
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
+    tagline: 'A big plain bar',
+    blurb: 'Cold-process, cut large, scented the other way from the rest of the range.',
+    description:
+      'The same cold-process method as the rest of the soap, cut into a larger bar and taken '
+      + 'in a different direction on scent — woodier and sharper than the florals elsewhere '
+      + 'on the shelf. It is a body bar; it will wash hair too if that is the kind of '
+      + 'household this is.',
+    price: 9, pricePending: PENDING,
+    weight: '5 oz bar', sizePending: PENDING,
+    scentFamily: ['woody', 'herbal', 'citrus'], concerns: ['daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Cut larger than the standard bar', 'Cold-process, cured slowly', 'Made in Washington'],
+    howToUse: 'Stand it somewhere it drains between showers — a bar left in a puddle is a bar you replace twice as often.',
+    art: { form: 'bar', sub: "MEN'S SOAP", tint: ['#F4F4F2', '#DEDFD9'], body: '#E9EAE4', cap: '#3F4A38', accent: '#7E8C63' }
+  },
+
+  {
+    id: 'face-beard-scrub',
+    name: 'Face & Beard Scrub',
+    brand: 'Aeindry', category: 'men', categoryLabel: 'Men',
+    tagline: 'Gets under the beard, not just over it',
+    blurb: 'A scrub coarse enough to reach the skin through a beard.',
+    description:
+      'The problem with washing a face under a beard is that most of what you use never '
+      + 'reaches the skin. This is worked in at the roots with the fingertips rather than '
+      + 'over the surface, which is also what lifts the hairs that would otherwise grow back '
+      + 'into the jaw.',
+    price: 12, pricePending: PENDING,
+    weight: '4 oz jar', sizePending: PENDING,
+    scentFamily: ['woody', 'citrus'], concerns: ['oily', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Reaches skin under a beard', 'Lifts hairs before they turn in', 'Made in Washington'],
+    howToUse: 'On a wet face, work it in at the roots with the fingertips, not over the top of the beard. Rinse and follow with an oil.',
+    art: { form: 'jar', sub: 'FACE & BEARD', tint: ['#F5F4F0', '#E0DED4'], body: '#EBE9E0', cap: '#4A2E1C', accent: '#9C7A4E' }
+  },
+
+  /* ── Aromatherapy ─────────────────────────────────────────────────────── */
+
+  {
+    id: 'bath-bomb',
+    name: 'Bath Bomb',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'Drop it and wait',
+    blurb: 'Fizzes out over a minute or two and scents the whole room.',
+    description:
+      'A bath bomb is pressed dry and only reacts once it hits water, which is why it keeps '
+      + 'on a shelf and then goes off all at once. It fizzes out over a minute or two, '
+      + 'scenting the water and most of the room with it.',
+    price: 6, pricePending: PENDING,
+    weight: '4.5 oz bomb', sizePending: PENDING,
+    scentFamily: ['floral', 'citrus', 'herbal'], concerns: ['muscle', 'sleep'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Keeps dry on a shelf', 'One bath, one bomb', 'Made in Washington'],
+    howToUse: 'Run the bath first, then drop it in — added under a running tap it spends itself before you are in.',
+    art: { form: 'sphere', sub: 'BATH BOMB', tint: ['#FBF4F7', '#F0DEE6'], body: '#F6E6EE', cap: '#C4557E', accent: '#E89BB8' }
+  },
+
+  {
+    id: 'foot-bomb',
+    name: 'Foot Bombs',
+    brand: 'Aeindry', category: 'aroma', categoryLabel: 'Aromatherapy',
+    tagline: 'A bath bomb for a washing-up bowl',
+    blurb: 'Smaller bombs, sized for a basin rather than a bath.',
+    description:
+      'The same thing as a bath bomb, pressed smaller, because a basin of water for your '
+      + 'feet is a fraction of the volume of a bath and a full-size bomb in it is a waste. '
+      + 'Sold as a set so one soak does not use the lot.',
+    price: 6, pricePending: PENDING,
+    weight: '2 oz bombs', sizePending: PENDING,
+    scentFamily: ['herbal', 'citrus'], concerns: ['muscle', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Sized for a basin, not a bath', 'Keeps dry on a shelf', 'Made in Washington'],
+    howToUse: 'Fill a basin with water as hot as you can stand, drop one in, and give it ten minutes you were not going to use anyway.',
+    art: { form: 'sphere', sub: 'FOOT BOMB', tint: ['#F3F8F5', '#DCE9E1'], body: '#E6F0EA', cap: '#3F7A5E', accent: '#7FBF9B' }
+  },
+
+  /* ── Pets ─────────────────────────────────────────────────────────────── */
+
+  {
+    id: 'pet-soap',
+    name: 'Pet Soap',
+    brand: 'Aeindry', category: 'pets', categoryLabel: 'Pets',
+    tagline: 'For the bath nobody volunteers for',
+    blurb: 'A cold-process bar made for a dog rather than adapted from one for people.',
+    description:
+      'A bar rather than a bottle, which is easier to hold with one hand while the other one '
+      + 'holds the dog. Made for animals from the start instead of being a people soap with a '
+      + 'different label — a dog’s skin is not a person’s and the formula is not either.',
+    price: 9, pricePending: PENDING,
+    weight: '4.5 oz bar', sizePending: PENDING,
+    scentFamily: ['herbal', 'unscented'], concerns: ['sensitive', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['One-handed to use', 'Made for animals, not adapted', 'Made in Washington'],
+    howToUse: 'Wet the coat through first, lather the bar in your hands rather than on the animal, and rinse until the water runs clear. Keep it away from eyes and ears.',
+    art: { form: 'bar', sub: 'PET SOAP', tint: ['#F6F7F1', '#E3E6D7'], body: '#ECEEE1', cap: '#6B7A3A', accent: '#A8BF5C' }
+  },
+
+  {
+    id: 'pet-lotion-bar',
+    name: 'Pet Lotion Bar',
+    brand: 'Aeindry', category: 'pets', categoryLabel: 'Pets',
+    tagline: 'Rubbed on, not squeezed out',
+    blurb: 'A solid bar for paw pads and noses — nothing to spill on a floor.',
+    description:
+      'A solid bar melts on contact and goes exactly where you rub it, which matters more '
+      + 'with an animal than with a person: there is no bottle to knock over and no puddle '
+      + 'to walk through. For paw pads and noses after a winter walk on salted pavement.',
+    price: 6, pricePending: PENDING,
+    weight: '1 oz bar', sizePending: PENDING,
+    scentFamily: ['unscented'], concerns: ['dry', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Nothing to spill', 'Goes where you rub it', 'Made in Washington'],
+    howToUse: 'Rub straight onto the pad or nose and hold the paw a moment so it is absorbed rather than licked off.',
+    art: { form: 'puck', sub: 'PET BAR', tint: ['#FAF7F0', '#EDE5D2'], body: '#F3EDDF', cap: '#8C6A3A', accent: '#D4B06A' }
+  },
+
+  {
+    id: 'pet-acv-rinse',
+    name: 'Apple Cider Vinegar Herbal Rinse',
+    brand: 'Aeindry', category: 'pets', categoryLabel: 'Pets',
+    tagline: 'The last pour before the towel',
+    blurb: 'A diluted vinegar rinse poured through the coat after washing.',
+    description:
+      'The same idea as the rinse on the hair shelf, made for a coat: diluted, poured '
+      + 'through after the soap, worked in and rinsed or left depending on the label. The '
+      + 'vinegar smell goes as the coat dries, which is the usual first question.',
+    price: 16, pricePending: PENDING,
+    weight: '8 oz bottle', sizePending: PENDING,
+    scentFamily: ['herbal'], concerns: ['sensitive', 'daily'],
+    variants: [],
+    keyIngredients: [],
+    ingredients: ON_LABEL,
+    benefits: ['Dilutes to go further', 'The smell goes as it dries', 'Made in Washington'],
+    howToUse: 'Dilute as the label says and pour through the coat after washing, keeping it away from eyes and ears. Towel as normal.',
+    art: { form: 'bottle', sub: 'ACV RINSE', tint: ['#F7F8F0', '#E5E8D4'], body: '#EFF1E0', cap: '#7A6A2E', accent: '#BFAE55' }
+  },
+];
+
+/**
+ * The order of the shop, top to bottom.
+ *
+ * The owner gave this order and said twice that it matters, so it is written
+ * out rather than derived: no sort produces it, and nothing about a product
+ * implies its place. "Featured" on the shop page is this list.
+ *
+ * It lives apart from the entries above because the entries are long and a
+ * reorder would otherwise mean moving three thousand lines and hoping. Here a
+ * move is one line. `tools/check-catalogue.mjs` fails if a product is missing
+ * from it or named twice, so the two cannot drift.
+ *
+ * Marked ※: not named on the owner's tree. Real products with prices the owner
+ * gave, filed on the nearest shelf rather than dropped — say the word and they
+ * move or go.
+ */
+const ORDER = [
+  /* ── Bath ─────────────────────────────────────────────────────────────── */
+  'handmade-soap', 'pine-tar-soap',       // Soap
+  'body-buff',                            // Body Buff Scrubs
+  'foot-scrub',                           // Foot Scrub
+  'bamboo-soap-dish',                     // ※ the dish the soap stands on
+  // Face Scrub is filed under Face and shelved here too — see `alsoIn`.
+
+  /* ── Body ─────────────────────────────────────────────────────────────── */
+  'body-cream',                           // Body Cream
+  'foot-cream',                           // Foot Cream
+  'body-butter',                          // Body Butter
+  'body-oil',                             // Body Oil
+  'botanical-hand-butter', 'hand-butter', // Hand Butter
+  'deodorant-creme',                      // Deodorant
+  'lotion-bar',                           // Lotion Bar
+  'body-balm',                            // Body Balm
+
+  /* ── Face ─────────────────────────────────────────────────────────────── */
+  'face-cream',                                                  // Face Cream
+  'face-serum', 'copper-face-serum', 'under-eye-serum',          // Face Serum
+  'face-oil',                                                    // Face Oil
+  'face-toner',                                                  // Face Toner
+  'face-cleanser',                                               // Face Soap and Cleanser
+  'jelly-face-mask', 'clay-face-mask',                           // Face Pack
+  'face-scrub',                                                  // Face Scrub
+  /* ── Face › Lips ──────────────────────────────────────────────────────── */
+  'lip-balm', 'lip-scrub', 'lip-oil', 'lip-gloss', 'lip-rouge-cream',
+
+  /* ── Hair ─────────────────────────────────────────────────────────────── */
+  'shampoo-bar',                           // Shampoo Bar
+  'conditioner-bar',                       // Conditioner Bar
+  'hair-leave-in', 'leave-in-keratin',     // Leave in Conditioner
+  'elixir-hair-oil',                       // Hair Oil
+  'hair-butter',                           // ※ an oil treatment, so it sits with the oil
+  'copper-hair-serum',                     // Hair Serum
+  'nocturn-balm',                          // ※ a hair-and-face balm, nearest the serum
+  'acv-hair-rinse',                        // Apple Cider Vinegar Herbal Hair Rinse
+
+  /* ── Kids ─────────────────────────────────────────────────────────────── */
+  'kids-soap', 'kids-body-cream', 'kids-salve', 'kids-massage-oil', 'kids-body-butter',
+
+  /* ── Men ──────────────────────────────────────────────────────────────── */
+  'mens-soap', 'beard-oil', 'beard-balm', 'shaving-soap', 'face-beard-scrub',
+
+  /* ── Aromatherapy ─────────────────────────────────────────────────────── */
+  'shower-steamers',                             // Shower Steamer
+  'milk-bath', 'coconut-milk-bath-salt',         // Bath Milk & Salts
+  'bath-bomb',                                   // Bath Bomb
+  'foot-bomb',                                   // Foot Bombs
+  'foot-soak',                                   // ※ a foot soak, next to the foot bombs
+  'essential-oil-roll-on',                       // Essential Oil Roll On
+  'room-spray',                                  // Room and Linen Spray
+  'beeswax-candle',                              // Beeswax Candle
+  'room-diffuser', 'car-diffuser',               // ※ the other two ways to scent a room
+  'solid-perfume',                               // ※ the one you wear rather than burn
+
+  /* ── Pets ─────────────────────────────────────────────────────────────── */
+  'pet-soap', 'pet-lotion-bar', 'pet-acv-rinse',
+
+  /* ── Sets & Packs ─────────────────────────────────────────────────────── */
+  /* ※ The whole shelf. Not on the tree, but every one of them is a real pack
+     the owner priced, so they keep a shelf of their own at the end. */
+  'mini-hand-butter-pack', 'mini-body-oil-pack', 'mini-beeswax-pack',
+  'lotion-bar-pack', 'lip-balm-pack', 'roll-on-pack', 'jelly-mask-mini-pack'
+];
+
+/**
+ * The catalogue in shop order.
+ *
+ * A product ORDER forgets is appended rather than dropped: a typo in that list
+ * should cost the shop its running order, not a product. The checker fails on
+ * it, loudly, which is where a typo belongs.
+ */
+export const PRODUCTS = (() => {
+  const byId = new Map(CATALOGUE.map((p) => [p.id, p]));
+  const placed = ORDER.map((id) => byId.get(id)).filter(Boolean);
+  const seen = new Set(placed.map((p) => p.id));
+  return [...placed, ...CATALOGUE.filter((p) => !seen.has(p.id))];
+})();
+
+/** What ORDER says, for the checker to hold the catalogue against. */
+export const CATALOGUE_ORDER = ORDER;
+
+
+/**
+ * Sets — several products bought together for one reason.
+ *
+ * Unlike the packs in the `kits` category, which the owner prices as single
+ * items, a set is only a list of ids and a saving. Every name, price, photo
+ * and variant is read from the products at render time, so a set can never
+ * quietly drift from what is actually sold, and `tools/check-catalogue.mjs`
+ * fails the build if one names something that has left the range.
+ */
+export const SETS = [
+  {
+    id: 'dry-skin',
+    name: 'The Dry Skin Set',
+    concern: 'dry',
+    tagline: 'For skin that drinks everything and stays thirsty',
+    blurb: 'The two richest things we make, plus the bar that will not strip what they put back.',
+    lines: [
+      { productId: 'botanical-hand-butter', variantId: 'vanilla' },
+      { productId: 'body-cream', variantId: 'aloe-oats-honey' },
+      { productId: 'pine-tar-soap' }
+    ],
+    saving: 6
+  },
+  {
+    id: 'sensitive',
+    name: 'The Calm Set',
+    concern: 'sensitive',
+    tagline: 'Nothing in here will argue with you',
+    blurb: 'Unscented soap, oat-extract butter and a deodorant with no aluminium in it.',
+    lines: [
+      { productId: 'pine-tar-soap' },
+      { productId: 'botanical-hand-butter', variantId: 'bud-of-rose' },
+      { productId: 'deodorant-creme', variantId: 'lavender-meadows' }
+    ],
+    saving: 5
+  },
+  {
+    id: 'unwind',
+    name: 'The Unwind Set',
+    concern: 'sleep',
+    tagline: 'An evening, arranged',
+    blurb: 'A steamer for the shower, a candle for after, and a diffuser that carries the room.',
+    lines: [
+      { productId: 'shower-steamers', variantId: 'lavender-large' },
+      { productId: 'beeswax-candle', variantId: 'large' },
+      { productId: 'room-diffuser', variantId: 'calming-mind' }
+    ],
+    saving: 6
+  },
+  {
+    id: 'everyday',
+    name: 'The Everyday Set',
+    concern: 'daily',
+    tagline: 'The three you will actually finish',
+    blurb: 'Hands, underarms, face. The routine most people are really after.',
+    lines: [
+      { productId: 'hand-butter', variantId: 'citrus-hearth' },
+      { productId: 'deodorant-creme', variantId: 'smoky-citrus' },
+      { productId: 'face-toner', variantId: 'rose-rosemary' }
+    ],
+    saving: 6
+  },
+  {
+    id: 'no-bottle',
+    name: 'The No-Bottle Set',
+    concern: 'daily',
+    tagline: 'A whole bathroom, and not one plastic pump',
+    blurb: 'Shampoo bar, conditioner bar, soap and the dish that makes all three last.',
+    lines: [
+      { productId: 'shampoo-bar', variantId: 'aloe-honey' },
+      { productId: 'conditioner-bar', variantId: 'repair-growth' },
+      { productId: 'handmade-soap' },
+      { productId: 'bamboo-soap-dish', variantId: 'large' }
+    ],
+    saving: 7
+  },
+  {
+    id: 'beard',
+    name: 'The Beard Set',
+    concern: 'daily',
+    tagline: 'Oil on weekdays, balm on the days it matters',
+    blurb: 'The two beard products and the shaving soap for the edges.',
+    lines: [
+      { productId: 'beard-oil' },
+      { productId: 'beard-balm' },
+      { productId: 'shaving-soap', variantId: 'cabane-tin' }
+    ],
+    saving: 6
+  }
+];
+
+export const PRODUCT_MAP = new Map(PRODUCTS.map((p) => [p.id, p]));
+
+export const getProduct = (id) => PRODUCT_MAP.get(id) || null;
+
+/** Lowest purchasable price for a product, accounting for variant overrides. */
+export const priceOf = (product, variantId) => {
+  if (!product) return 0;
+  const v = variantId && product.variants?.find((x) => x.id === variantId);
+  return v && typeof v.price === 'number' ? v.price : product.price;
+};
+
+/**
+ * The rendered widths of a product's photograph.
+ *
+ * Two tiers for everything, but not always the same two: a source is only ever
+ * scaled down, never up, so a photograph cropped out of a smaller frame tops
+ * out lower. Declaring it here keeps the `w` descriptors in the srcset honest
+ * — a browser told 900 about a 740px file will happily choose it for a display
+ * size it cannot fill.
+ */
+export const PHOTO_WIDTHS = [480, 900];
+export const photoWidthsOf = (product, variantId) => {
+  const v = variantId && product?.variants?.find((x) => x.id === variantId);
+  return (v?.photo ? v.photoWidths : null) || product?.photoWidths || PHOTO_WIDTHS;
+};
+
+/**
+ * The shape of a photograph, for the ones that are not square.
+ *
+ * Everything shot on the sweep is 1:1 and needs no entry. The group shots keep
+ * whatever frame they were taken in — a tall tray of nine, three wide rows of
+ * four — and an <img> told they are square reserves the wrong box and then
+ * jumps when the file lands. Ratios, not pixel sizes: the same numbers hold at
+ * every tier in the srcset.
+ */
+export const PHOTO_SHAPES = {
+  'lb-hero-1': [900, 675],
+  'lb-hero-2': [900, 675],
+  'lb-hero-3': [900, 675],
+  'lb-hero-4': [900, 1200],
+  'buff-hero-1': [900, 1236],
+  'buff-hero-2': [900, 655],
+  'buff-hero-3': [900, 655],
+  'buff-hero-4': [900, 655]
+};
+export const photoShape = (photo, width) => {
+  const [w, h] = PHOTO_SHAPES[photo] || [1, 1];
+  return { width, height: Math.round((width * h) / w) };
+};
+
+/**
+ * The photo for a product, or for one of its variants when that variant was
+ * shot separately. Returns null when nothing was photographed, which is the
+ * signal to fall back to the generated illustration.
+ */
+/**
+ * Every image for a product, in the order a gallery should show them.
+ *
+ * `heroPhotos` are the product's own — a group shot of the whole range, a
+ * lifestyle frame — and they lead, whichever scent is selected, because they
+ * are about the product rather than about one variant of it. The variants'
+ * own images follow.
+ *
+ * Each entry says which variant, if any, selecting it should choose:
+ * a hero is `variantId: null` and leaves the current choice alone.
+ */
+export const galleryOf = (product) => {
+  if (!product) return [];
+  const heroes = (product.heroPhotos || []).map((photo, i) => ({
+    photo, variantId: null, label: i === 0 ? product.name : `${product.name} — ${i + 1}`
+  }));
+  const shots = (product.variants || [])
+    .filter((v) => v.photo)
+    .map((v) => ({ photo: v.photo, variantId: v.id, label: v.label }));
+  if (heroes.length || shots.length) return [...heroes, ...shots];
+  return product.photo ? [{ photo: product.photo, variantId: null, label: product.name }] : [];
+};
+
+export const photoOf = (product, variantId) => {
+  if (!product) return null;
+  const v = variantId && product.variants?.find((x) => x.id === variantId);
+  if (v?.photo) return v.photo;
+
+  /* Falling back to the product's own photo is right when that photo is a shot
+     of the thing itself — one jar, several scents inside it. It is wrong when
+     the photo *is* a variant's, as it is for the Body Buff, where every image
+     is a label with a scent name printed on it: showing the Sunlit Cider label
+     while Coffee Cinnamon is selected states the wrong scent in the customer's
+     own language. So a per-variant image is never borrowed; an unlabelled
+     variant falls through to the generated vessel instead. */
+  if (variantId && product.photo &&
+      product.variants?.some((x) => x.photo === product.photo)) {
+    return null;
+  }
+  return product.heroPhotos?.[0] || product.photo || null;
+};
+
+export const getSet = (id) => SETS.find((s) => s.id === id) || null;
+
+/** What a set costs, and what it saves — both derived, never stored twice. */
+export const setPricing = (set) => {
+  const full = (set?.lines || []).reduce(
+    (n, l) => n + priceOf(getProduct(l.productId), l.variantId), 0);
+  return { full, price: Math.max(0, full - (set?.saving || 0)), saving: set?.saving || 0 };
+};
+
+export const formatPrice = (n) =>
+  n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
