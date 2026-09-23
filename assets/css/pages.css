@@ -2161,6 +2161,55 @@ body:has(.invoice-page) .backdrop { display: none; }
   .pdp__thumb:hover { transform: none; }
 }
 
+/* ── shelves inside a shelf ────────────────────────────────────────────────
+   Shown above the products when a category has categories under it. Wide, low
+   and quiet: it is a signpost on the way to the products, not a product. */
+.subshelves {
+  display: grid;
+  /* auto-FILL, not auto-fit: with one sub-shelf, auto-fit collapses the empty
+     tracks and the single tile stretches into a full-width banner. auto-fill
+     keeps them, so one tile is one tile. */
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.8rem;
+  margin-bottom: clamp(2rem, 4vw, 3.2rem);
+}
+.subshelf {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.05rem 1.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: color-mix(in oklab, var(--paper-0) 62%, transparent);
+  transition: border-color .3s var(--ease-soft), transform .3s var(--ease-out-expo),
+              background-color .3s var(--ease-soft);
+}
+.subshelf__name {
+  font: 400 clamp(1.15rem, 2vw, 1.45rem)/1.1 var(--font-display);
+  color: var(--text);
+}
+.subshelf__count {
+  flex: 1;
+  font-size: var(--step--1);
+  color: var(--text-faint);
+}
+.subshelf__go {
+  color: var(--text-faint);
+  transition: transform .3s var(--ease-out-expo), color .3s var(--ease-soft);
+}
+.subshelf:hover {
+  border-color: var(--line-strong);
+  background: color-mix(in oklab, var(--paper-0) 88%, transparent);
+  transform: translateY(-2px);
+}
+.subshelf:hover .subshelf__go { transform: translateX(4px); color: var(--text); }
+.subshelf:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .subshelf, .subshelf__go { transition: none; }
+  .subshelf:hover { transform: none; }
+  .subshelf:hover .subshelf__go { transform: none; }
+}
+
 /* A sub-shelf's own chip, marked so "Soap & Bath" reads as living inside
    "Body & Hands" rather than as a seventh top-level shelf. */
 .chip--sub { padding-left: 0.72em; }

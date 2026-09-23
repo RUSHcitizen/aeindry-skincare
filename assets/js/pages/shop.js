@@ -44,6 +44,29 @@ const AISLE = {
 const PREVIEW = 6;
 
 /**
+ * The shelves inside a shelf, as something to press.
+ *
+ * A count rather than a preview of the products: the tile's job is to say the
+ * shelf exists and how big it is, and a row of product cards under a heading
+ * that is itself inside a heading reads as a mistake. `list` is the already
+ * filtered set, so the number is the number you will actually be shown.
+ */
+function subShelves(kids, list) {
+  return `
+  <nav class="subshelves" aria-label="Shelves in this section">
+    ${kids.map((k) => {
+      const n = list.filter((p) => inCategory(p, k.id)).length;
+      return `
+      <a class="subshelf" href="#/shop?category=${esc(k.id)}" data-reveal="up">
+        <span class="subshelf__name">${esc(k.label)}</span>
+        <span class="subshelf__count">${n} ${n === 1 ? 'product' : 'products'}</span>
+        <span class="subshelf__go" aria-hidden="true">&#8594;</span>
+      </a>`;
+    }).join('')}
+  </nav>`;
+}
+
+/**
  * Unfiltered, the grid is grouped into its categories with a sign above each
  * and the long aisles trimmed to a preview. Filtered, it is one flat grid —
  * a heading over a group of one is noise, and nothing is held back from
@@ -51,6 +74,20 @@ const PREVIEW = 6;
  */
 function render(list, state) {
   if (state.category !== 'all' || state.scent || state.search || state.sort !== 'featured') {
+    /* Inside a shelf that has shelves of its own, those come first and the
+       shelf's own products follow. Face opens on Lips and the ten face
+       products, not on fifteen things in a heap.
+
+       Only when nothing else is narrowing the view. Someone who has typed a
+       search or picked a scent has said what they are after, and hiding five
+       matching lip products behind a tile they have to notice and press would
+       be answering a different question. */
+    const kids = state.category !== 'all' && !state.scent && !state.search
+      ? childCategories(state.category) : [];
+    if (kids.length) {
+      const own = list.filter((p) => filedIn(p, state.category));
+      return subShelves(kids, list) + (own.length ? productGrid(own) : '');
+    }
     return productGrid(list);
   }
   /* An aisle and, indented under it, its sub-shelves. Products filed directly

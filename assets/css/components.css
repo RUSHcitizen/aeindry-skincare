@@ -264,6 +264,96 @@
 .nav__link.is-active { color: var(--text); font-weight: 500; }
 .nav__link.is-active::after { transform: scaleX(1); }
 
+
+/* ── the Shop folder ────────────────────────────────────────────────────────
+   A panel of shelves under the Shop link. It hangs from the nav rather than
+   pushing anything, and it is `hidden` rather than merely transparent, so a
+   screen reader and the tab order agree with what the eye sees. */
+.nav__folder { position: relative; display: flex; align-items: center; }
+.nav__panel {
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.35rem;
+  min-width: 22rem;
+  padding: 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: color-mix(in oklab, var(--paper-0) 94%, transparent);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  box-shadow: 0 22px 48px -18px rgb(var(--shadow-color) / .30),
+              0 2px 6px rgb(var(--shadow-color) / .06);
+  z-index: 1;
+}
+.nav__folder.is-open .nav__panel { animation: folder-in .26s var(--ease-out-expo) both; }
+@keyframes folder-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav__folder.is-open .nav__panel { animation: none; }
+}
+/* Two columns: eleven shelves in one column is a list long enough to need
+   scanning, and in two it is one glance. */
+.nav__shelves { display: grid; grid-template-columns: 1fr 1fr; gap: 0.1rem 0.5rem; }
+.nav__shelf {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.44rem 0.6rem;
+  border-radius: var(--r-md);
+  font-size: var(--step--1);
+  color: var(--text-soft);
+  transition: background-color .2s var(--ease-soft), color .2s var(--ease-soft);
+}
+.nav__shelf-name { flex: 1; }
+.nav__shelf-count {
+  font-size: 0.78em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+.nav__shelf-in { color: var(--text-faint); font-size: 0.85em; line-height: 1; }
+.nav__shelf--sub { padding-left: 0.4rem; }
+.nav__shelf--all {
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  font-weight: 500;
+  color: var(--text);
+}
+.nav__shelf:hover, .nav__shelf:focus-visible {
+  background: var(--paper-1);
+  color: var(--text);
+}
+.nav__shelf:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.nav__shelf:hover .nav__shelf-count { color: var(--text-soft); }
+
+/* ── the same shelves in the phone menu ─────────────────────────────────── */
+.menu__sub {
+  margin: 0.2rem 0 0.9rem 2.4rem;
+  display: grid;
+  gap: 0.1rem;
+}
+.menu__sublink {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.3rem 0;
+  font-size: var(--step--1);
+  color: var(--text-soft);
+}
+.menu__sublink--sub { padding-left: 1rem; }
+.menu__sublink--sub::before {
+  content: "\21b3";
+  margin-right: -0.35rem;
+  color: var(--text-faint);
+  font-size: 0.85em;
+}
+.menu__subcount { color: var(--text-faint); font-size: 0.8em; font-variant-numeric: tabular-nums; }
+.menu__sublink:hover, .menu__sublink:focus-visible { color: var(--text); }
+
 .nav__actions { display: flex; align-items: center; gap: 0.15rem; justify-self: end; }
 
 .cart-btn { position: relative; }

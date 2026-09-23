@@ -83,7 +83,14 @@
     </a>
 
     <nav class="nav__links" aria-label="Primary">
-      <a class="nav__link" href="#/shop">Shop</a>
+      <!-- The panel is filled from the catalogue at runtime rather than written
+           out here, so a shelf added to CATEGORIES appears in the nav without
+           anybody remembering to come and edit this file. -->
+      <div class="nav__folder" data-shop-menu>
+        <a class="nav__link" href="#/shop" aria-haspopup="true" aria-expanded="false"
+           aria-controls="shop-menu">Shop</a>
+        <div class="nav__panel" id="shop-menu" hidden></div>
+      </div>
       <a class="nav__link" href="#/sets">Sets</a>
       <a class="nav__link" href="#/ritual">Build a ritual</a>
       <a class="nav__link" href="#/ingredients">Ingredients</a>
@@ -118,7 +125,10 @@
   <nav aria-label="Mobile">
     <ul class="menu__list" role="list">
       <li class="menu__item"><a class="menu__link" href="#/"          style="--d:120ms"><span class="num">01</span>Home</a></li>
-      <li class="menu__item"><a class="menu__link" href="#/shop"      style="--d:180ms"><span class="num">02</span>Shop</a></li>
+      <li class="menu__item"><a class="menu__link" href="#/shop"      style="--d:180ms"><span class="num">02</span>Shop</a>
+        <!-- Also filled from the catalogue. There is no hover on a phone, so the
+             shelves are listed outright rather than hidden behind one. -->
+        <ul class="menu__sub" role="list" data-shop-sub></ul></li>
       <li class="menu__item"><a class="menu__link" href="#/sets"      style="--d:240ms"><span class="num">03</span>Sets</a></li>
       <li class="menu__item"><a class="menu__link" href="#/ritual"    style="--d:300ms"><span class="num">04</span>Build a ritual</a></li>
       <li class="menu__item"><a class="menu__link" href="#/ingredients" style="--d:360ms"><span class="num">05</span>Ingredients</a></li>
