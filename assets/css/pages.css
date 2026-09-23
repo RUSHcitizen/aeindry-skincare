@@ -702,7 +702,45 @@
 /* ============================================================
    FILTERS (shop + ingredients)
    ============================================================ */
+/* ── the scent preview ──────────────────────────────────────────────────────
+   Resting on a scent chip lights the products carrying it and hushes the rest,
+   and the bar blooms in that scent's colour from under the chip you are on.
+   `--scent` and `--scent-x` are written by shop.js; everything else is here.
+
+   `.is-hushed` rather than a filter: nothing is removed, nothing moves, and the
+   grid does not reflow — the products you want simply stay lit while the others
+   step back. A preview that rearranged the page would be a worse preview. */
+.filters__wash {
+  position: absolute;
+  inset: -1px 0 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(58% 130% at var(--scent-x, 50%) 108%,
+              color-mix(in oklab, var(--scent, transparent) 34%, transparent), transparent 70%);
+  transition: opacity 420ms var(--ease-soft), background 420ms var(--ease-soft);
+}
+.filters.is-scenting .filters__wash { opacity: 1; }
+
+.chip--scent.is-hushed { opacity: .45; }
+.spec.is-hushed { opacity: .32; }
+/* Again `.is-settled` on the card — see the note in components.css. A bare
+   `.spec` here replaces the reveal's transition and strands every card on its
+   own composited layer. */
+.chip--scent, .spec.is-settled {
+  transition: opacity 380ms var(--ease-soft), scale var(--dur-slow) var(--ease-out-expo);
+}
+/* A hushed card should not answer the pointer either — a dimmed thing that
+   still lifts and tilts reads as broken rather than as set aside. */
+.spec.is-hushed { pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .filters__wash { transition: none; }
+  .chip--scent, .spec.is-settled { transition: opacity 1ms; }
+}
+
 .filters {
+  position: relative;
   display: grid;
   gap: var(--space-s);
   padding: var(--space-s) 0 var(--space-m);
@@ -851,6 +889,29 @@
   animation: float-slow 18s var(--ease-soft) infinite;
 }
 .pdp__art { width: 62%; position: relative; margin-bottom: 6%; }
+
+/* ── the stage notices you ──────────────────────────────────────────────────
+   `--px`/`--py` are written on .pdp__stage by pointer-field.js, already eased.
+
+   The vessel leans toward the pointer and the plinth's shadow swings the other
+   way, as though the light over the shelf stayed where it was. That opposition
+   is the whole trick: move the shadow with the object and it reads as a sticker
+   sliding around; move it against, and the object is standing on something.
+
+   `translate` and `rotate` rather than `transform`, because the artwork inside
+   is already running a float animation on `transform` and a photograph is
+   sized by `width` — independent properties compose with both. */
+.pdp__art {
+  translate: calc(var(--px, 0) * 10px) calc(var(--py, 0) * 5px);
+  rotate: calc(var(--px, 0) * 1.4deg);
+}
+.pdp__crown  { translate: calc(var(--px, 0) * -7px) calc(var(--py, 0) * -4px); }
+.pdp__plinth { translate: calc(var(--px, 0) * -9px) 0; }
+.pdp__halo   { translate: calc(var(--px, 0) * 16px) calc(var(--py, 0) * 10px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp__art, .pdp__crown, .pdp__plinth, .pdp__halo { translate: none; rotate: none; }
+}
 .pdp__art svg { width: 100%; filter: drop-shadow(0 28px 38px rgb(28 45 32 / .26)); animation: float-y 9s var(--ease-soft) infinite; }
 
 .pdp__marks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }

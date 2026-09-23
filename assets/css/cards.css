@@ -16,6 +16,41 @@
   position: relative;
   display: grid;
   grid-template-rows: auto 1fr;
+  /* Tilted by tilt.js, which writes a `transform` carrying its own
+     `perspective()` — so the depth travels with the card and one shown on its
+     own, in the quick view or the related rail, is still right.
+
+     Deliberately NOT `transform-style: preserve-3d`. Nothing here needs its own
+     position in the card's 3D space, and a preserved 3D context puts the
+     product name and price into 3D rendering, where they lose subpixel
+     antialiasing — the same softness the reveal goes out of its way to undo. */
+}
+/* The light the pointer drags across the vessel. `--mx`/`--my` are written by
+   tilt.js on every pointermove; unset, the fallback puts the highlight nowhere
+   in particular, which is what a card at rest should look like.
+
+   It spans the whole card because that is the box `--mx`/`--my` are measured
+   against — inside the stage the same 25% would point somewhere else entirely.
+   A mask keeps it off the label plate instead: soft-light over the product
+   name still lifts it, and a highlight that washes the text under it is a
+   worse card, not a livelier one. */
+.spec__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 48%, transparent 66%);
+  mask-image: linear-gradient(to bottom, #000 0 48%, transparent 66%);
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(34% 30% at var(--mx, 50%) var(--my, 30%),
+              rgb(255 255 255 / .6), transparent 72%);
+  mix-blend-mode: soft-light;
+  transition: opacity var(--dur-slow) var(--ease-soft);
+}
+.spec:hover .spec__sheen { opacity: .7; }
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .spec__sheen { display: none; }
 }
 
 /* ---- the stage the vessel stands on ---- */

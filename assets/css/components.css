@@ -49,6 +49,58 @@
 .btn:hover, .btn:focus-visible { color: var(--btn-fill-fg, #fff); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 .btn:active { transform: translateY(0) scale(0.98); transition-duration: 90ms; }
 
+/* ── press ──────────────────────────────────────────────────────────────────
+   Hover says "this is live"; press says "I heard you". Everything actionable
+   compresses a little under the pointer and springs back on release.
+
+   Through the `scale` property rather than `transform`, deliberately: the
+   specimen card carries an inline transform written by tilt.js every
+   pointermove, and a `transform: scale()` here would simply lose to it. `scale`
+   is its own property and composes with whatever transform is in play.
+
+   The press is quick going down and slower coming back — the asymmetry is what
+   reads as sprung rather than rubbery. */
+.chip, .variant, .pdp__thumb, .subshelf, .nav__shelf,
+.ing-card, .set, .spec__wish, .swatch, .menu__sublink,
+/* `.spec.is-settled`, not `.spec`: the card is a [data-reveal] element, and
+   that rule sets a three-property transition — opacity, transform, filter —
+   which reveal.js waits on, listening for the *filter* transition to end
+   before it strips `will-change` and the zero blur. Declaring a transition on
+   `.spec` replaces all three, the filter transition never ends, settle never
+   runs, and every card on the site stays promoted to its own layer with a
+   blur(0) on it. That is the state the reveal comments describe as permanently
+   soft display type. `.is-settled` is added after the reveal is over, so
+   overriding the transition from there cannot reach it. */
+.spec.is-settled {
+  transition-property: scale;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-out-expo);
+}
+.chip:active, .variant:active, .pdp__thumb:active,
+.spec__wish:active, .swatch:active, .nav__shelf:active, .menu__sublink:active {
+  scale: 0.94;
+  transition-duration: 80ms;
+}
+/* Big surfaces move less. A card that shrinks as much as a chip reads as
+   collapsing rather than being pressed.
+
+   `.spec.is-settled:active` rather than `.spec:active`: the scent preview in
+   pages.css also declares a transition on `.spec.is-settled`, and at equal
+   specificity the later sheet wins — which left the press easing over the
+   preview's long duration instead of snapping down. Pressing has to be the
+   fastest thing on the card or it does not read as a press at all. */
+.spec.is-settled:active, .subshelf:active, .ing-card:active, .set:active {
+  scale: 0.988;
+  transition-duration: 110ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .spec.is-settled, .chip, .variant, .pdp__thumb, .subshelf, .nav__shelf,
+  .ing-card, .set, .spec__wish, .swatch, .menu__sublink { transition-property: none; }
+  .spec.is-settled:active, .chip:active, .variant:active, .pdp__thumb:active,
+  .subshelf:active, .nav__shelf:active, .ing-card:active, .set:active,
+  .spec__wish:active, .swatch:active, .menu__sublink:active { scale: 1; }
+}
+
 .btn__label { position: relative; display: inline-block; }
 .btn__icon { flex: none; width: 1.05em; height: 1.05em; transition: transform var(--dur-base) var(--ease-out-expo); }
 .btn:hover .btn__icon { transform: translateX(3px); }

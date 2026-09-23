@@ -107,6 +107,30 @@
 @media (prefers-reduced-motion: reduce) {
   .cover__logo { transform: none; opacity: 1; }
 }
+
+/* ── the cover notices you ──────────────────────────────────────────────────
+   `--px`/`--py` run -1..1 across the section, written by pointer-field.js and
+   already eased there, so these want no transition of their own — a second
+   easing on top only adds lag.
+
+   Through `translate`, because every one of these elements is already using
+   `transform` for something else: the wreath for its scroll exit, the headline
+   for its reveal. Independent properties compose; a second `transform` would
+   simply replace the first.
+
+   The mark leads and the type lags behind it, in the opposite direction. That
+   opposition is the whole effect — moving them the same way at different
+   speeds reads as a wobble, moving them apart reads as depth. */
+.cover__logo  { translate: calc(var(--px, 0) *  16px) calc(var(--py, 0) *  11px); }
+.cover__halo  { translate: calc(var(--px, 0) *  26px) calc(var(--py, 0) *  18px); }
+.cover__title { translate: calc(var(--px, 0) *  -8px) calc(var(--py, 0) *  -5px); }
+.cover__blurb,
+.cover__rule  { translate: calc(var(--px, 0) *  -4px) calc(var(--py, 0) *  -3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cover__logo, .cover__halo, .cover__title,
+  .cover__blurb, .cover__rule { translate: none; }
+}
 .cover {
   --leave: 0;
   position: relative;

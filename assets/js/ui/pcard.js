@@ -42,8 +42,10 @@ export function productCard(product, { reveal = 'up', index = 0 } = {}) {
     + (options.length > 4 ? `<span class="spec__swatch-more">+${options.length - 4}</span>` : '');
 
   return `
-  <article class="spec" data-reveal="${esc(reveal)}"
+  <article class="spec" data-reveal="${esc(reveal)}" data-tilt="4.5"
+           data-scents="${esc((product.scentFamily || []).join(' '))}"
            style="--tint:${esc(product.art.tint[1])};--tint2:${esc(product.art.tint[0])};--accent-art:${esc(product.art.accent)}">
+    <span class="spec__sheen" aria-hidden="true"></span>
     <div class="spec__stage${photo ? ' spec__stage--photo' : ''}">
       <span class="spec__halo" aria-hidden="true"></span>
       <span class="spec__leaf" aria-hidden="true" style="${SPOTS[index % SPOTS.length]}">

@@ -17,6 +17,7 @@ import { productArt } from '../lib/art.js';
 import { botanical } from '../lib/botanical.js';
 import { botField, petalDrift, edge, join, initBotField } from '../ui/bot-field.js';
 import { initTilt } from '../ui/tilt.js';
+import { pointerFieldIn } from '../ui/pointer-field.js';
 import { trackProgress } from '../core/scroll.js';
 
 /* The shelf, the spotlight and the encyclopedia all pull from real data. */
@@ -502,6 +503,11 @@ export default function home() {
 
       cleanups.push(initBotField(root));
       initTilt(root);
+
+      /* The cover already floats, breathes and recedes on scroll. What it did
+         not do was notice you. Two numbers on the section; home.css decides
+         which layer moves how far. */
+      cleanups.push(pointerFieldIn(root, '.cover', { ease: 0.09 }));
 
       /* ---- counters ---- */
       const statsBlock = $('.story__stats', root);

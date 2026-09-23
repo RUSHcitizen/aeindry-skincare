@@ -11,6 +11,7 @@ import { botField, pageField, initBotField } from '../ui/bot-field.js';
 import { productCard } from '../ui/pcard.js';
 import { initAccordion } from '../ui/accordion.js';
 import { initTilt } from '../ui/tilt.js';
+import { pointerFieldIn } from '../ui/pointer-field.js';
 import { toggleWish, isWished } from '../core/store.js';
 import { toast } from '../ui/toast.js';
 import notFound from './not-found.js';
@@ -384,9 +385,14 @@ export default function product({ params, query }) {
 
       initAccordion(root);
       initTilt(root);
+
+      /* The stage is the focal point of seventy pages and, apart from a float
+         loop, it sat still. Two numbers on the stage; pages.css leans the
+         vessel and swings its shadow the other way. */
+      const stopStage = pointerFieldIn(root, '.pdp__stage', { ease: 0.11 });
       const stopField = initBotField(root);
       repaint();
-      return () => stopField?.();
+      return () => { stopField?.(); stopStage?.(); };
     }
   };
 }

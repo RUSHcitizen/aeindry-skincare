@@ -162,6 +162,7 @@ export default function shop({ query }) {
     <section class="section section--flush-top">
       <div class="wrap">
         <div class="filters" data-reveal="up">
+          <span class="filters__wash" aria-hidden="true"></span>
           <div class="filters__row">
             <div class="filters__group" role="group" aria-label="Filter by category">
               ${CATEGORIES.map((c) => `
@@ -286,6 +287,57 @@ export default function shop({ query }) {
         state.scent = state.scent === btn.dataset.scent ? null : btn.dataset.scent;
         paint();
       }));
+
+      /* ---- the shop answers before you commit ----------------------------
+         Resting on a scent lights the products that carry it and lets the rest
+         recede, and the filter bar blooms in that scent's own colour under the
+         chip. Nothing is filtered and nothing is navigated: it is a preview of
+         what pressing would do, which is the part that makes it worth
+         discovering rather than merely pretty.
+
+         Preview only, and only for a pointer. On a touch screen there is no
+         hover to preview with — a tap is the commitment — and on a keyboard
+         focus does the same job, so it is wired to both enter and focus. */
+      const filters = $('.filters', root);
+      const scentChips = $$('[data-scent]', root);
+      let scentTimer = null;
+
+      const previewScent = (btn) => {
+        clearTimeout(scentTimer);
+        const id = btn.dataset.scent;
+        if (filters) {
+          const f = filters.getBoundingClientRect();
+          const b = btn.getBoundingClientRect();
+          filters.style.setProperty('--scent', btn.style.getPropertyValue('--sc'));
+          filters.style.setProperty('--scent-x',
+            `${(((b.left + b.width / 2) - f.left) / f.width * 100).toFixed(1)}%`);
+          filters.classList.add('is-scenting');
+        }
+        scentChips.forEach((c) => c.classList.toggle('is-hushed', c !== btn));
+        $$('.spec', root).forEach((card) =>
+          card.classList.toggle('is-hushed',
+            !(card.dataset.scents || '').split(' ').includes(id)));
+      };
+
+      const clearScent = () => {
+        /* A short grace period, so travelling from one chip to the next does
+           not flash the whole grid back to full and out again. */
+        clearTimeout(scentTimer);
+        scentTimer = setTimeout(() => {
+          filters?.classList.remove('is-scenting');
+          scentChips.forEach((c) => c.classList.remove('is-hushed'));
+          $$('.spec', root).forEach((c) => c.classList.remove('is-hushed'));
+        }, 90);
+      };
+
+      scentChips.forEach((btn) => {
+        btn.addEventListener('pointerenter', (e) => {
+          if (e.pointerType !== 'touch') previewScent(btn);
+        });
+        btn.addEventListener('pointerleave', clearScent);
+        btn.addEventListener('focus', () => previewScent(btn));
+        btn.addEventListener('blur', clearScent);
+      });
 
       $('#shop-sort', root).addEventListener('change', (e) => {
         state.sort = e.target.value;

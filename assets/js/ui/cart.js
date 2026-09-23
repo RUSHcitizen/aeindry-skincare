@@ -172,7 +172,13 @@ function flyToCart(sourceBtn, product, variantId) {
   if (prefersReducedMotion()) return;
 
   const card = sourceBtn.closest('.spec, .shelf-item, .modal, .pdp, .ritual-step, .quiz-result, .spotlight-sec');
-  const art = card?.querySelector('svg.product-art') || sourceBtn.querySelector('svg.product-art');
+  /* A photograph as well as a generated vessel. This looked for `svg.product-art`
+     alone, which meant the eleven photographed products — the two the range
+     actually leads with among them — were the only ones that added to the basket
+     with no animation at all. `productArt` below already returns whichever the
+     product has; only finding the source to measure was too narrow. */
+  const PICK = 'svg.product-art, img.product-photo';
+  const art = card?.querySelector(PICK) || sourceBtn.querySelector(PICK);
   const cartBtn = $('.cart-btn');
   if (!art || !cartBtn) return;
 
