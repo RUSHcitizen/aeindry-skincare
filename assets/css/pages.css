@@ -2241,7 +2241,7 @@ body:has(.invoice-page) .backdrop { display: none; }
   padding: 1.05rem 1.3rem;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  background: color-mix(in oklab, var(--paper-0) 62%, transparent);
+  background: color-mix(in oklab, var(--bg-raised) 62%, transparent);
   transition: border-color .3s var(--ease-soft), transform .3s var(--ease-out-expo),
               background-color .3s var(--ease-soft);
 }
@@ -2252,15 +2252,16 @@ body:has(.invoice-page) .backdrop { display: none; }
 .subshelf__count {
   flex: 1;
   font-size: var(--step--1);
-  color: var(--text-faint);
+  /* Muted rather than faint — see the note on .nav__shelf-count. */
+  color: var(--text-muted);
 }
 .subshelf__go {
-  color: var(--text-faint);
+  color: var(--text-muted);
   transition: transform .3s var(--ease-out-expo), color .3s var(--ease-soft);
 }
 .subshelf:hover {
   border-color: var(--line-strong);
-  background: color-mix(in oklab, var(--paper-0) 88%, transparent);
+  background: color-mix(in oklab, var(--bg-raised) 88%, transparent);
   transform: translateY(-2px);
 }
 .subshelf:hover .subshelf__go { transform: translateX(4px); color: var(--text); }

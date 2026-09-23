@@ -331,7 +331,11 @@
   padding: 0.55rem;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  background: color-mix(in oklab, var(--paper-0) 94%, transparent);
+  /* `--bg-raised`, not `--paper-0`. The paper tokens are literal ivory and do
+     not flip with the theme — `--paper-1` is what dark mode uses for *text* —
+     so a panel built on them stayed a white card while the type on it went
+     pale. Measured at 1.3:1 in dark mode: a menu you could not read. */
+  background: color-mix(in oklab, var(--bg-raised) 94%, transparent);
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   box-shadow: 0 22px 48px -18px rgb(var(--shadow-color) / .30),
@@ -360,12 +364,16 @@
   transition: background-color .2s var(--ease-soft), color .2s var(--ease-soft);
 }
 .nav__shelf-name { flex: 1; }
+/* `--text-muted`, not `--text-faint`. The count is small text carrying real
+   information — how much is on that shelf — so it owes AA, and faint on the
+   raised surface this panel uses measures 3.6:1 in dark mode. Muted is 5.2:1
+   and still reads as secondary to the name beside it. */
 .nav__shelf-count {
   font-size: 0.78em;
   font-variant-numeric: tabular-nums;
-  color: var(--text-faint);
+  color: var(--text-muted);
 }
-.nav__shelf-in { color: var(--text-faint); font-size: 0.85em; line-height: 1; }
+.nav__shelf-in { color: var(--text-muted); font-size: 0.85em; line-height: 1; }
 .nav__shelf--sub { padding-left: 0.4rem; }
 .nav__shelf--all {
   margin-bottom: 0.3rem;
@@ -376,7 +384,10 @@
   color: var(--text);
 }
 .nav__shelf:hover, .nav__shelf:focus-visible {
-  background: var(--paper-1);
+  /* A wash of the text colour rather than a named surface: it darkens on a
+     light panel and lightens on a dark one, with no second value to keep in
+     step. */
+  background: color-mix(in oklab, var(--text) 7%, transparent);
   color: var(--text);
 }
 .nav__shelf:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
@@ -400,10 +411,10 @@
 .menu__sublink--sub::before {
   content: "\21b3";
   margin-right: -0.35rem;
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-size: 0.85em;
 }
-.menu__subcount { color: var(--text-faint); font-size: 0.8em; font-variant-numeric: tabular-nums; }
+.menu__subcount { color: var(--text-muted); font-size: 0.8em; font-variant-numeric: tabular-nums; }
 .menu__sublink:hover, .menu__sublink:focus-visible { color: var(--text); }
 
 .nav__actions { display: flex; align-items: center; gap: 0.15rem; justify-self: end; }
