@@ -1998,16 +1998,6 @@ body:has(.invoice-page) .backdrop { display: none; }
      than the product standing on it. */
   mix-blend-mode: multiply;
 }
-/* On a dark ground multiply has nothing to do but crush the product to black,
-   so the sweep is softened with a little transparency instead. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .product-photo {
-    mix-blend-mode: normal; opacity: .94; border-radius: var(--r-md);
-  }
-}
-:root[data-theme="dark"] .product-photo {
-  mix-blend-mode: normal; opacity: .94; border-radius: var(--r-md);
-}
 .band--olive .product-photo { mix-blend-mode: normal; border-radius: var(--r-md); }
 
 /* ============================================================

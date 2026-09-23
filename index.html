@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aeindry Skincare — All Natural Handmade Skincare</title>
 <meta name="description" content="Aeindry Skincare — a small, woman-owned company making 100% natural handmade skincare in the Pacific Northwest. Plant oils, botanical extracts and rich butters. No preservatives, no silicon, no formaldehyde, no harsh chemicals.">
-<meta name="theme-color" content="#241F19" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#F4EDE0" media="(prefers-color-scheme: light)">
-<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F4EDE0">
+<!-- One theme. `light` rather than `light dark` so a browser in dark mode does
+     not repaint form controls, scrollbars and the canvas behind the page in
+     colours the stylesheet knows nothing about. -->
+<meta name="color-scheme" content="light">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Aeindry Skincare — All Natural Handmade Skincare">
@@ -34,13 +36,6 @@
 <link rel="icon" type="image/png" sizes="512x512" href="assets/img/favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicon-180.png">
 
-<script>
-  // Applied before first paint so a chosen theme never flashes the other one.
-  try {
-    var t = localStorage.getItem('aeindry.theme');
-    if (t) document.documentElement.setAttribute('data-theme', JSON.parse(t));
-  } catch (e) {}
-</script>
 </head>
 
 <body>
@@ -100,9 +95,6 @@
     </nav>
 
     <div class="nav__actions">
-      <button class="icon-btn theme-btn" type="button" aria-label="Change colour theme">
-        <svg viewBox="0 0 24 24" aria-hidden="true"></svg>
-      </button>
       <button class="icon-btn cart-btn" type="button" aria-label="Open basket">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M5 8h14l-1.1 11.3a2 2 0 0 1-2 1.7H8.1a2 2 0 0 1-2-1.7Z"/>

@@ -93,9 +93,9 @@ export async function mountCard(el, { amountMinor, currency = 'usd' }) {
 
   stripe = stripe || window.Stripe(config.publishable_key);
 
-  const dark = matchMedia('(prefers-color-scheme: dark)').matches
-    && document.documentElement.dataset.theme !== 'light'
-    || document.documentElement.dataset.theme === 'dark';
+  /* The site has one theme, so the card form does too. Left to its own
+     devices Stripe's Element follows the operating system, which would drop a
+     dark card form into the middle of an ivory checkout. */
   const css = getComputedStyle(document.documentElement);
   const token = (name, fallback) => (css.getPropertyValue(name) || '').trim() || fallback;
 
@@ -104,7 +104,7 @@ export async function mountCard(el, { amountMinor, currency = 'usd' }) {
     amount: Math.max(50, Math.round(amountMinor)),   // Stripe's floor is 50c
     currency,
     appearance: {
-      theme: dark ? 'night' : 'flat',
+      theme: 'flat',
       variables: {
         colorPrimary: token('--gilt-text', '#8A6111'),
         colorBackground: token('--paper-0', '#FCFBF8'),

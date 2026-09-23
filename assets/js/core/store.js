@@ -15,7 +15,6 @@ import { getProduct } from '../data/products.js';
 import * as commerce from '../commerce/index.js';
 
 const WISH_KEY = 'aeindry.wishlist.v1';
-const THEME_KEY = 'aeindry.theme';
 
 export const bus = emitter();
 
@@ -114,34 +113,3 @@ export function toggleWish(id) {
   return wishlist.has(id);
 }
 
-/* ---------- Theme ---------- */
-export function getTheme() {
-  return store.get(THEME_KEY, 'system');
-}
-
-export function setTheme(mode) {
-  if (mode === 'system') {
-    document.documentElement.removeAttribute('data-theme');
-    store.remove(THEME_KEY);
-  } else {
-    document.documentElement.setAttribute('data-theme', mode);
-    store.set(THEME_KEY, mode);
-  }
-  bus.emit('theme:change', mode);
-}
-
-export function initTheme() {
-  const saved = getTheme();
-  if (saved === 'dark' || saved === 'light') {
-    document.documentElement.setAttribute('data-theme', saved);
-  }
-}
-
-/** Cycle light → dark → system. */
-export function cycleTheme() {
-  const order = ['light', 'dark', 'system'];
-  const current = getTheme();
-  const next = order[(order.indexOf(current) + 1) % order.length];
-  setTheme(next);
-  return next;
-}

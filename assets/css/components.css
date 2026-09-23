@@ -460,7 +460,25 @@
   inset: 0;
   z-index: calc(var(--z-nav) - 1);
   background: var(--stem-900);
-  color: var(--paper-1);
+
+  /* The overlay is a dark room inside a light site, so it re-tokenises its
+     subtree the way .band--olive does. Setting `color` alone was not enough:
+     anything inside that names a token of its own — the shelf list, the
+     address, the email link, a ghost button's label — took the page's dark ink
+     and painted it on this dark ground. Measured from 2.6:1 down to 1.0:1,
+     which is text the same colour as what it sits on. */
+  --text:        var(--paper-1);
+  --text-soft:   #D8D3C6;
+  --text-muted:  #BEB8A8;
+  --text-faint:  #A39D8B;
+  --line:        color-mix(in oklab, var(--paper-1) 16%, transparent);
+  --line-soft:   color-mix(in oklab, var(--paper-1) 9%, transparent);
+  --line-strong: color-mix(in oklab, var(--paper-1) 30%, transparent);
+  --accent:      var(--rose-lit);
+  --accent-hover: var(--rose-lit);
+  --bg-raised:   var(--stem-800);
+  --focus-ring:  var(--rose-wash);
+  color: var(--text);
   display: flex;
   flex-direction: column;
   justify-content: center;

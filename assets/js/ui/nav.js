@@ -6,9 +6,7 @@
 import { $, $$, lockScroll, unlockScroll, trapFocus } from '../lib/dom.js';
 import { scrollBus } from '../core/scroll.js';
 import { parseHash } from '../core/router.js';
-import { cycleTheme, getTheme } from '../core/store.js';
 import { PRODUCTS, topCategories, childCategories, inCategory } from '../data/products.js';
-import { toast } from './toast.js';
 
 let nav, menu, burger, progress, releaseTrap;
 let menuOpen = false;
@@ -37,15 +35,6 @@ export function initNav() {
   window.addEventListener('route:change', syncActive);
   window.addEventListener('route:change', shutFolder);
   syncActive();
-
-  // Theme toggle
-  const themeBtn = $('.theme-btn');
-  themeBtn?.addEventListener('click', () => {
-    const mode = cycleTheme();
-    paintThemeIcon(mode);
-    toast(`Theme: ${mode === 'system' ? 'following your system' : mode}`, { icon: 'info', duration: 1800 });
-  });
-  paintThemeIcon(getTheme());
 }
 
 function onScroll({ y, progress: p }) {
@@ -220,17 +209,3 @@ function shutFolder() {
   folderLink?.setAttribute('aria-expanded', 'false');
 }
 
-const THEME_ICONS = {
-  light: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2M12 19.4v2M2.6 12h2M19.4 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/>',
-  dark:  '<path d="M20 14.4A8.5 8.5 0 0 1 9.6 4 8.5 8.5 0 1 0 20 14.4Z"/>',
-  system:'<rect x="3" y="4.5" width="18" height="13" rx="2"/><path d="M8.5 21h7M12 17.5V21"/>'
-};
-
-function paintThemeIcon(mode) {
-  const btn = $('.theme-btn');
-  if (!btn) return;
-  const svg = btn.querySelector('svg');
-  if (svg) svg.innerHTML = THEME_ICONS[mode] || THEME_ICONS.system;
-  btn.setAttribute('aria-label', `Colour theme: ${mode}. Activate to change.`);
-  btn.querySelector('.tip__bubble')?.remove();
-}

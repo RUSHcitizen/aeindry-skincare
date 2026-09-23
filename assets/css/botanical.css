@@ -214,20 +214,10 @@
   will-change: transform;
 }
 
-/* Dark grounds need much less of it — the same near-white artwork that reads
-   as a whisper on ivory reads as a lit shape against bark. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .backdrop { opacity: .18; }
-}
-:root[data-theme="dark"] .backdrop { opacity: .18; }
-
 /* Phones crop hard into the frame, so the corner clusters land proportionally
    much larger against the viewport. Same artwork, less of it. */
 @media (max-width: 760px) {
   .backdrop { opacity: .36; }
-}
-@media (max-width: 760px) {
-  :root[data-theme="dark"] .backdrop { opacity: .15; }
 }
 
 @media (prefers-reduced-motion: reduce) {

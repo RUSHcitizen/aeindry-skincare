@@ -3,7 +3,7 @@
  */
 
 import { $, $$, on } from './lib/dom.js';
-import { initTheme, initCommerce, canTakePayment, toggleWish, bus } from './core/store.js';
+import { initCommerce, canTakePayment, toggleWish, bus } from './core/store.js';
 import { initScroll } from './core/scroll.js';
 import { initMagnetic } from './core/cursor.js';
 import { runPreloader } from './core/preloader.js';
@@ -114,7 +114,6 @@ async function boot() {
     }
   });
   installBackdrop();      // once, outside the router's subtree
-  initTheme();
   initScroll();
   initMagnetic(document);
   initNav();
