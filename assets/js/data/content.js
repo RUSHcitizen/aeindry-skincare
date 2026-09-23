@@ -315,6 +315,38 @@ const INGREDIENT_ENTRIES = [
     family: 'wax', color: '#E9C97A',
     role: 'Structure & seal',
     body: 'It sets a balm and forms a breathable seal that keeps water in the skin instead of letting it evaporate off. Poured on its own with a cotton wick, it is also the candle.'
+  },
+
+  /* Named on the lotion bar's own write-up. */
+  {
+    id: 'mango-butter', name: 'Mango Butter', latin: 'Mangifera indica', origin: 'The mango stone, India & West Africa',
+    family: 'butter', color: '#F2D9A8',
+    role: 'Soft structure',
+    body: 'Pressed from the stone rather than the fruit. Softer than cocoa butter and less waxy than shea, which is why the two are usually blended \u2014 cocoa gives a bar its backbone and mango keeps it from feeling like a candle.'
+  },
+  {
+    id: 'jojoba-oil', name: 'Jojoba Oil', latin: 'Simmondsia chinensis', origin: 'Sonoran Desert shrub',
+    family: 'oil', color: '#EBD79A',
+    role: 'Closest to skin\u2019s own',
+    body: 'Not strictly an oil but a liquid wax, and the plant oil whose structure sits closest to what skin makes for itself. It absorbs rather than sitting on top, and it keeps for years without turning.'
+  },
+  {
+    id: 'avocado-oil', name: 'Avocado Oil', latin: 'Persea gratissima', origin: 'Pressed from the flesh, not the stone',
+    family: 'oil', color: '#C9D18A',
+    role: 'Heavy and slow',
+    body: 'One of the thicker plant oils, and slow to sink in \u2014 which is the point in a bar you rub on a heel rather than a face. Deep green when unrefined, from the flesh it is pressed out of.'
+  },
+  {
+    id: 'grapeseed-oil', name: 'Grapeseed Oil', latin: 'Vitis vinifera', origin: 'A by-product of winemaking',
+    family: 'oil', color: '#D8DCA6',
+    role: 'The light one',
+    body: 'Thin, almost weightless, and the counterweight to the heavy oils in a blend: it is what stops a rich bar feeling like a film. Pressed from the seeds left after the grapes are crushed.'
+  },
+  {
+    id: 'chamomile', name: 'Chamomile', latin: 'Chamomilla recutita', origin: 'The flower head, dried',
+    family: 'herb', color: '#F0E3B0',
+    role: 'Quiet infusion',
+    body: 'Infused into oil rather than added as an essential oil. It is the herb reached for when a formula is meant to feel calm rather than active \u2014 which is as much about what it does not do as what it does.'
   }
 ];
 

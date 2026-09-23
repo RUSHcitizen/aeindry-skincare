@@ -660,23 +660,66 @@ const CATALOGUE = [
 
   {
     id: 'lotion-bar',
-    name: 'Lotion Bar',
+    name: 'Botanical Lotion Bar',
     brand: 'Aeindry', category: 'body', categoryLabel: 'Body',
-    tagline: 'Solid until it touches you',
-    blurb: 'A bar of lotion. No bottle, no water, no preservative.',
+    tagline: 'A little tin of melt-on-contact moisture',
+    blurb: 'Solid moisturiser in a reusable tin — no pump, no spills, no watery lotion.',
     description:
-      'Hard in the tin and liquid on contact with skin — body heat is the only thing that '
-      + 'melts it. Because there is no water in it there is nothing to preserve, and because '
-      + 'there is no bottle there is nothing to leak in a bag.',
+      'Meet the lotion bar that turns everyday moisturising into a small ritual you will '
+      + 'actually look forward to.\n\n'
+      + 'Handcrafted in small batches, our Botanical Lotion Bars are rich, solid moisturisers '
+      + 'made with a decadent blend of cocoa butter, mango butter, beeswax and skin-loving '
+      + 'botanical oils. Warm the bar between your hands or glide it directly over dry skin '
+      + 'and watch it soften on contact, releasing a silky layer of concentrated moisture.\n\n'
+      + 'No pump. No spills. No watery lotion. Just beautifully rich, portable moisture tucked '
+      + 'inside a reusable tin.\n\n'
+      + 'Each bar is moulded into a seasonal shape — from pumpkins and leaves to acorns — '
+      + 'which makes opening the tin almost as good as using it.\n\n'
+      + 'There is no bottle to fight with. Remove the bar, warm it against your skin, and '
+      + 'glide it over hands, elbows, knees, heels or anywhere that needs extra moisture. '
+      + 'Massage in and enjoy the soft, velvety finish.\n\n'
+      + 'Beautiful enough to gift, tempting enough to keep: pair several scents together for a '
+      + 'seasonal gift, a stocking filler or a hostess present — or put one aside for yourself '
+      + 'before your favourite disappears.',
     price: 5,
-    weight: '1 oz bar',
-    scentFamily: ['sweet', 'herbal'], concerns: ['dry', 'daily'],
-    variants: [],
-    keyIngredients: ['beeswax', 'shea-butter'],
-    ingredients: ON_LABEL,
-    benefits: ['No water, so no preservative', 'Travels without leaking', 'Made in Washington'],
-    howToUse: 'Rub the bar straight onto dry patches — elbows, shins, knuckles — and let body heat do the rest.',
-    art: { form: 'puck', sub: 'LOTION BAR', tint: ['#FBF8EE', '#EEE6CE'], body: '#F1E8D2', cap: '#C8961E', accent: '#E9C97A' }
+    weight: '1 oz bar in a reusable tin',
+    /* Six scents and one photograph with all six labels in it, so that is the
+       lead and there are no per-scent shots to fall back on. The moulded-shape
+       frame follows, because the shapes are half of what is being sold. */
+    photo: 'lb-hero-1',
+    heroPhotos: ['lb-hero-1', 'lb-hero-2', 'lb-hero-3', 'lb-hero-4'],
+    scentFamily: ['citrus', 'sweet', 'floral', 'woody', 'herbal'],
+    concerns: ['dry', 'daily'],
+    variants: [
+      { id: 'orange-clove',  label: 'Orange Clove',  swatch: '#E08A2E',
+        note: 'Bright citrus wrapped in warm, comforting spice' },
+      { id: 'pumpkin-spice', label: 'Pumpkin Spice', swatch: '#C2662A',
+        note: 'Crisp autumn afternoons and warm spice' },
+      { id: 'anise-citrus',  label: 'Anise Citrus',  swatch: '#8C6E3A',
+        note: 'Sparkling citrus against the warmth of star anise' },
+      { id: 'serene-bloom',  label: 'Serene Bloom',  swatch: '#B98BB5',
+        note: 'A softer botanical escape — peaceful and floral' },
+      { id: 'golden-pine',   label: 'Golden Pine',   swatch: '#4E7A46',
+        note: 'Fresh greenery softened with warm seasonal notes' },
+      { id: 'solstice-spice', label: 'Solstice Spice', swatch: '#A8412F',
+        note: 'Rich, festive and warming — made for sweater weather' }
+    ],
+    /* Read off the tins in the photograph rather than off the write-up: the
+       label names three the copy leaves out. Which botanical extract a scent
+       carries is printed on its own tin — Orange Clove says calendula, Pumpkin
+       Spice says chamomile — so both are listed and neither is claimed for a
+       scent nobody has checked. */
+    keyIngredients: ['cocoa-butter', 'mango-butter', 'beeswax', 'coconut-oil',
+                     'jojoba-oil', 'avocado-oil', 'grapeseed-oil', 'arrowroot',
+                     'calendula', 'chamomile', 'vitamin-e', 'essential-oils'],
+    ingredients:
+      'Cocoa Butter, Mango Butter, Beeswax, Extra-virgin Coconut Oil, Jojoba Oil, Avocado Oil, '
+      + 'Grapeseed Oil, Arrowroot Powder, Essential Oil Blend, Calendula Extract, Vitamin E. '
+      + 'Water-free and concentrated. Each scent names its own botanical extract on its tin.',
+    benefits: ['Melts with your body warmth', 'Water-free, so a little goes a long way',
+               'Reusable tin — no pump, nothing to spill', 'Small-batch, made in Washington'],
+    howToUse: 'Warm the bar between your hands or glide it straight over dry skin — hands, elbows, knees, heels. Massage in, and put it back in its tin.',
+    art: { form: 'tin', sub: 'LOTION BAR', tint: ['#FBF8EE', '#EEE6CE'], body: '#F1E8D2', cap: '#C8961E', accent: '#E9C97A' }
   },
 
   {
@@ -2006,6 +2049,10 @@ export const photoWidthsOf = (product, variantId) => {
  * every tier in the srcset.
  */
 export const PHOTO_SHAPES = {
+  'lb-hero-1': [900, 675],
+  'lb-hero-2': [900, 675],
+  'lb-hero-3': [900, 675],
+  'lb-hero-4': [900, 1200],
   'buff-hero-1': [900, 1236],
   'buff-hero-2': [900, 655],
   'buff-hero-3': [900, 655],
