@@ -13,12 +13,13 @@
  *
  *   node tools/check-catalogue.mjs
  */
-import { readdirSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const { PRODUCTS, SETS, CATEGORIES, getProduct, setPricing, photoWidthsOf } =
+const { PRODUCTS, SETS, CATEGORIES, getProduct, setPricing, photoWidthsOf,
+        PHOTO_SHAPES, photoShape } =
   await import(join(root, 'assets/js/data/products.js'));
 const { ROUTINES, SCENT_MATCHES, INGREDIENTS, INGREDIENT_FAMILIES,
         SCENT_PROFILES, SCENT_QUIZ, CONCERNS } =
@@ -129,14 +130,48 @@ for (const c of concerns) {
 /* ── every claimed photograph is on disk ─────────────────────────────────── */
 const dir = join(root, 'assets/img/products');
 const files = existsSync(dir) ? new Set(readdirSync(dir)) : new Set();
+
+/* The width and height of a WebP, read off its header.
+ *
+ * The catalogue declares the shape of every photograph that is not square so
+ * the markup can reserve the right box. A declaration nobody checks drifts the
+ * first time a file is re-cut, and the failure it causes — a page that settles
+ * downwards as the image lands — is the kind nobody files a bug about. So it is
+ * checked against the file. */
+const webpSize = (file) => {
+  const b = readFileSync(join(dir, file));
+  if (b.length < 30 || b.toString('ascii', 0, 4) !== 'RIFF') return null;
+  const chunk = b.toString('ascii', 12, 16);
+  if (chunk === 'VP8X') return { w: (b.readUIntLE(24, 3) + 1), h: (b.readUIntLE(27, 3) + 1) };
+  if (chunk === 'VP8 ') return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff };
+  if (chunk === 'VP8L') {
+    const n = b.readUInt32LE(21);
+    return { w: (n & 0x3fff) + 1, h: ((n >> 14) & 0x3fff) + 1 };
+  }
+  return null;
+};
+
 const wantPhoto = (where, name, widths) => {
   if (!name) return;
   for (const w of widths) {
-    if (!files.has(`${name}-${w}.webp`)) fail(where, `missing image ${name}-${w}.webp`);
+    const file = `${name}-${w}.webp`;
+    if (!files.has(file)) { fail(where, `missing image ${file}`); continue; }
+    const real = webpSize(file);
+    if (!real) continue;
+    const want = photoShape(name, w);
+    /* One pixel of slack each way: a downscale rounds, and a 1236-tall source
+       asked for 480 wide lands on 659 or 660 depending on which way. */
+    if (Math.abs(real.w - want.width) > 1 || Math.abs(real.h - want.height) > 1) {
+      fail(where, `${file} is ${real.w}x${real.h}, but the catalogue says `
+        + `${want.width}x${want.height}`
+        + (PHOTO_SHAPES[name] ? '' : ' (nothing declared, so square is assumed)'));
+    }
   }
 };
 for (const p of PRODUCTS) {
   wantPhoto(`PRODUCTS.${p.id}.photo`, p.photo, photoWidthsOf(p));
+  (p.heroPhotos || []).forEach((h, i) =>
+    wantPhoto(`PRODUCTS.${p.id}.heroPhotos[${i}]`, h, photoWidthsOf(p)));
   (p.variants || []).forEach((v) =>
     wantPhoto(`PRODUCTS.${p.id}.${v.id}.photo`, v.photo, photoWidthsOf(p, v.id)));
   if (!p.photo) note.push(`PRODUCTS.${p.id}: no photograph — falls back to generated art`);

@@ -1,10 +1,11 @@
 /** Product detail — variants, ingredient links, accordions, related rail. */
 
-import { $, $$, esc } from '../lib/dom.js';
+import { $, $$, esc, prefersReducedMotion } from '../lib/dom.js';
 import { getProduct, PRODUCTS, formatPrice, priceOf, photoOf, galleryOf,
-         photoWidthsOf } from '../data/products.js';
+         photoWidthsOf, photoShape } from '../data/products.js';
 import { INGREDIENT_MAP, BRAND } from '../data/content.js';
-import { productArt, botanical as icon } from '../lib/art.js';
+import { productArt, photoTag, botanical as icon } from '../lib/art.js';
+import { asset } from '../lib/asset.js';
 import { botanical } from '../lib/botanical.js';
 import { botField, pageField, initBotField } from '../ui/bot-field.js';
 import { productCard } from '../ui/pcard.js';
@@ -25,12 +26,24 @@ export default function product({ params, query }) {
   const shots = (p.variants || []).filter((v) => v.photo);
 
   /* Open on a scent that has artwork of its own where one exists. The list
-     order is the owner's, and on the Body Buff it starts with scents whose
-     labels have not been drawn yet — landing on a generated jar with five real
-     labels sitting in the rail below it undersells the product. */
+     order is the owner's, and it can start with scents whose labels have not
+     been photographed yet — landing on a generated jar with real labels sitting
+     in the rail below it undersells the product. */
   const initialVariant =
     (query.variant && p.variants?.find((v) => v.id === query.variant)?.id) ||
     shots[0]?.id || p.variants?.[0]?.id || null;
+
+  /* Where a product has a group shot, that is what the page opens on: it is the
+     picture of the product — the whole range in one frame — and it belongs to
+     every scent rather than to one. A scent is still chosen underneath it,
+     because the basket needs one. A link that names a variant is honoured
+     instead: someone arriving at ?variant=zen-zest asked to see Zen Zest. */
+  const initialShown = (!query.variant && p.heroPhotos?.length) ? p.heroPhotos[0] : null;
+  const labelFor = (photo) => gallery.find((g) => g.photo === photo)?.label || p.name;
+  const stagePhoto = (photo) => photoTag(photo, {
+    widths: photoWidthsOf(p), sizes: '(max-width: 760px) 80vw, 460px',
+    loading: 'eager', alt: labelFor(photo)
+  });
 
   const related = PRODUCTS
     .filter((x) => x.id !== p.id)
@@ -65,7 +78,9 @@ export default function product({ params, query }) {
             <div class="pdp__stage" data-reveal="scale">
               <span class="pdp__crown" aria-hidden="true">${botanical('arc', { seed: `${p.id}-crown`, mode: 'line', stroke: 1.5 })}</span>
               <span class="pdp__halo" aria-hidden="true"></span>
-              <div class="pdp__art" data-art-host>${productArt(p, { variantId: initialVariant })}</div>
+              <div class="pdp__art" data-art-host>${initialShown
+                ? stagePhoto(initialShown)
+                : productArt(p, { variantId: initialVariant, sizes: '(max-width: 760px) 80vw, 460px' })}</div>
               <span class="pdp__plinth" aria-hidden="true"></span>
             </div>
 
@@ -77,17 +92,25 @@ export default function product({ params, query }) {
                  different label, so browsing images without selecting would let
                  someone study one scent and add another to the basket. -->
             <div class="pdp__thumbs" role="group" aria-label="${esc(p.name)} images" data-thumbs>
-              ${gallery.map((g, i) => `
-                <button class="pdp__thumb ${g.variantId === initialVariant ? 'is-on' : ''}${g.variantId ? '' : ' pdp__thumb--hero'}"
+              ${gallery.map((g, i) => {
+                const on = initialShown ? g.photo === initialShown
+                                        : g.variantId === initialVariant;
+                const box = photoShape(g.photo, 480);
+                return `
+                <button class="pdp__thumb ${on ? 'is-on' : ''}${g.variantId ? '' : ' pdp__thumb--hero'}"
                         type="button" data-thumb="${esc(g.variantId || '')}"
                         data-photo="${esc(g.photo)}"
-                        aria-pressed="${g.variantId === initialVariant}"
+                        aria-pressed="${on}"
                         title="${esc(g.label)}">
-                  <img src="assets/img/products/${esc(g.photo)}-480.webp"
-                       alt="${esc(g.label)}" width="480" height="480"
+                  <!-- Through asset(): the bundled page has no assets
+                       directory beside it, and a hand-built path leaves a rail
+                       of thirteen blank boxes that only shows up once it is
+                       published. -->
+                  <img src="${esc(asset(`assets/img/products/${g.photo}-480.webp`))}"
+                       alt="${esc(g.label)}" width="${box.width}" height="${box.height}"
                        loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async">
                   <span class="visually-hidden">${esc(g.label)}</span>
-                </button>`).join('')}
+                </button>`; }).join('')}
             </div>` : ''}
             <ul class="pdp__marks" role="list" data-stagger style="--stagger-step:70ms">
               <li data-reveal="up">${icon('leaf')}<span>100% natural</span></li>
@@ -235,22 +258,19 @@ export default function product({ params, query }) {
 
       /* A hero image being shown instead of the selected scent's own. Cleared
          the moment a scent is chosen, from the rail or the option list. */
-      let shownPhoto = null;
+      let shownPhoto = initialShown;
 
       function repaint() {
         const v = p.variants?.find((x) => x.id === variantId) || null;
         const unit = priceOf(p, variantId);
 
         if (shownPhoto) {
-          const w = photoWidthsOf(p);
-          const big = w[w.length - 1];
-          artHost.innerHTML = `<img class="product-photo" src="assets/img/products/${esc(shownPhoto)}-${big}.webp"
-            srcset="${w.map((n) => `assets/img/products/${esc(shownPhoto)}-${n}.webp ${n}w`).join(', ')}"
-            sizes="(max-width: 760px) 80vw, 460px" width="${big}" height="${big}"
-            decoding="async" alt="${esc(p.name)}">`;
+          artHost.innerHTML = stagePhoto(shownPhoto);
         } else {
           // Re-render the artwork so the accent tracks the chosen scent.
-          artHost.innerHTML = productArt(p, { variantId });
+          artHost.innerHTML = productArt(p, {
+            variantId, sizes: '(max-width: 760px) 80vw, 460px'
+          });
         }
         artHost.animate(
           [{ opacity: 0, transform: 'scale(.94) rotate(-3deg)' }, { opacity: 1, transform: 'none' }],
@@ -271,13 +291,34 @@ export default function product({ params, query }) {
         });
         /* The rail and the option list are two ways into the same choice, so
            both reflect it however it was made. */
+        let marked = null;
         $$('[data-thumb]', root).forEach((b) => {
           const on = shownPhoto
             ? b.dataset.photo === shownPhoto
             : Boolean(b.dataset.thumb) && b.dataset.thumb === variantId;
           b.classList.toggle('is-on', on);
           b.setAttribute('aria-pressed', String(on));
+          if (on) marked = b;
         });
+        /* The rail scrolls rather than wraps, so on a range this long the marked
+           thumbnail can sit off the end of it — choose Zen Zest from the option
+           list and the rail goes on showing Twilight Orchard with nothing
+           highlighted. Bring it into view, but only ever by scrolling the rail:
+           `scrollIntoView` would walk every scrollable ancestor and drag the
+           whole page down to the media column on a phone. And only when it is
+           actually out of view, so choosing the scent beside the current one
+           does not slide the row under the pointer. */
+        const rail = $('[data-thumbs]', root);
+        if (marked && rail) {
+          const m = marked.getBoundingClientRect();
+          const r = rail.getBoundingClientRect();
+          if (m.left < r.left || m.right > r.right) {
+            rail.scrollTo({
+              left: rail.scrollLeft + (m.left - r.left) - (r.width - m.width) / 2,
+              behavior: prefersReducedMotion() ? 'auto' : 'smooth'
+            });
+          }
+        }
 
         /* No variant in the range is restricted today. The branch stays because
            a restricted one is a data change, not a code change. */

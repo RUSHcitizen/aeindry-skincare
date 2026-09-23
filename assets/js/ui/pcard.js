@@ -33,8 +33,13 @@ export function productCard(product, { reveal = 'up', index = 0 } = {}) {
   const price = priceOf(product);
   const cheapest = Math.min(price, ...(product.variants || []).map((v) => v.price ?? price));
   const more = (product.variants || []).some((v) => (v.price ?? price) !== cheapest);
-  const swatches = (product.variants || []).slice(0, 4)
-    .map((v) => `<span class="spec__swatch" style="background:${esc(v.swatch)}" title="${esc(v.label)}"></span>`).join('');
+  /* Four dots is as many as the card has room for, but a range of nine shown as
+     four dots reads as a range of four. The count says the rest out loud rather
+     than leaving it to the aria-label nobody sees. */
+  const options = product.variants || [];
+  const swatches = options.slice(0, 4)
+    .map((v) => `<span class="spec__swatch" style="background:${esc(v.swatch)}" title="${esc(v.label)}"></span>`).join('')
+    + (options.length > 4 ? `<span class="spec__swatch-more">+${options.length - 4}</span>` : '');
 
   return `
   <article class="spec" data-reveal="${esc(reveal)}"
@@ -63,7 +68,7 @@ export function productCard(product, { reveal = 'up', index = 0 } = {}) {
       <p class="spec__note">${esc(product.tagline)}</p>
       <div class="spec__foot">
         <span class="spec__price">${formatPrice(cheapest)}${more ? '<small>+</small>' : ''}</span>
-        ${swatches ? `<span class="spec__swatches" aria-label="${(product.variants || []).length} options">${swatches}</span>` : ''}
+        ${options.length ? `<span class="spec__swatches" aria-label="${options.length} scents">${swatches}</span>` : ''}
       </div>
       <div class="spec__actions">
         <button class="btn btn--ghost btn--sm" type="button" data-quickview="${esc(product.id)}">Quick view</button>

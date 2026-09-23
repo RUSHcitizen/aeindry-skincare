@@ -530,18 +530,24 @@ export const PRODUCTS = [
       + 'soft, velvety finish and a healthy-looking glow.',
     price: 14,
     weight: '5 oz jar',
-    /* The label artwork is the product shot for now: it is the real thing, it
-       is per-scent, and a photograph of nine identical jars would carry less
-       information than the labels on them do. Four scents have no label on
-       file yet and fall back to the generated jar. */
-    photo: 'buff-sunlit-cider',
+    /* The whole range in one frame leads, because that is the picture of the
+       product: nine jars on a tray, which no single label can say. Then the
+       three group rows, then each scent's own label — the labels are the
+       product shot for this range, since a photograph of nine identical jars
+       would carry less information than the printing on them does. */
+    photo: 'buff-hero-1',
+    heroPhotos: ['buff-hero-1', 'buff-hero-2', 'buff-hero-3', 'buff-hero-4'],
     scentFamily: ['citrus', 'sweet', 'floral', 'herbal', 'woody', 'fruity'],
     concerns: ['dry', 'daily'],
     variants: [
-      { id: 'twilight-orchard', label: 'Twilight Orchard', swatch: '#6B4E8C' },
-      { id: 'coffee-cinnamon',  label: 'Coffee Cinnamon',  swatch: '#6B4A32' },
-      { id: 'lavender-citrus',  label: 'Lavender Citrus',  swatch: '#9B8FC7' },
-      { id: 'orange-bergamot',  label: 'Orange Bergamot',  swatch: '#E08A2E' },
+      { id: 'twilight-orchard', label: 'Twilight Orchard', swatch: '#6B4E8C',
+        photo: 'buff-twilight-orchard' },
+      { id: 'coffee-cinnamon',  label: 'Coffee Cinnamon',  swatch: '#6B4A32',
+        photo: 'buff-coffee-cinnamon' },
+      { id: 'lavender-citrus',  label: 'Lavender Citrus',  swatch: '#9B8FC7',
+        photo: 'buff-lavender-citrus' },
+      { id: 'orange-bergamot',  label: 'Orange Bergamot',  swatch: '#E08A2E',
+        photo: 'buff-orange-bergamot' },
       { id: 'sweet-sunrise',    label: 'Sweet Sunrise',    swatch: '#E4574F',
         note: 'Citrus-floral — grapefruit, lemongrass, geranium',
         photo: 'buff-sweet-sunrise' },
@@ -1500,6 +1506,26 @@ export const PHOTO_WIDTHS = [480, 900];
 export const photoWidthsOf = (product, variantId) => {
   const v = variantId && product?.variants?.find((x) => x.id === variantId);
   return (v?.photo ? v.photoWidths : null) || product?.photoWidths || PHOTO_WIDTHS;
+};
+
+/**
+ * The shape of a photograph, for the ones that are not square.
+ *
+ * Everything shot on the sweep is 1:1 and needs no entry. The group shots keep
+ * whatever frame they were taken in — a tall tray of nine, three wide rows of
+ * four — and an <img> told they are square reserves the wrong box and then
+ * jumps when the file lands. Ratios, not pixel sizes: the same numbers hold at
+ * every tier in the srcset.
+ */
+export const PHOTO_SHAPES = {
+  'buff-hero-1': [900, 1236],
+  'buff-hero-2': [900, 655],
+  'buff-hero-3': [900, 655],
+  'buff-hero-4': [900, 655]
+};
+export const photoShape = (photo, width) => {
+  const [w, h] = PHOTO_SHAPES[photo] || [1, 1];
+  return { width, height: Math.round((width * h) / w) };
 };
 
 /**

@@ -1,4 +1,4 @@
-import { photoOf, photoWidthsOf } from '../data/products.js';
+import { photoOf, photoWidthsOf, photoShape, PHOTO_WIDTHS } from '../data/products.js';
 import { asset } from './asset.js';
 /**
  * Parametric product illustration engine.
@@ -612,6 +612,36 @@ const FORMS = {
 };
 
 /**
+ * The `<img>` for one photograph, sized from the catalogue.
+ *
+ * Shared rather than written twice: the product stage and the repaint after a
+ * thumbnail click each built their own tag, and they disagreed — the repaint
+ * stamped square dimensions onto a landscape group shot, so the page reserved
+ * a box half again too tall and settled into it as the file arrived.
+ *
+ * @param {string} photo   a basename under assets/img/products
+ * @param {object} [opts]  { widths, className, sizes, loading, alt }
+ * @returns {string} HTML
+ */
+export function photoTag(photo, opts = {}) {
+  const widths = opts.widths || PHOTO_WIDTHS;
+  const largest = widths[widths.length - 1];
+  const { width, height } = photoShape(photo, largest);
+  const cls = ['product-photo', opts.className].filter(Boolean).join(' ');
+  const at = (w) => asset(`assets/img/products/${photo}-${w}.webp`);
+  /* The shape again, this time as a number CSS can do arithmetic on. The stage
+     uses it to size the element box to the picture, so a rounded corner and a
+     shadow land on the photograph rather than on empty letterbox. */
+  return `<img class="${cls}" style="--shot:${(width / height).toFixed(4)}"
+    src="${at(largest)}"
+    srcset="${widths.map((w) => `${at(w)} ${w}w`).join(', ')}"
+    sizes="${escapeAttr(opts.sizes || '(max-width: 760px) 46vw, 320px')}"
+    width="${width}" height="${height}"
+    loading="${opts.loading || 'lazy'}" decoding="async"
+    alt="${escapeAttr(opts.alt || '')}">`;
+}
+
+/**
  * Render a product illustration.
  * @param {object} product  a PRODUCTS entry
  * @param {object} [opts]   { variantId, className, animate }
@@ -624,18 +654,16 @@ export function productArt(product, opts = {}) {
      look like a product on the day it is added, not like a gap. */
   const photo = photoOf(product, opts.variantId);
   if (photo) {
-    const cls = ['product-photo', opts.className].filter(Boolean).join(' ');
-    /* Not every source is big enough for the same tiers. A `w` descriptor the
-       file does not match makes the browser pick the wrong one, so the widths
-       are read off the catalogue rather than assumed. */
-    const widths = photoWidthsOf(product, opts.variantId);
-    const largest = widths[widths.length - 1];
-    const at = (w) => asset(`assets/img/products/${photo}-${w}.webp`);
-    return `<img class="${cls}" src="${at(largest)}"
-      srcset="${widths.map((w) => `${at(w)} ${w}w`).join(', ')}"
-      sizes="(max-width: 760px) 46vw, 320px"
-      width="${largest}" height="${largest}" loading="lazy" decoding="async"
-      alt="${escapeAttr(product.name)}">`;
+    return photoTag(photo, {
+      /* Not every source is big enough for the same tiers. A `w` descriptor the
+         file does not match makes the browser pick the wrong one, so the widths
+         are read off the catalogue rather than assumed. */
+      widths: photoWidthsOf(product, opts.variantId),
+      className: opts.className,
+      sizes: opts.sizes,
+      loading: opts.loading,
+      alt: product.name
+    });
   }
 
   const art = { ...product.art };

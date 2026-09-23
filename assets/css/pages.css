@@ -2188,8 +2188,44 @@ body:has(.invoice-page) .backdrop { display: none; }
    into. */
 .pdp__art:has(img.product-photo) ~ .pdp__halo,
 .pdp__stage:has(.pdp__art img.product-photo) .pdp__halo { display: none; }
+
+/* The generated vessels are SVGs drawn to one viewBox, so a width was enough
+   to place them. A photograph arrives in whatever frame it was taken in — the
+   Body Buff group shots are a tall tray of nine and three wide rows of four —
+   so the stage hands a photograph a box instead of a width. It fills what it
+   can of that box and letterboxes the rest, which keeps a wide row legible
+   without letting a tall tray walk off the plinth. */
+.pdp__art:has(img.product-photo) {
+  /* A fixed box, so swapping a tall tray for a wide row moves nothing else on
+     the page. 1/1.09 is the stage's own proportion, less the plinth. */
+  width: 74%;
+  aspect-ratio: 1 / 1.09;
+  margin-bottom: 4%;
+  display: grid;
+  place-items: center;
+}
+/* The photograph is then the largest rectangle of its own shape that fits that
+   box — sized, not letterboxed. Letterboxing was the obvious move and it put
+   the rounded corner and the shadow on empty space beside a portrait tray
+   instead of on the tray. `--shot` is the picture's width over its height, and
+   109% is the box's height as a share of its width, so the second term is the
+   width a picture would need to fill the box's full height. Whichever is
+   smaller binds. (`max-height: 100%` is what this ought to be; it resolves
+   against nothing here, because the box's height comes from an aspect-ratio.) */
 .pdp__art img.product-photo {
   mix-blend-mode: normal;
-  width: 100%;
+  width: min(100%, calc(109% * var(--shot, 1)));
+  height: auto;
   border-radius: var(--r-md);
+  /* Photographs carry their own ground — a white studio sweep under a label, a
+     marble tray under the range — and the page has a ground of its own. Seated
+     on a soft shadow they read as one deliberate thing rather than as a tile
+     stamped over the botanicals. */
+  box-shadow: 0 18px 40px -12px rgb(var(--shadow-color) / .30),
+              0 2px 8px rgb(var(--shadow-color) / .08);
 }
+
+/* A variant thumbnail is a label, square, and crops happily. A hero is the
+   whole range in one frame: cropping a tray of nine to a square throws most of
+   the jars away, which is the one thing that thumbnail exists to show. */
+.pdp__thumb--hero img { object-fit: contain; padding: 2px; }
